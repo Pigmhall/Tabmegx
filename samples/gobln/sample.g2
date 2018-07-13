@@ -1,0 +1,68 @@
+` Sample for Gobln
+
+/* ---- constant values */
+const SCX=640,SCY=480;
+const TM=10;
+
+/* ---- type statement */
+type test{
+ x,y,l}
+global ts as test
+ts.x=8;
+
+`---- global variables
+type gl{
+x,y$,z#} global gw as gl;
+
+@x=10;@y$="ABC";z#=1.1;
+` replaced '@' to 'gw.'
+
+`---- array
+dim t[TM],tx[TM],ty[TM];
+
+`
+setSyncRate(30,0);
+setVirtualResolution(SCX,SCY);
+
+`---- for statement
+for(i=1 to TM){
+ createText(i,chr(i+48));
+ setTextSize(i,32);
+ t[i]=rand(3);
+ tx[i]=rand(SCX);
+ ty[i]=rand(SCY);
+ ` What is rand?
+ ` It is replaced by the regular expression list.
+ ` Please see gobln\replace2.def
+ ` (gobln\replace.def is the list for DarkBASIC pro)
+}
+ 
+`--- while statement
+while(1){
+ for(i=1 to TM){
+
+  `--- switch statement
+  switch(t[i]){
+   case 0:tx[i]=mod(tx[i]+10,SCX);
+    break;
+   case 1:ty[i]=mod(ty[i]+10,SCX);
+    break;
+   case 2:tx[i]=func1(1,2);
+    break;
+  }
+
+  setTextPosition(i,tx[i],ty[i]);}
+
+ sync();
+ 
+ `--- if statement
+ if(getRawKeyPressed(27)){exit;}
+ else{print("Press ESC to quit.");}
+}
+
+`--- function statement
+sub func1(a,b){
+ c=a+b+@x+rand(8);
+`--- insert a file
+#include "ok.g2"
+ return c;}

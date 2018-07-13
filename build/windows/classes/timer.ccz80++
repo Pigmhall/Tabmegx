@@ -1,0 +1,85 @@
+// timer.ccz80++
+//--- the functions for using the timer interrupt with VSYNC
+class timer{
+
+//--- start(function address)
+//--- set the address for the timer interrupt
+public static void start(int argument1){
+ reg(argument1,&loop());}
+
+//--- stop()
+//--- stops the timer interrupt
+public static void stop()
+asm{
+ di
+ ld hl,__timer_func_org
+ ld de,#fd9f
+ ld bc,5
+ ldir
+ ei
+ ret
+}
+
+//- timer interrupt initialize
+static void reg(int argument1,int argument2)
+asm{
+ ld   hl,2
+ add  hl,sp
+ ld   c,(hl)
+ inc  hl
+ ld   b,(hl) ; BC = 2nd parameter
+ inc  hl
+ ld   e,(hl)
+ inc  hl
+ ld   d,(hl) ; DE = 1st parameter
+ ex de,hl
+ ld (__timer_func_addr),hl
+ push bc
+ ;save original interrupt routine
+ ld hl,#fd9f
+ ld de,__timer_func_org
+ ld bc,5
+ ldir
+ pop hl
+ ;set new interrupt routine
+ di
+ ld a,#c3
+ ld (#fd9f),a
+ ld (#fda0),hl
+ ei
+ ret
+__timer_func_addr:
+defs 2
+__timer_func_org:
+defs 5
+}
+
+//- timer interrupt loop
+static void loop()
+asm {
+ push af
+ push bc
+ push de
+ push hl
+ push ix
+ push iy
+ call __timer_jump
+ pop iy
+ pop ix
+ pop hl
+ pop de
+ pop bc
+ pop af
+ jp __timer_func_org
+__timer_jump: ld hl,(__timer_func_addr)
+ jp (hl)
+}
+
+//--- time()
+//--- gets time. Same value as time in MSX-BASIC
+ public static int time()
+ asm inline ()
+ {
+  ld hl,(#FC9E)
+ }
+}

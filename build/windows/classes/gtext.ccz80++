@@ -1,0 +1,102 @@
+// gtext.ccz80++
+//--- the functions for the management of the texts in SCREEN5~8
+include String.ccz80++
+include bios.ccz80++
+
+class gtext{
+
+//--- print(x,y,strings)
+//--- prints the text
+public static void print(short argument1,short argument2,int argument3){
+ String.Copy(bios.cmdbuf,"XY(");
+ String.ShortToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ bios.call(bios.cmdbuf);
+ String.Copy(bios.cmdbuf,"K?(\x22");
+ String.Concat(bios.cmdbuf,argument3);
+ String.Concat(bios.cmdbuf,"\x22)");
+ bios.call();
+}
+
+//--- color(text color,background color,border color,shadow color)
+//--- sets the text color
+public static void color(short argument1,short argument2,short argument3,short argument4){
+ String.Copy(bios.cmdbuf,"KCOLOR(");
+ String.ShortToDec(bios.cmdnum,argument1);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument2);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument3);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument4);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,")");
+ bios.call();
+}
+
+//--- init(attribute,shadow x,shadow y,italic table,color table)
+//--- sets the text attribute.
+//--- attribute b0:border/b1:shadow/b2:italic/b3:virtical/b4:pitch/b5:units/b6:change color/b7:interlace
+public static void init(short argument1,short argument2,short argument3,int argument4,int argument5){
+ String.Copy(bios.cmdbuf,"KINIT(");
+ String.ShortToDec(bios.cmdnum,argument1);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument2);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument3);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument4);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument5);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,")");
+ bios.call();
+}
+
+//--- bold(x,y,border x,border y,shadow x,shadow y)
+//--- sets the text bold
+public static void bold(short argument1,short argument2,short argument3,short argument4,short argument5,short argument6){
+ String.Copy(bios.cmdbuf,"KBOLD(");
+ String.ShortToDec(bios.cmdnum,argument1);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument2);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument3);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument4);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument5);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument6);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,")");
+ bios.call();
+}
+
+//--- size(x,y,space)
+//--- sets the font size
+public static void size(short argument1,short argument2,short argument3){
+ String.Copy(bios.cmdbuf,"KSIZE(");
+ String.ShortToDec(bios.cmdnum,argument1);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument2);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.ShortToDec(bios.cmdnum,argument3);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,")");
+ bios.call();
+}
+
+//--- load8(filename)
+//--- loads the 8 dots font file. The format of the font data is the same as the pattern name table in screen 1.
+public static void load8(int argument1){
+ static short fnttext8[]={#EB,#21,#E1,#E9,#22,#18,#FC,#CD,#18,#FC,#06,#00,#FE,#FF,#28,#24,#B7,#28,#03,#3D,#F6,#80,#08,#01,#AE,#43,#0A,#23,#77,#2B,#3E,#03,#02,#01,#35,#00,#09,#22,#C1,#43,#08,#01,#0E,#00,#09,#77,#23,#23,#73,#23,#72,#C9,#78,#32,#AE,#43,#21,#00,#00,#22,#C1,#43,#C9,
+ #04,#05,#20,#18,#7B,#D6,#20,#6F,#26,#00,#29,#29,#29,#3E,#00,#11,#00,#00,#19,#11,#18,#FC,#01,#08,#00,#CD,#8F,#40,#21,#18,#FC,#11,#08,#08,#01,#08,#00,#C9};
+ String.Copy(bios.cmdbuf,"BLOCK(");
+ String.IntToDec(bios.cmdnum,&fnttext8);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",&H7500,101)");
+ bios.call();
+ String.Copy(bios.cmdbuf,"LOAD(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,&H7565,,7)");
+ bios.call();
+ String.Copy(bios.cmdbuf,"CALL(&H7500,0,&H7565)");
+ bios.call();}
+
+//--- load8pnt()
+//--- sets the screen1 vram font as gtext.
+public static void load8pnt(){
+ static short fnttext8[]={#EB,#21,#E1,#E9,#22,#18,#FC,#CD,#18,#FC,#06,#00,#FE,#FF,#28,#24,#B7,#28,#03,#3D,#F6,#80,#08,#01,#AE,#43,#0A,#23,#77,#2B,#3E,#03,#02,#01,#35,#00,#09,#22,#C1,#43,#08,#01,#0E,#00,#09,#77,#23,#23,#73,#23,#72,#C9,#78,#32,#AE,#43,#21,#00,#00,#22,#C1,#43,#C9,
+ #04,#05,#20,#18,#7B,#D6,#20,#6F,#26,#00,#29,#29,#29,#3E,#00,#11,#00,#00,#19,#11,#18,#FC,#01,#08,#00,#CD,#8F,#40,#21,#18,#FC,#11,#08,#08,#01,#08,#00,#C9};
+ String.Copy(bios.cmdbuf,"BLOCK(");
+ String.IntToDec(bios.cmdnum,&fnttext8);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",&H7500,101)");
+ bios.call();
+ bios.call("BLOCK(@256,&H7565,766)");
+ String.Copy(bios.cmdbuf,"CALL(&H7500,0,&H7565)");
+ bios.call();}
+}

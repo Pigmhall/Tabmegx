@@ -1,0 +1,30 @@
+`head.g2
+
+`---------- loadChr
+sub loadChr(nm,fi$){
+ i=0;flg=0;imgn=imgIm+nm*ImMaxSel;
+ while(flg=0){
+  f$=fi$+str(i)+".png";
+  if(getFileExists(f$)){
+   loadImage(imgn+i,f$);++i;}
+  else{flg=1;}}
+ imn[nm]=imgn;imw[nm]=getImageWidth(imgn);imh[nm]=getImageHeight(imgn);imc[nm]=i;} 
+
+
+
+sub spCenter(i,imgn){setSpriteOffset(spT+i,imw[imgn]/2,imh[imgn]/2);}
+`---- cntrBordr
+sub brdRight(i){a=SCX-getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdBottom(i){a=SCY-getW(imh[tc[i]],ts[i])/2;return a;}
+sub brdTop(i){a=getW(imh[tc[i]],ts[i])/2;return a;}
+sub brdLeft(i){a=getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdRight2(i){a=SCX-getW(imh[tc[i]],ts[i])/2;return a;}
+sub brdBottom2(i){a=SCY-getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdTop2(i){a=getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdLeft2(i){a=getW(imh[tc[i]],ts[i])/2;return a;}
+`---- hideBordr
+sub hideRight(i){a=SCX+getW(imw[tc[i]],ts[i])/2;return a;}
+sub hideBottom(i){a=SCY+getW(imh[tc[i]],ts[i])/2;return a;}
+sub hideTop(i){a=-getW(imh[tc[i]],ts[i])/2;return a;}
+sub hideLeft(i){a=-getW(imw[tc[i]],ts[i])/2;return a;}
+sub getW(wid#,scal#){wid#=wid#*scal#;wid#=wid#/100;return wid#;}

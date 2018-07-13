@@ -1,0 +1,10 @@
+include bios.ccz80++
+include chr.ccz80++
+include sprite.ccz80++
+include graphic.ccz80++
+include Random.ccz80++
+
+class MainClass{
+ static void main(){
+ }
+}

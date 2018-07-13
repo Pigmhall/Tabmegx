@@ -1,0 +1,2 @@
+case 1:mry[i]=wrapvalue(mry[i]+10);
+ break;

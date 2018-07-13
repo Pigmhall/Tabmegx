@@ -1,0 +1,19 @@
+// Amstrad CPC test2
+include Indirections464.ccz80++
+include Screen.ccz80++
+include Text.ccz80++
+include Random.ccz80++
+include GameKeyboard.ccz80++
+include GameScreen.ccz80++
+include GameSprite.ccz80++
+
+class MainClass{
+static short image[]={8,8,3,24,#00,#00,#00,#70,#C0,#00,#80,#2C,#00,#80,#2C,#00,#80,#20,#00,#80,#20,#00,#70,#C0,#00,#00,#40,#00,#00,#00,#00,#30,#E0,#00,#40,#16,#00,#40,#16,#00,#40,#10,#00,#40,#10,#00,#30,#E0,#00,#00,#20,#00,#00,#00,#00,#10,#F0,#00,#20,#03,#80,#20,#03,#80,#20,#00,#80,#20,#00,#80,#10,#F0,#00,#00,#10,#00,#00,#00,#00,#00,#F0,#80,#10,#01,#48,#10,#01,#48,#10,#00,#40,#10,#00,#40,#00,#F0,#80,#00,#00,#80};
+static void main(){
+ GameScreen.SetMode(1);
+ GameScreen.SetInks(1,24,20,6);
+ while(1){
+  GameScreen.PutImage(Random.Next()%320,Random.Next()%200,&image);
+  }
+ }
+}

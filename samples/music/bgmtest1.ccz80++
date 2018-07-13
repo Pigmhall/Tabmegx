@@ -1,0 +1,55 @@
+// background music test
+include bios.ccz80++
+include sprite.ccz80++
+include music.ccz80++
+include Random.ccz80++
+include gtext.ccz80++
+
+class MainClass{
+ //-- sprite pattern data
+ static short spptn[]={#54,#7C,#7C,#38,#10,#D6,#7C,#38};
+ static short spcol[]={#08,#08,#08,#08,#02,#02,#02,#02,
+  #0a,#0a,#0a,#0a,#02,#02,#02,#02,
+  #0f,#0f,#0f,#0f,#02,#02,#02,#02};
+ static short i;
+
+ static void main(){
+  bios.color(15,0,0);
+  bios.screen(5);
+
+  //-- sprite
+  sprite.mode(1); // 0:8x8 1:8x8(x2) 2:16x16 3:16x16(x2)
+  sprite.sprite(i,&spptn);
+  for(i=0;i<32;i++){sprite.spritecolor(i,&spcol+(i%3)*8);}
+
+  //-- infomation
+  bios.disscr();
+  gtext.init(2,1,1,0,0);
+  gtext.size(8,8,1);
+  gtext.bold(2,1,1,1,2,1);
+  gtext.color(2,4,0,10);
+  gtext.print(3*8,8*8,"MUSIC TEST");
+  gtext.color(5,0,0,13);
+  gtext.print(3*8,10*8,"UP   : Play");
+  gtext.print(3*8,11*8,"RIGHT: Change volume");
+  gtext.print(3*8,12*8,"DOWN : Change speed");
+  gtext.print(3*8,13*8,"LEFT : Fade out");
+  bios.enascr();
+
+  //-- load music 
+  music.load("SAMPLE1.MGS",0);
+  music.play(0);
+
+  //-- loop
+  while(1){
+   if(!(bios.getkey(7)&4))break;//esc
+   switch(bios.stick(0)){
+    case 1:music.stop();music.speed(100);music.volume(15);music.play(0);break;
+    case 3:music.volume(10);break;
+    case 5:music.speed(50);break;
+    case 7:music.stop(120);break;}
+   //-- put sprites
+   sprite.put(Random.Next()%32,Random.Next()%240,Random.Next()%176,0,0);
+  }
+ }
+}

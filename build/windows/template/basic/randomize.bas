@@ -1,0 +1,1 @@
+gettimea$:a=val(mid$(a$,4,2)+right$(a$,2)):fori=0toa:a=rnd(1):nexti

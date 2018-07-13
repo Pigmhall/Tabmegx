@@ -1,0 +1,18 @@
+const SCX=640,SCY=480;
+
+setSyncRate(30,0);
+setVirtualResolution(SCX,SCY);
+setWindowSize(512,384,0);
+setWindowPosition(0,64);
+
+createObjectBox(1,2,2,2);
+setObjectRotation(1,0,90,0);
+setObjectColor(1,0,0,255,255);
+createText(1,"test");
+setTextSize(1,32);
+setTextPosition(1,(SCX-getTextTotalWidth(1))/2,SCY/2);
+
+while(1){
+ sync();
+ if(getRawKeyPressed(27)){exit;}
+}

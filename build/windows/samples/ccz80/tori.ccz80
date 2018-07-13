@@ -1,0 +1,71 @@
+include "mymsx.ccz80";
+
+//----------
+define tm=10;//number of bird
+array byte fonts[#800],buf[32];
+array byte tx[tm],ty[tm],tc[tm];
+byte i,j,sx,sy,a;
+word v;
+array byte an={0,1,2,1};
+array byte chptn={
+ #FF,#DD,#E7,#C3,#C3,#E7,#DB,#FF,
+ #FF,#FF,#FF,#FF,#EF,#FF,#FF,#FF};
+array byte chcol={
+#00,#07,#03,#02,#02,#03,#07,#00,
+#00,#00,#00,#00,#07,#00,#00,#00};
+array byte spptn={
+#00,#0F,#1F,#3B,#7F,#FF,#7F,#1F,#1F,#1F,#0F,#0F,#0F,#07,#01,#00,#00,#00,#06,#86,#8E,#FE,#FC,#FC,#F8,#FC,#FF,#FE,#F8,#F0,#20,#90,
+#00,#0F,#1F,#3B,#7F,#FF,#7F,#1F,#1F,#1F,#0F,#0F,#0F,#07,#01,#00,#00,#00,#00,#80,#80,#FF,#FF,#FC,#F8,#FC,#FF,#FE,#F8,#F0,#20,#90,
+#00,#0F,#1F,#3B,#7F,#FF,#7F,#1F,#1F,#1F,#0F,#0F,#0F,#07,#01,#00,#00,#00,#00,#80,#80,#C0,#E0,#F0,#F8,#FC,#FF,#FE,#F8,#F0,#20,#90};
+
+//--- sprite setting
+asm{"_RG1SAV: equ #F3E0","ld a,(_RG1SAV)", // sprite size
+"and #fc", // x1
+"or #2", // set 16x16
+"ld (_RG1SAV),a",
+"ld hl,#1b00","ld (__satblad),hl" // screen1~3
+}
+//---------- init
+screen(1);ldirmv(0,fonts,#800);screen(2);
+cls();
+ldirvm(fonts,#0,#800);ldirvm(fonts,#800,#800);ldirvm(fonts,#1000,#800);
+filvrm(#2000,#f0,#1800);
+
+// character init
+define ch=128,chnum=2;v=ch;
+ldirvm(chptn,v*8,8*chnum);
+ldirvm(chptn,#800+v*8,8*chnum);
+ldirvm(chptn,#1000+v*8,8*chnum);
+ldirvm(chcol,#2000+v*8,8*chnum);
+ldirvm(chcol,#2800+v*8,8*chnum);
+ldirvm(chcol,#3000+v*8,8*chnum);
+
+// sprite init
+ldirvm(spptn,#3800,32*3);
+for(i=0;i<tm;i++){
+ *(tx+rand()%tm)=rand()&255;
+ *(ty+rand()%tm)=rand()%192;
+ *(tc+rand()%tm)=rand()%4;}
+loop:
+for(i=0;i<tm;i++){
+ sx=*(tx+i);sy=*(ty+i);
+ sx=sx+rand()%3-1;sy=sy+rand()%3-1;
+ *(tc+i)=(*(tc+i)+1)%8;
+ a=*(an+*(tc+i)/2);gosub print_n;
+ putsprite(i,sx,sy,rand()&15,a*4);}
+if(rand()%3==0){
+ vpoke(6144+rand()%(32*24),ch+rand()%2);
+ v=ch;
+ vpoke((v+1)*8+4,rand()&255);
+ vpoke(#800+(v+1)*8+4,rand()&255);
+ vpoke(#1000+(v+1)*8+4,rand()&255);}
+  vpoke(6144+rand()%(32*24),32);
+ print(6,12,"Bird Animation Test");
+goto loop;
+
+//--------------------
+print_n:
+wtoa(buf,a);
+j=0;while(j<4&&*(buf+j)=='0'){*(buf+j)=32;++j;}
+print(1,i,buf);
+return;

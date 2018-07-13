@@ -1,0 +1,349 @@
+include Indirections.ccz80++
+
+class bios{
+ public static void screen(short argument1)
+ asm inline (Indirections.Values())
+ {
+ld iy,(#FCC1)
+ld ix, __chgmod
+call #1c
+ }
+
+ public static void color(short argument1, short argument2, short argument3)
+ asm (Indirections.Values())
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 3th parameter
+      ld   (#F3EB),a
+      inc  hl
+      inc  hl
+      ld   a,(hl)             ; A = 2nd parameter
+      ld   (#F3EA),a
+      inc  hl
+      inc  hl
+      ld   a,(hl)             ; A = 1st parameter
+      ld   (#F3E9),a
+ld iy,(#FCC1)
+ld ix,__chgclr
+jp #1c
+ }
+	
+  public static void keyon()
+    asm inline (Indirections.Values())
+    {
+ld iy,(#FCC1)
+ld ix, __dspfnk
+call #1c
+    }
+
+  public static void keyoff()
+    asm inline (Indirections.Values())
+    {
+ld iy,(#FCC1)
+ld ix, __erafnk
+call #1c
+    }
+
+ public static void vpoke(int argument1,short argument2)
+ asm (Indirections.Values()){
+  ld   hl,3
+  add  hl,sp
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+ld iy,(#FCC1)
+ld ix,__wrtvrm
+jp #1c
+ }
+
+ public static short vpeek(int argument1)
+ asm inline (Indirections.Values())
+ {
+ld iy,(#FCC1)
+ld ix, __rdvrm
+call #1c
+ }
+
+ public static void cls()
+ asm (Indirections.Values()){
+  ld hl,6144
+  ld a,32
+  ld bc,768
+ld iy,(#FCC1)
+ld ix,__filvrm
+jp #1c
+ }
+
+ public static short stick(short argument1)
+ asm inline (Indirections.Values())
+ {
+ld iy,(#FCC1)
+ld ix, __gtstck
+call #1c
+ }
+
+ public static short strig(short argument1)
+ asm inline (Indirections.Values())
+ {
+ld iy,(#FCC1)
+ld ix, __gttrig
+call #1c
+ }
+
+ public static void kilbuf()
+ asm inline (Indirections.Values())
+ {
+ld iy,(#FCC1)
+ld ix, __kilbuf
+call #1c
+ }
+
+ public static void ldirvm(int argument1,int argument2,int argument3)
+ asm (Indirections.Values())
+ {
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+ld iy,(#FCC1)
+ld ix,__ldirvm
+jp #1c
+ }
+
+ public static void sound(short argument1,short argument2)
+ asm (Indirections.Values()){
+  ld   hl,3
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  inc hl
+  ld a,(hl)
+ld iy,(#FCC1)
+ld ix,__wrtpsg
+jp #1c
+ }
+
+ public static short rslreg()
+ asm inline (Indirections.Values())
+ {
+ld iy,(#FCC1)
+ld ix, __rslreg
+call #1c
+ }
+
+ public static void enaslt(short argument1)
+ asm inline (Indirections.Values()){
+  ld hl,#8000
+ld iy,(#FCC1)
+ld ix, __enaslt
+call #1c
+  ei
+ }
+
+ public static short rdslt(int argument1,short argument2)
+ asm (Indirections.Values()){
+  ld   hl,3
+  add  hl,sp
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+ld iy,(#FCC1)
+ld ix,__rdslt
+jp #1c
+ }
+
+// spn,x,y,col,ptn
+ public static void putsprite(short argument1,short argument2,short argument3,short argument4,short argument5)
+ asm (Indirections.Values()){
+  ld hl,3
+  add hl,sp
+  ld a,(hl)
+  ld (__satbl+2),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__satbl+3),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__satbl),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__satbl+1),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld l,a
+  ld h,0
+  ld a,4
+  ld de,0
+  ex de,hl
+  ld   b,8
+  rra
+  jr   nc,$+3
+  add  hl,de
+  sla  e
+  rl   d
+  djnz $-8
+  ld   b,h
+  ld   c,l
+  ld   hl,(__satblad)
+  add  hl,bc
+  ex de,hl
+  ld bc,4
+  ld hl,__satbl
+ld iy,(#FCC1)
+ld ix,__ldirvm
+jp #1c
+  __satbl:defb 0,0,0,0
+  __satblad:defw #1b00
+}
+
+ public static void setsatblad(int argument1)
+ asm inline (Indirections.Values()){
+  ld (__satblad),hl
+ }
+
+ public static short getkey(short argument1)
+ asm inline (Indirections.Values()){
+ld iy,(#FCC1)
+ld ix, __snsmat
+call #1c
+ }
+
+ public static void ldirmv(int argument1,int argument2,int argument3)
+ asm (Indirections.Values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+ld iy,(#FCC1)
+ld ix,__ldirmv
+jp #1c
+}
+
+ public static void filvrm(int argument1,short argument2,int argument3)
+ asm (Indirections.Values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+ld iy,(#FCC1)
+ld ix,__filvrm
+jp #1c
+}
+
+ public static void print(short argument1,short argument2,int argument3)
+ asm (Indirections.Values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  push bc
+  inc hl
+  inc hl
+  ld e,(hl)
+  ld d,0
+  inc hl
+  inc hl
+  ld c,(hl)
+  ld b,0
+  ld   hl,6144
+  add  hl,bc
+  push hl
+  ex   de,hl
+  ld   a,32
+  ld   de,0
+  ex   de,hl
+  ld   b,8
+  rra
+  jr   nc,$+3
+  add  hl,de
+  sla  e
+  rl   d
+  djnz $-8
+  ld   b,h
+  ld   c,l
+  pop  hl
+  add  hl,bc
+  pop bc
+  __printloop:
+  ld   a,(bc)
+  or   a
+  ret  z
+ld iy,(#FCC1)
+ld ix, __wrtvrm
+call #1c
+  inc  bc
+  inc  hl
+  jr   __printloop
+ }
+
+ public static void cliksw(short argument1)
+ asm inline (Indirections.Values()){
+  _CLIKSW: equ #F3DB
+  ld (_CLIKSW),a
+ }
+ 
+ public static void ldir(int argument1,short argument2)
+ asm (Indirections.Values()){
+  ld   hl,3
+  add  hl,sp
+  ld c,(hl)
+  dec c
+  ld b,0
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  inc de
+  xor a
+  ld (hl),a
+  ldir
+  ret
+ }
+}
+

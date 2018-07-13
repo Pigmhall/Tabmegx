@@ -1,0 +1,25 @@
+include bios.ccz80++
+include Random.ccz80++
+include String.ccz80++
+include sprite.ccz80++
+
+class MainClass{
+ static void main(){
+  bios.color(15,0,0);
+  bios.screen(5);
+  sprite.mode(2);
+  static short spptn[]={#0C,#1E,#3F,#7F,#5B,#6E,#7E,#3F,#1F,#1F,#1F,#1F,#33,#31,#30,#00,#00,#00,#00,#84,#C6,#CE,#8E,#0E,#FC,#FE,#FE,#FF,#B7,#B3,#30,#00};
+  static short spcol[]={#09,#09,#02,#02,#02,#02,#02,#02,#02,#02,#02,#02,#02,#05,#05,#00};
+
+  short buf[32];
+  String.ShortToDec(&buf,*(#FCAF));
+  //bios.print(0,0,&buf);
+  // sprite init
+  sprite.sprite(0,&spptn);
+  sprite.spritecolor(0,&spcol);
+  while(1){
+   sprite.put(0,30,30,8,0);
+   }
+   
+ }
+}

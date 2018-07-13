@@ -1,0 +1,2 @@
+c=setmPlain(0,-5,10,2,-2,100,100);mrx[c]=90;
+maprepeat(c,50,50);

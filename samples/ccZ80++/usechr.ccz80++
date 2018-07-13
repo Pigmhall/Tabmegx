@@ -1,0 +1,24 @@
+include bios.ccz80++
+include chr.ccz80++
+include Random.ccz80++
+
+class MainClass{
+ static short chptn[]={
+  #66,#66,#00,#00,#7E,#7E,#7E,#7E, #A0,#A0,#99,#99,#70,#70,#40,#40,
+  #00,#3C,#3C,#5A,#7F,#6F,#3E,#00, #00,#65,#65,#64,#60,#60,#60,#00,
+  #7E,#5A,#7E,#7E,#3C,#18,#3C,#00, #D0,#0D,#60,#60,#70,#70,#70,#77};
+
+ static void main(){
+  int i;
+  bios.color(15,0,0);
+  bios.screen(2);
+
+  for(i=0;i<3;i++){
+   chr.chr(97+i,&chptn+16*i);
+   chr.chrcolor(97+i,&chptn+16*i+8);}
+ 
+  while(1){
+   bios.vpoke(6144+Random.Next()%768,97+Random.Next()%3);}
+ 
+ }
+}

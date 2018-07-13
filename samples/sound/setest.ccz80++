@@ -1,0 +1,58 @@
+// sound effect test
+include bios.ccz80++
+include sound.ccz80++
+include Random.ccz80++
+
+class MainClass{
+ static short k1,k2,k1s;
+ static int wa;
+ // Sound data
+ static short wav[]={#06,#00,#10,#00,#17,#00,#00,#0f,#23,#e8,#4f,#69,#20,#89,#c0,#c4,#09,#e0,#01,#0f,#23,#e8,#c0,#20,#20,#c0,#e0,#01,#0e,#20,#32,#69,#20,#87,#a3,#cf,#03,#e0};
+
+ static void main(){
+  bios.color(15,0,0);
+  bios.screen(1);
+  bios.keyoff();
+
+  bios.call("LOAD(\x22nisfxdrv.org\x22,&h2800)");
+  sound.set(&wav);
+  bios.print(0,0,"Sound Effect Test");
+  bios.print(0,1,"Push [1]~[9]    ESC: Quit");
+  wa=0;
+
+  //-- loop
+  while(1){
+   k1=bios.getkey(0);
+   k2=bios.getkey(1);
+   if(k1==255&&k2==255)k1s=0;
+
+   // push [0]~[9]
+   if(k1s==0){
+    if((k1&1)==0){playSound(10);}
+    if((k1&2)==0){playSound(1);}
+    if((k1&4)==0){playSound(2);}
+    if((k1&8)==0){playSound(3);}
+    if((k1&16)==0){playSound(4);}
+    if((k1&32)==0){playSound(5);}
+    if((k1&64)==0){playSound(6);}
+    if((k1&128)==0){playSound(7);}
+    if((k2&1)==0){playSound(8);}
+    if((k2&2)==0){playSound(9);}
+   }
+   bios.vpoke(6144+30,Random.Next()&255);
+   if(wa>0){if(--wa==0){bios.print(0,3,"          ");}}
+  
+   // ESC 
+   if((bios.getkey(7)&4)==0){bios.kilbuf();break;}
+  }
+ }
+ static void playSound(short A){
+  String.Copy(bios.cmdbuf,"SOUND:");
+  String.ShortToDec(bios.cmdnum,A);
+  String.Concat(bios.cmdbuf,bios.cmdnum);
+  bios.print(0,3,bios.cmdbuf);
+  k1s=1;wa=1000;
+  // play
+  sound.play(A);
+ }
+}

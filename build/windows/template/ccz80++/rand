@@ -1,0 +1,1 @@
+ static int rand(int arg){return Random.Next()%arg;}

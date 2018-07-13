@@ -1,0 +1,5 @@
+ static short gradata[]={};
+ static short buf[32*32];
+ graphic.setpage(1,0);
+ bitbuster.depack(&buf,&gradata);
+ graphic.put(0,0,32,32,&buf);

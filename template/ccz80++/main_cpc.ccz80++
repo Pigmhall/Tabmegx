@@ -1,0 +1,13 @@
+// Amstrad CPC template
+include Indirections464.ccz80++
+include Screen.ccz80++
+include Text.ccz80++
+include Random.ccz80++
+include GameKeyboard.ccz80++
+include GameScreen.ccz80++
+include GameSprite.ccz80++
+
+class MainClass{
+static void main(){
+ }
+}

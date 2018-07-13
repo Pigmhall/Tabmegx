@@ -1,0 +1,166 @@
+// file.ccz80++
+//--- the functions for the management of files
+
+class file{
+
+// file -> "file"
+public static int setfile(int argument1)
+asm register{
+;__file_buf: equ #f55e
+ push hl
+ ld bc,-1
+__file_setfile:
+ ld a,(hl)
+ inc bc
+ inc hl
+ or a
+ jr nz,__file_setfile
+
+ ld hl,__file_buf
+ ld (hl),34
+ inc hl
+ pop de
+ ex de,hl
+ push bc
+ ldir
+ pop bc
+ ld hl,__file_buf
+ add hl,bc
+ inc hl
+ ld (hl),34
+ inc hl
+ ld (hl),0
+ ld hl,__file_buf
+ ret 
+;__file_set_herror:
+; ld a,#c3
+; ld (#FFB1),a
+; ld hl,__file_herror
+; ld (#FFB2),hl
+; ret
+;__file_herror:
+; pop hl
+; ld a,#c9
+; ld (#FFB1),a
+; ld a,(#F414)
+; ld a,1
+; ld (__file_result),a
+; pop hl
+; ret
+__file_buf:
+defs 32
+}
+
+//--- save(file name,start address,length)
+//--- saves variables to the file
+public static short save(int argument1,int argument2,int argument3){
+// int p;static short b[32];
+// p=setfile(argument1);
+// bios.print(0,17,p);
+ setfile(argument1);
+ return bltdm(argument2,argument2+argument3-1);}
+
+//--- load(file name,start address,length)
+//--- loads variables from the file
+public static short load(int argument1,int argument2,int argument3){
+ setfile(argument1);
+ return bltmd(argument2,argument2+argument3-1);}
+
+static short bltdm(int argument1,int argument2)
+asm{
+ ld   hl,2
+ add  hl,sp
+
+ ld a,(hl)	;2nd param
+ ld (#F564),a   ; EPTR
+ inc hl
+ ld a,(hl)
+ ld (#F565),a
+ inc hl
+
+ ld a,(hl)	;1st param
+ ld (#f562),a   ; SPTR
+ inc hl
+ ld a,(hl)
+ ld (#f563),a
+
+ ld hl,__file_buf
+ ld (#f566),hl  ; FNPTR
+
+; ld hl,__end_program
+; ld (#F6C6),hl
+; call __file_set_herror
+
+ ld hl,#f562
+ ld ix,#1a9 ;BLTDM
+ call #15f ;extrom
+ xor a
+ ret
+}
+
+static short bltmd(int argument1,int argument2)
+asm{
+ ld   hl,2
+ add  hl,sp
+
+ ld a,(hl)	;2nd param
+ ld (#F568),a   ; EPTR
+ inc hl
+ ld a,(hl)
+ ld (#F569),a
+ inc hl
+
+ ld a,(hl)	;1st param
+ ld (#f566),a   ; SPTR
+ inc hl
+ ld a,(hl)
+ ld (#f567),a
+
+ ld hl,__file_buf
+ ld (#f562),hl  ; FNPTR
+; ld hl,__end_program
+; ld (#F6C6),hl
+; call __file_set_herror
+
+ ld hl,#f562
+ ld ix,#1a5  ;BLTMD
+ call #15f ;extrom
+ ld a,#c9
+ ld (#FFB1),a
+ xor a
+ ret
+}
+
+//--- load_ext(file name,start address,offset)
+//--- loads variables from the file
+public static void load_ext(int argument1,int argument2,int argument3){
+ String.Copy(bios.cmdbuf,"LOAD(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",,");
+ String.IntToDec(bios.cmdnum,argument3);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ bios.call();}
+
+//--- load_ext(file name,start address)
+//--- loads variables from the file. loads to #0000~#7fff ram.
+public static void load_ext(int argument1,int argument2){
+ load_ext(argument1,argument2,0);}
+
+//--- save_ext(file name,start address,length)
+//--- saves variables to the file. saves #0000~#7fff ram.
+public static void save_ext(int argument1,int argument2,int argument3){
+ String.Copy(bios.cmdbuf,"SAVE(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument3);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ bios.call();}
+}

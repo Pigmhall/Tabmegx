@@ -1,0 +1,1158 @@
+// g9k.ccz80++
+//--- the functions for the management of V9990
+include bitbuster.ccz80++
+include file.ccz80++
+include String.ccz80++
+include bios.ccz80++
+
+class g9k{
+ // page address
+ public const PG0=#0000,PGH0=0,PG1=#6a00,PGH1=0,PG2=#d400,PGH2=0,PG3=#3e00,PGH3=1,PG4=#a800,PGH4=1,PG5=#1200,PGH5=2,PG6=#7c00,PGH6=2,PG7=#e600,PGH7=2,PG8=#5000,PGH8=3,PG9=#ba00,PGH9=3,PG10=#2400,PGH10=4,PG11=#8e00,PGH11=4,PG12=#f800,PGH12=4,PG13=#6200,PGH13=5,PG14=#cc00,PGH14=5,PG15=#3600,PGH15=6,PG16=#a000,PGH16=6,PG17=#0a00,PGH17=7,PG18=#7400,PGH18=7;
+// Bit defines G9K_SCREEN_MODE0 (register 6)
+ public const SCR0_STANDBY=192  ; //Stand by mode
+ public const SCR0_BITMAP=128	; //Select Bit map mode
+ public const SCR0_P2=64	; //Select P1 mode
+ public const SCR0_P1=0	; //Select P1 mode
+ public const SCR0_DTCLK=32	; //Master Dot clock not divided
+ public const SCR0_DTCLK2=16	; //Master Dot clock divided by 2
+ public const SCR0_DTCLK4=0	; //Master Dot clock divided by 4
+ public const SCR0_XIM2048=12	; //Image size = 2048
+ public const SCR0_XIM1024=8	; //Image size = 1024
+ public const SCR0_XIM512=4	; //Image size = 512
+ public const SCR0_XIM256=0	; //Image size = 256
+ public const SCR0_16BIT=3	; //16 bits/dot
+ public const SCR0_8BIT=2	; //8 bits/dot
+ public const SCR0_4BIT=1	; //4 bits/dot
+ public const SCR0_2BIT=0	; //2 bits/dot
+
+// Mode select defines for SetScreenMode
+ public const MODE_P1=0	; //Pattern mode 0 256 212
+ public const MODE_P2=1	; //Pattern mode 1 512 212
+ public const MODE_B1=2	; //Bitmap mode 1 256 212
+ public const MODE_B2=3	; //Bitmap mode 2 384 240
+ public const MODE_B3=4	; //Bitmap mode 3 512 212
+ public const MODE_B4=5	; //Bitmap mode 4 768 240
+ public const MODE_B5=6	; //Bitmap mode 5 640 400 (VGA)
+ public const MODE_B6=7	; //Bitmap mode 6 640 480 (VGA)
+ public const MODE_B7=8	; //Bitmap mode 7 1024 212 (Undocumented v9990 mode)
+
+// Bit defines G9K_LOP           (Register 45)
+ public const LOP_TP=16;
+ public const LOP_WCSC=12;
+ public const LOP_WCNOTSC=3;
+ public const LOP_WCANDSC=8;
+ public const LOP_WCORSC=14;
+ public const LOP_WCEORSC=6;
+
+// Bit defines G9K_ARG
+ public const ARG_MAJ=1;
+ public const ARG_NEG=2;
+ public const ARG_DIX=4;
+ public const ARG_DIY=8;
+
+// const values
+static void values()
+ asm
+ {
+G9K_BUF: EQU #F55E
+; Port defines
+G9K_VRAM		:EQU	#60	; R/W
+G9K_PALETTE		:EQU	#61	; R/W
+G9K_CMD_DATA		:EQU	#62	; R/W
+G9K_REG_DATA		:EQU	#63	; R/W
+G9K_REG_SELECT		:EQU	#64	; W
+G9K_STATUS		:EQU	#65	; R
+G9K_INT_FLAG		:EQU	#66	; R/W
+G9K_SYS_CTRL		:EQU	#67	; W
+G9K_OUTPUT_CTRL         :EQU     #6F     ; R/W
+
+; Bit defines G9K_SYS_CTRL
+G9K_SYS_CTRL_SRS	:EQU	2	; Power on reset state
+G9K_SYS_CTRL_MCKIN	:EQU	1	; Select MCKIN terminal
+G9K_SYS_CTRL_XTAL	:EQU	0	; Select XTAL
+
+; Register defines
+G9K_WRITE_ADDR		:EQU	0	; W
+G9K_READ_ADDR		:EQU	3	; W
+G9K_SCREEN_MODE0	:EQU	6	; R/W
+G9K_SCREEN_MODE1	:EQU	7	; R/W
+G9K_CTRL		:EQU	8	; R/W
+G9K_INT_ENABLE          :EQU     9       ; R/W
+G9K_INT_V_LINE_LO	:EQU	10	; R/W	
+G9K_INT_V_LINE_HI	:EQU	11	; R/W
+G9K_INT_H_LINE		:EQU	12	; R/W	
+G9K_PALETTE_CTRL	:EQU	13	; W
+G9K_PALETTE_PTR		:EQU	14	; W
+G9K_BACK_DROP_COLOR 	:EQU     15      ; R/W
+G9K_DISPLAY_ADJUST	:EQU	16	; R/W
+G9K_SCROLL_LOW_Y	:EQU     17      ; R/W
+G9K_SCROLL_HIGH_Y	:EQU     18      ; R/W
+G9K_SCROLL_LOW_X	:EQU     19      ; R/W
+G9K_SCROLL_HIGH_X	:EQU     20      ; R/W
+G9K_SCROLL_LOW_Y_B	:EQU     21      ; R/W
+G9K_SCROLL_HIGH_Y_B	:EQU     22      ; R/W
+G9K_SCROLL_LOW_X_B	:EQU     23      ; R/W
+G9K_SCROLL_HIGH_X_B	:EQU     24      ; R/W
+G9K_PAT_GEN_TABLE   	:EQU     25      ; R/W
+G9K_LCD_CTRL        	:EQU     26      ; R/W
+G9K_PRIORITY_CTRL  	:EQU     27      ; R/W
+G9K_SPR_PAL_CTRL	:EQU	28	; W
+G9K_SC_X		:EQU	32	; W
+G9K_SC_Y		:EQU	34	; W
+G9K_DS_X		:EQU	36	; W
+G9K_DS_Y		:EQU	38	; W
+G9K_NX			:EQU	40	; W
+G9K_NY			:EQU	42	; W
+G9K_ARG			:EQU	44	; W
+G9K_LOP			:EQU	45	; W
+G9K_WRITE_MASK		:EQU	46	; W
+G9K_FC			:EQU	48	; W
+G9K_BC			:EQU	50	; W
+G9K_OPCODE		:EQU	52	; W
+
+; Register Select options
+G9K_DIS_INC_READ	:EQU	64
+G9K_DIS_INC_WRITE	:EQU	128
+
+; Bit defines G9K_SCREEN_MODE0 (register 6)
+G9K_SCR0_STANDBY	:EQU	192	; Stand by mode
+G9K_SCR0_BITMAP		:EQU	128	; Select Bit map mode
+G9K_SCR0_P2		:EQU	64	; Select P1 mode
+G9K_SCR0_P1		:EQU	0	; Select P1 mode
+G9K_SCR0_DTCLK		:EQU	32	; Master Dot clock not divided
+G9K_SCR0_DTCLK2		:EQU	16	; Master Dot clock divided by 2
+G9K_SCR0_DTCLK4		:EQU	0	; Master Dot clock divided by 4
+G9K_SCR0_XIM2048	:EQU	12	; Image size = 2048
+G9K_SCR0_XIM1024	:EQU	8	; Image size = 1024
+G9K_SCR0_XIM512		:EQU	4	; Image size = 512
+G9K_SCR0_XIM256		:EQU	0	; Image size = 256
+G9K_SCR0_16BIT		:EQU	3	; 16 bits/dot
+G9K_SCR0_8BIT		:EQU	2	; 8 bits/dot
+G9K_SCR0_4BIT		:EQU	1	; 4 bits/dot
+G9K_SCR0_2BIT		:EQU	0	; 2 bits/dot
+
+; Bit defines G9K_SCREEN_MODE1 (register 7)
+G9K_SCR1_C25M		:EQU	64	; Select 640*480 mode
+G9K_SCR1_SM1		:EQU	32	; Selection of 263 lines during non interlace , else 262
+G9K_SCR1_SM		:EQU	16	; Selection of horizontal fr:EQUency 1H=fsc/227.5
+G9K_SCR1_PAL		:EQU	8	; Select PAL, else NTSC
+G9K_SCR1_EO		:EQU	4	; Select of vertical resoltion of twice the non-interlace resolution
+G9K_SCR1_IL		:EQU	2	; Select Interlace
+G9K_SCR1_HSCN		:EQU	1	; Select High scan mode
+
+; Bit defines G9K_CTRL    (Register 8)
+G9K_CTRL_DISP		:EQU	128	; Display VRAM
+G9K_CTRL_DIS_SPD	:EQU	64	; Disable display sprite (cursor)
+G9K_CTRL_YSE		:EQU	32	; /YS Enable
+G9K_CTRL_VWTE		:EQU	16	; VRAM Serial data bus control during digitization
+G9K_CTRL_VWM		:EQU	8	; VRAM write control during digitization
+G9K_CTRL_DMAE		:EQU	4	; Enable DMAQ output
+G9K_CTRL_VRAM512	:EQU	2	; VRAM=512KB
+G9K_CTRL_VRAM256	:EQU	1	; VRAM=256KB
+G9K_CTRL_VRAM128	:EQU	0	; VRAM=128KB
+
+; Bit defines G9K_INT_ENABLE (register 9)
+G9K_INT_IECE	        :EQU     4       ; Command end interrupt enable control
+G9K_INT_IEH	        :EQU     2       ; Display position interrupt enable
+G9K_INT_IEV	        :EQU     1       ; Int. enable during vertical retrace line interval
+
+; Bit Defines G9K_PALETTE_CTRL  (Register 13)
+G9K_PAL_CTRL_YUV	:EQU	192	; YUV mode
+G9K_PAL_CTRL_YJK	:EQU	128	; YJK mode
+G9K_PAL_CTRL_256	:EQU	64	; 256 color mode
+G9K_PAL_CTRL_PAL	:EQU	0	; Pallete mode
+G9K_PAL_CTRL_YAE	:EQU	32	; Enable YUV/YJK RGB mixing mode
+
+; Bit defines G9K_LOP           (Register 45)
+G9K_LOP_TP		:EQU	16
+G9K_LOP_WCSC		:EQU	12
+G9K_LOP_WCNOTSC		:EQU	3
+G9K_LOP_WCANDSC		:EQU	8
+G9K_LOP_WCORSC		:EQU	14
+G9K_LOP_WCEORSC		:EQU	6
+
+; Bit defines G9K_ARG
+G9K_ARG_MAJ		:EQU	1
+G9K_ARG_NEG		:EQU	2
+G9K_ARG_DIX		:EQU	4
+G9K_ARG_DIY		:EQU	8
+
+; Blitter Commands G9K_OPCODE    (Register 52)
+G9K_OPCODE_STOP		:EQU	#00	; Command being excuted is stopped 
+G9K_OPCODE_LMMC		:EQU	#10     ; Data is transferred from CPU to VRAM rectangle area
+G9K_OPCODE_LMMV		:EQU	#20     ; VRAM rectangle area is painted out
+G9K_OPCODE_LMCM		:EQU	#30     ; VRAM rectangle area is transferred to CPU
+G9K_OPCODE_LMMM		:EQU	#40     ; Rectangle area os transferred from VRAM to VRAM
+G9K_OPCODE_CMMC		:EQU	#050    ; CPU character data is color-developed and transferred to VRAM rectangle area
+G9K_OPCODE_CMMK		:EQU	#060    ; Kanji ROM data is is color-developed and transferred to VRAM rectangle area
+G9K_OPCODE_CMMM		:EQU	#070    ; VRAM character data is color-developed and transferred to VRAM rectangle area 
+G9K_OPCODE_BMXL		:EQU	#080    ; Data on VRAM linear address is transferred to VRAM rectangle area
+G9K_OPCODE_BMLX		:EQU	#090    ; VRAM rectangle area is transferred to VRAM linear address 
+G9K_OPCODE_BMLL		:EQU	#0A0    ; Data on VRAM linear address is transferred to VRAM linear address 
+G9K_OPCODE_LINE		:EQU	#0B0    ; Straight line is drawer on X-Y co-ordinates
+G9K_OPCODE_SRCH		:EQU	#0C0    ; Border color co-ordinates on X-Y are detected
+G9K_OPCODE_POINT	:EQU	#0D0    ; Color code on specified point on X-Y is read out
+G9K_OPCODE_PSET		:EQU	#0E0    ; Drawing is executed at drawing point on X-Y co-ordinates
+G9K_OPCODE_ADVN		:EQU	#0F0    ; Drawing point on X-Y co-ordinates is shifted
+
+; Bit defines G9K_STATUS
+G9K_STATUS_TR           :EQU     128
+G9K_STATUS_VR           :EQU     64
+G9K_STATUS_HR           :EQU     32
+G9K_STATUS_BD           :EQU     16
+G9K_STATUS_MSC          :EQU     4
+G9K_STATUS_EO           :EQU     2
+G9K_STATUS_CE           :EQU     1
+
+; Mode select defines for SetScreenMode
+G9K_MODE_P1		:EQU	0	; Pattern mode 0 256 212
+G9K_MODE_P2		:EQU	1	; Pattern mode 1 512 212
+G9K_MODE_B1		:EQU	2	; Bitmap mode 1 256 212
+G9K_MODE_B2		:EQU	3	; Bitmap mode 2 384 240
+G9K_MODE_B3		:EQU	4	; Bitmap mode 3 512 212
+G9K_MODE_B4		:EQU	5	; Bitmap mode 4 768 240
+G9K_MODE_B5		:EQU	6	; Bitmap mode 5 640 400 (VGA)
+G9K_MODE_B6		:EQU	7	; Bitmap mode 6 640 480 (VGA)
+G9K_MODE_B7		:EQU	8	; Bitmap mode 7 1024 212 (Undocumented v9990 mode)
+
+G9K_RED                 :EQU     32
+G9K_GREEN               :EQU     1024
+G9K_BLUE                :EQU     1
+
+G9K_WRITE_MASK_LAYER_A	:EQU	#000FF
+G9K_WRITE_MASK_LAYER_B	:EQU	#0FF00
+_G9K_RAMTOVRAM:
+		LD      A,B
+                LD      B,C
+                LD      C,G9K_VRAM
+                INC     B
+                DEC     B
+                JR      Z,_G9K_SKIP1
+                INC     A
+_G9K_SKIP1:
+                OTIR
+                DEC     A
+                JP      NZ,_G9K_SKIP1
+		RET
+} 
+
+//--- reset()
+//--- Resets v9990
+// Deletes Palette, Sprites off,stops current blit operation, puts V9990 in correct RAM config and disables display
+public static void reset()
+ asm (values()) {
+ 		;G9kReadReg G9K_DISPLAY_ADJUST + G9K_DIS_INC_READ
+		LD	A,G9K_DISPLAY_ADJUST + G9K_DIS_INC_READ
+		OUT	(G9K_REG_SELECT),A
+		IN	A,(G9K_REG_DATA)
+                PUSH    AF      ; Save adjust value
+
+                ; Set reset state
+                LD      A,G9K_SYS_CTRL_SRS
+                OUT     (G9K_SYS_CTRL),A
+                ; Clear reset state
+                XOR     A
+                OUT     (G9K_SYS_CTRL),A
+
+                POP     AF
+                OUT     (G9K_REG_DATA),A        	; Restore adjust value
+
+                ;G9kWriteReg G9K_OPCODE,G9K_OPCODE_STOP
+                ;G9kWriteReg G9K_CTRL,G9K_CTRL_DIS_SPD+G9K_CTRL_VRAM512
+		LD	A,G9K_OPCODE
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_OPCODE_STOP
+		OUT	(G9K_REG_DATA),A
+		LD	A,G9K_CTRL
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_CTRL_DIS_SPD+G9K_CTRL_VRAM512
+		OUT	(G9K_REG_DATA),A
+
+                ; Clear current palette
+                ;G9kWriteReg G9K_PALETTE_PTR,0       ; A becomes 0
+		LD	A,G9K_PALETTE_PTR
+		OUT	(G9K_REG_SELECT),A
+		LD	A,0
+		OUT	(G9K_REG_DATA),A
+                LD      B,64 * 3
+                      OUT     (G9K_PALETTE),A
+                      DJNZ    $-2
+                OUT (G9K_OUTPUT_CTRL),A    	   ; Set output GFX9000
+                RET
+ }
+
+//--- detect()
+//--- Detects v9990. 0 is error.
+public static short detect(){
+ vram(0,0);vpoke(#a2);
+ vramRead(0,0);
+ return (vpeek()==#a2)?1:0;
+}
+
+//--- screen(mode,bit per dot,image size,interlace,palette ctrl reg)
+//--- Sets screen mode
+public static void screen(short argument1,short argument2,short argument3,short argument4,short argument5)
+ asm(values()){
+; A = Mode
+; B = Bit per dot
+; C = Image size
+; D = Interlace
+; E = Palette control register
+      ld   hl,3
+      add  hl,sp
+      ld   e,(hl)             ; A = 5th parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; A = 4th parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   a,(hl)             ; A = 1st parameter
+ ;     jp g9ksetscreenmode
+                LD      L,A
+                ADD     A,A
+                ADD     A,L     ; A  = A * 3
+                LD      HL,G9K_MODE_TABLE
+                push bc
+                ld b,0
+                ld c,a
+                add hl,bc
+                pop bc
+;		add	a,l
+;		ld	l,a
+;		jr	nc,$+1
+;		inc	h
+                LD      A,G9K_SCREEN_MODE0
+                OUT     (G9K_REG_SELECT),A
+                LD      A,(HL)  ; Get fixed settings for mode reg 6
+                INC     HL
+                OR      B     ; Set bits per dot
+                OR      C     ; Set image size
+                OUT     (G9K_REG_DATA),A
+                LD      A,(HL)  ; Get fixed settings for mode reg 7
+                INC     HL
+                DEC     D
+                INC     D       ; Is d 0?
+                JR      Z,$+4
+                     OR    G9K_SCR1_EO+G9K_SCR1_IL
+                OUT     (G9K_REG_DATA),A
+                LD      A,(HL)
+                OUT     (G9K_SYS_CTRL),A
+                ;G9kWriteReg G9K_PALETTE_CTRL,e
+		LD	A,G9K_PALETTE_CTRL
+		OUT	(G9K_REG_SELECT),A
+		LD	A,e
+		OUT	(G9K_REG_DATA),A
+                RET
+G9K_MODE_TABLE:
+                ; Pattern mode 1      (P1)
+                DEFB      G9K_SCR0_P1+G9K_SCR0_DTCLK4
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_XTAL
+                ; Pattern mode 2      (P2)
+                DEFB      G9K_SCR0_P2+G9K_SCR0_DTCLK4
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_XTAL
+                ; Bitmap 256 * 212    (B1)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK4
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_XTAL
+                ; Bitmap 384 * 240    (B2)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK2
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_MCKIN
+                ; Bitmap 512 * 212    (B3)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK2
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_XTAL
+                ; Bitmap 768 * 212    (B4)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_MCKIN
+                ; Bitmap 640 * 400    (B5)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK
+                DEFB      G9K_SCR1_HSCN
+                DEFB      G9K_SYS_CTRL_XTAL
+                ; Bitmap 640 * 480    (B6)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK
+                DEFB      G9K_SCR1_HSCN+G9K_SCR1_C25M
+                DEFB      G9K_SYS_CTRL_XTAL
+                ; Bitmap 1024 * 212   (B7) (undocumented mode)
+                DEFB      G9K_SCR0_BITMAP+G9K_SCR0_DTCLK
+                DEFB      #00
+                DEFB      G9K_SYS_CTRL_XTAL
+}  
+
+//--- displayEnable()
+//--- Enables the display
+public static void displayEnable()
+asm (values()){
+                  ;G9kReadReg G9K_CTRL+G9K_DIS_INC_READ
+		LD	A,G9K_CTRL+G9K_DIS_INC_READ
+		OUT	(G9K_REG_SELECT),A
+		IN	A,(G9K_REG_DATA)
+                  OR      G9K_CTRL_DISP
+                  OUT     (G9K_REG_DATA),A
+                  ret
+}
+
+//--- displayDisable()
+//--- disables the display
+public static void displayDisable()
+asm inline(values()){
+                  ;G9kReadReg G9K_CTRL+G9K_DIS_INC_READ
+		LD	A,G9K_CTRL+G9K_DIS_INC_READ
+		OUT	(G9K_REG_SELECT),A
+		IN	A,(G9K_REG_DATA)
+                  AND     255-G9K_CTRL_DISP
+                  OUT     (G9K_REG_DATA),A
+                  RET
+}
+
+//--- cmdWait()
+//--- Waits the command
+public static void cmdWait()
+asm inline(values()){
+		IN	A,(G9K_STATUS)
+		RRA
+		JR	C,$-3
+}
+
+//--- palette(palette pointer,offset,length)
+//--- Sets the palette
+public static void palette(int argument1,short argument2,short argument3)
+asm(values()){
+ ld   hl,3
+ add  hl,sp
+ ld b,(hl)   ; A = 3th parameter
+ inc hl
+ inc hl
+ ld c,(hl)
+ inc hl
+ ld e,(hl)
+ inc hl
+ ld d,(hl)
+ ex de,hl
+ ;  HL=pointer to palette data
+ ;   C=Palette pointer offset
+ ;   B=Number of bytes to write
+		;G9kWriteReg G9K_PALETTE_PTR,C  
+		LD	A,G9K_PALETTE_PTR
+		OUT	(G9K_REG_SELECT),A
+		LD	A,C
+		OUT	(G9K_REG_DATA),A
+		LD	C,G9K_PALETTE     
+		OTIR
+		RET
+}
+
+//--- setBackDropColor(color)
+//--- sets the back drop color
+public static void setBackDropColor(short argument1)
+asm inline(values()){
+		PUSH	AF
+		LD	A,G9K_BACK_DROP_COLOR
+		OUT	(G9K_REG_SELECT),A
+		POP	AF
+		AND	63
+		OUT	(G9K_REG_DATA),A
+		RET
+}
+
+//--- box(left,top,width,height,color)
+//--- Draws the filled box
+public static void box(int argument1,int argument2,int argument3,int argument4,int argument5)
+asm(values()){
+      ld   hl,2
+      add  hl,sp
+ ld e,(hl)
+ inc hl
+ ld d,(hl)
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+6),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+7),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+4),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+5),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+2),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+3),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+0),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+1),a
+ ld hl,G9K_BUF
+; HL = pointer to parameters (format: left,top,width,height)
+; DE = Color
+		LD      A,G9K_DS_X
+		OUT     (G9K_REG_SELECT),A
+		LD      BC,8*256+G9K_REG_DATA
+		;G9kCmdWait
+		IN	A,(G9K_STATUS)
+		RRA
+		JR	C,$-3
+
+		OTIR
+		LD      A,G9K_FC
+		OUT     (G9K_REG_SELECT),A
+		OUT     (C),E
+		OUT     (C),D   ; Set color
+		;G9kWriteReg G9K_OPCODE,G9K_OPCODE_LMMV
+		LD	A,G9K_OPCODE
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_OPCODE_LMMV
+		OUT	(G9K_REG_DATA),A
+		ret
+}
+
+//--- line(left,top,width,height,color)
+//--- Draws the line
+public static void line(int argument1,int argument2,int argument3,int argument4,int argument5)
+asm(values()){
+      ld   hl,2
+      add  hl,sp
+ ld e,(hl)
+ inc hl
+ ld d,(hl)
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+6),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+7),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+4),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+5),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+2),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+3),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+0),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+1),a
+ ld hl,G9K_BUF
+; HL = pointer to parameters (format: left,top,width,height)
+; DE = Color
+		LD      A,G9K_DS_X
+		OUT     (G9K_REG_SELECT),A
+		LD      BC,8*256+G9K_REG_DATA
+		;G9kCmdWait
+		IN	A,(G9K_STATUS)
+		RRA
+		JR	C,$-3
+		OTIR
+		LD      A,G9K_FC
+		OUT     (G9K_REG_SELECT),A
+		OUT     (C),E
+		OUT     (C),D   ; Set color
+		;G9kWriteReg G9K_OPCODE,G9K_OPCODE_LINE
+		LD	A,G9K_OPCODE
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_OPCODE_LINE
+		OUT	(G9K_REG_DATA),A
+		ret
+}
+
+//--- vram(address,addressH)
+//--- Sets vram address
+public static void vram(int argument1,short argument2)
+asm (values()){
+ ld   hl,3
+ add  hl,sp
+ ld e,(hl)
+ inc hl
+ ld c,(hl)
+ inc hl
+ ld b,(hl)
+ ld h,b
+ ld l,c
+                 LD      A,G9K_WRITE_ADDR
+                 OUT     (G9K_REG_SELECT),A
+                 LD      C,G9K_REG_DATA
+                 OUT     (C),L
+                 OUT     (C),H
+                 OUT     (C),E
+                 ret
+}
+
+
+//--- vramRead(address,addressH)
+//--- Sets reading vram address
+public static void vramRead(int argument1,short argument2)
+asm (values()){
+ ld   hl,3
+ add  hl,sp
+ ld e,(hl)
+ inc hl
+ ld c,(hl)
+ inc hl
+ ld b,(hl)
+ ld h,b
+ ld l,c
+                 LD      A,G9K_READ_ADDR
+                 OUT     (G9K_REG_SELECT),A
+                 LD      C,G9K_REG_DATA
+                 OUT     (C),L
+                 OUT     (C),H
+                 OUT     (C),E
+                 RET
+}
+
+//--- vpoke(value)
+//--- Writes vram
+public static void vpoke(short argument1)
+asm inline(values()){
+ OUT     (G9K_VRAM),A
+}
+
+//--- vpoke(value)
+//--- Writes vram
+public static void vpokew(int argument1)
+asm inline(values()){
+ ld a,l
+ OUT (G9K_VRAM),a
+ ld a,h
+ OUT (G9K_VRAM),a
+}
+
+//--- vpeek(value)
+//--- Reads vram
+public static short vpeek()
+asm inline(values()){
+ IN      A,(G9K_VRAM)
+}
+
+//--- spritesEnable()
+//--- Enables sprite
+public static void spriteEnable()
+asm(values()){
+                  ;G9kReadReg G9K_CTRL+G9K_DIS_INC_READ
+		LD	A,G9K_CTRL+G9K_DIS_INC_READ
+		OUT	(G9K_REG_SELECT),A
+		IN	A,(G9K_REG_DATA)
+                  AND     255-G9K_CTRL_DIS_SPD
+                  OUT     (G9K_REG_DATA),A
+                  RET
+}
+
+//--- spritesDisable()
+//--- Disables sprite
+public static void spriteDisable()
+asm(values()){
+                ;G9kReadReg G9K_CTRL+G9K_DIS_INC_READ
+		LD	A,G9K_CTRL+G9K_DIS_INC_READ
+		OUT	(G9K_REG_SELECT),A
+		IN	A,(G9K_REG_DATA)
+                  OR      G9K_CTRL_DIS_SPD
+                  OUT     (G9K_REG_DATA),A
+}
+
+//--- sprite(sprite number,x,y,flag,sprite pattern)
+//--- puts sprite
+public static void sprite(short argument1,short argument2,short argument3,short argument4,short argument5)
+asm(values()){
+  ld hl,3
+  add hl,sp
+  ld a,(hl)
+  ld (__g9k_satbl+1),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__g9k_satbl+3),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__g9k_satbl),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__g9k_satbl+2),a
+  inc hl
+  inc hl
+  ld b,(hl)
+  XOR	A
+  OUT	(G9K_REG_SELECT),A
+  LD	A,B
+  LD	B,0
+  ADD	A,A
+  ADD	A,A
+  OUT	(G9K_REG_DATA),A  ; Low address
+  RL	B
+  LD	A,#FE
+  ADD	A,B               
+  OUT	(G9K_REG_DATA),A  ; Mid
+  LD	A,3
+  OUT	(G9K_REG_DATA),A  ; High
+  ld hl,__g9k_satbl
+  ld bc,4
+  jp _G9K_RAMTOVRAM
+__g9k_satbl: defs 4
+}
+
+//--- sgba(address)
+//--- Sets the sprite generator base address
+public static void sgba(short argument1)
+asm inline(values()){
+ ld	b,a
+ LD	A,25
+ OUT	(G9K_REG_SELECT),A
+ LD	A,b
+ OUT	(G9K_REG_DATA),A		
+}
+
+
+//--- copyRamToVram(pointer,length)
+//--- Copies ram to vram
+public static void copyRamToVram(int argument1,int argument2)
+asm(values()){
+ ld   hl,2
+ add  hl,sp
+ ld c,(hl)
+ inc hl
+ ld b,(hl)
+ inc hl
+ ld e,(hl)
+ inc hl
+ ld d,(hl)
+ ex de,hl
+; Function :    Data transfer from CPU to VRAM 
+; Input    :    HL = pointer to buffer, BC=number of bytes to send
+; Output   : 	none
+; Modifies :    A,B,C,HL
+ jp _G9K_RAMTOVRAM
+}
+
+//--- copy(destX,destY,width,height,srcX,srcY)
+//--- Copies XY to XY
+public static void copy(int argument1,int argument2,int argument3,int argument4,int argument5,int argument6)
+asm(values()){
+ ld   hl,2
+ add  hl,sp
+ ld a,(hl)
+ ld (G9K_BUF+2),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+3),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+0),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+1),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+10),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+11),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+8),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+9),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+6),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+7),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+4),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+5),a
+ ld hl,G9K_BUF
+; HL = Pointer to data  (format: SourceX,SourceY,DestX,DestY,Width,height) struct G9K_COPY_XY_XY
+		LD      A,G9K_SC_X
+		OUT     (G9K_REG_SELECT),A
+		LD      BC,12*256+G9K_REG_DATA
+		;G9kCmdWait
+		IN	A,(G9K_STATUS)
+		RRA
+		JR	C,$-3
+		OTIR
+		;G9kWriteReg G9K_OPCODE,G9K_OPCODE_LMMM
+		LD	A,G9K_OPCODE
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_OPCODE_LMMM
+		OUT	(G9K_REG_DATA),A
+		RET
+}
+
+
+//--- copyVramToVram(dest,destH,src,srcH,length,lengthH)
+//--- Copies vram to vram
+public static void copyVramToVram(int argument1,short argument2,int argument3,short argument4,int argument5,short argument6)
+asm(values()){
+ ld   hl,3
+ add  hl,sp
+ ld a,(hl)
+ ld (G9K_BUF+8),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+6),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+7),a
+ inc hl
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+2),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+0),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+1),a
+ inc hl
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+5),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+3),a
+ inc hl
+ ld a,(hl)
+ ld (G9K_BUF+4),a
+ ld hl,G9K_BUF
+ ; HL = Pointer to data  (format: SrcAddress,DestAddress,NrBytes) 
+		LD      A,G9K_SC_X
+		OUT     (G9K_REG_SELECT),A
+		LD      C,G9K_REG_DATA
+		;cmdWait
+		IN	A,(G9K_STATUS)
+		RRA
+		JR	C,$-3
+		
+		OUTI			    ; Source Low
+		OUT     (G9K_REG_DATA),A    ; dummy write
+		OUTI			    ; Source mid
+		OUTI			    ; Source high
+		
+		OUTI			    ; Destination Low
+		OUT     (G9K_REG_DATA),A    ; dummy write
+		OUTI			    ; Destination mid
+		OUTI			    ; Destination High
+				
+		OUTI			    ; Number of bytes Low
+		OUT     (G9K_REG_DATA),A    ; dummy write
+		OUTI			    ; Number of bytes mid
+		OUTI			    ; Number of bytes High
+
+		;G9kWriteReg G9K_OPCODE,G9K_OPCODE_BMLL
+		LD	A,G9K_OPCODE
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_OPCODE_BMLL
+		OUT	(G9K_REG_DATA),A
+
+		RET
+} 
+
+
+//blitter settings
+//--- lop(lop)
+//--- Sets the logical operation
+public static void lop(short argument1)
+asm inline(values()){
+		ld b,a
+		LD	A,G9K_LOP
+		OUT	(G9K_REG_SELECT),A
+		LD	A,B
+		OUT	(G9K_REG_DATA),A
+}
+
+//--- arg(arg)
+//--- Sets the argment
+public static void arg(short argument1)
+asm inline(values()){
+		ld b,a
+		LD	A,G9K_ARG
+		OUT	(G9K_REG_SELECT),A
+		LD	A,B
+		OUT	(G9K_REG_DATA),A
+}
+
+//--- writeMask(color)
+//--- Sets write mask color
+public static void writeMask(int argument1)
+asm inline(values()){
+		LD	A,G9K_WRITE_MASK
+		OUT	(G9K_REG_SELECT),A
+		LD	A,L
+		OUT	(G9K_REG_DATA),A
+		LD      A,H
+		OUT     (G9K_REG_DATA),A
+}
+
+//--- scrollX(value)
+//--- Sets horizontal scroll
+public static void scrollX(int argument1)
+asm register(values()){
+		LD	A,G9K_SCROLL_LOW_X
+		OUT	(G9K_REG_SELECT),a
+		LD	A,L
+		AND	7
+		OUT     (G9K_REG_DATA),A
+		LD	A,L
+		SRL	H
+		RRA
+		SRL	H
+		RRA
+		SRL	H
+		RRA
+		OUT     (G9K_REG_DATA),A
+		RET
+}
+
+//--- scrollY(value)
+//--- Sets vertical scroll
+public static void scrollY(int argument1)
+asm register(values()){
+; Function :    Sets Scroll Y 
+; Input    : 	HL = Y
+; Output   : 	none
+; Modifies : 	A
+		;G9kWriteReg G9K_SCROLL_LOW_Y,L
+		LD	A,G9K_SCROLL_LOW_Y
+		OUT	(G9K_REG_SELECT),A
+		LD	A,L
+		OUT	(G9K_REG_DATA),A
+		LD	A,(G9K_SCROLL_MODE)
+		OR	H
+		OUT	(G9K_REG_DATA),A		
+		RET
+G9K_SCROLL_MODE:	DEFB	0
+}
+
+//--- scrollXB(value)
+//--- Sets horizontal scroll layer-B
+public static void scrollXB(int argument1)
+asm register(values()){
+		LD	A,G9K_SCROLL_LOW_X_B
+		OUT	(G9K_REG_SELECT),a
+		LD	A,L
+		AND	7
+		OUT     (G9K_REG_DATA),A
+		LD	A,L
+		SRL	H
+		RRA
+		SRL	H
+		RRA
+		SRL	H
+		RRA
+		OUT     (G9K_REG_DATA),A
+		RET
+}
+
+//--- scrollYB(value)
+//--- Sets vertical scroll layer-B
+public static void scrollYB(int argument1)
+asm register(values()){
+		;G9kWriteReg G9K_SCROLL_LOW_Y_B,L
+		LD	A,G9K_SCROLL_LOW_Y_B
+		OUT	(G9K_REG_SELECT),A
+		LD	A,L
+		OUT	(G9K_REG_DATA),A
+
+		LD	A,H
+		OUT	(G9K_REG_DATA),A		
+		RET		
+}
+
+//--- setScrollMode(value)
+//--- Sets the scroll mode
+public static void setScrollMode(short argument1)
+asm register(values()){
+		AND	3
+		RRCA
+		RRCA
+		LD	(G9K_SCROLL_MODE),A
+		RET
+}
+
+//--- bload(file)
+//--- loads the file to vram
+public static void bload(int argument1){
+// 27143=8192,8192,8192,2567
+ static int f_p,l;
+ //-- genarate FCB
+ f_p=argument1;l=0;
+ while(*f_p!='.'){++f_p;++l;}
+ *(bios.cmdbuf)=0;
+ bios.ldir(bios.cmdbuf+1,8,32);
+ bios.copy(bios.cmdbuf+1,argument1,l);
+ bios.copy(bios.cmdbuf+9,argument1+l+1,3);
+ bios.ldir(bios.cmdbuf+12,25);
+// bios.info(bios.cmdbuf+1);
+ asm{
+; set dma
+ ld hl,(#F6C6) ;strend
+ ex de,hl
+ ld c,#1a
+ call #f37d ;bdos
+; open
+ ld c,#0f
+ ld de,G9K_BUF
+ call #f37d
+; init fcb
+ ld hl,1
+ ld (G9K_BUF+14),hl
+ ld a,7
+ ld (G9K_BUF+33),a
+; read
+ ld hl,(_G9K_FBUFSIZ)
+ call _G9K_BLOAD
+ ld hl,(_G9K_FBUFSIZ)
+ call _G9K_BLOAD
+ ld hl,(_G9K_FBUFSIZ)
+ call _G9K_BLOAD
+ ld hl,(_G9K_FBUFSIZ+2)
+_G9K_BLOAD:
+ ld de,G9K_BUF
+ ld c,#27
+ push hl
+ call #f37d
+ ld hl,(#F6C6)
+ pop bc
+ call _G9K_RAMTOVRAM
+ ret
+_G9K_FBUFSIZ: defw 8192
+ defw 2560
+ }
+}
+
+//--- fileBuffer()
+//--- sets the file buffer sizes
+public static void fileBuffer(int argument1,int argument2)
+asm{
+ ld   hl,2
+ add  hl,sp
+ ld a,(hl)
+ ld (_G9K_FBUFSIZ+2),a
+ inc hl
+ ld a,(hl)
+ ld (_G9K_FBUFSIZ+3),a
+ inc hl
+ ld a,(hl)
+ ld (_G9K_FBUFSIZ),a
+ inc hl
+ ld a,(hl)
+ ld (_G9K_FBUFSIZ+1),a
+ ret
+}
+
+//--- put(left,width,width,height,pointer)
+//--- puts graphic from memory. turboR only.
+public static void put(int argument1,int argument2,int argument3,int argument4,int argument5)
+asm(values()){
+  ld hl,2
+  add hl,sp
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  push de
+  ld a,(hl)
+  ld (__G9K_PUT+6),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+7),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+4),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+5),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+2),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+3),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+0),a
+  inc hl
+  ld a,(hl)
+  ld (__G9K_PUT+1),a
+
+		ld hl,__G9K_PUT
+		LD      A,G9K_DS_X
+		OUT     (G9K_REG_SELECT),A
+		LD      BC,8*256+G9K_REG_DATA
+		;G9kCmdWait
+		IN	A,(G9K_STATUS)
+		RRA
+		JR	C,$-3
+		OTIR
+		;G9kWriteReg G9K_OPCODE,G9K_OPCODE_LMMC
+		LD	A,G9K_OPCODE
+		OUT	(G9K_REG_SELECT),A
+		LD	A,G9K_OPCODE_LMMC
+		OUT	(G9K_REG_DATA),A
+ ld a,(__G9K_PUT+6)
+ ld b,a
+ ld a,(__G9K_PUT+4)
+ defb #ed,#c1 ;HL=A*B
+ LD      A,H
+ LD      B,L
+ pop hl
+ INC     B
+ DEC     B
+ JR      Z,$+3
+                    INC    A
+                LD      C,G9K_CMD_DATA
+                      OTIR
+                      DEC     A
+                      JP   NZ,$-3 
+		RET
+__G9K_PUT: defs 8
+}
+
+public static void bload2(int argument1){
+// 27143=8192,8192,8192,2567
+ static int f_p,l;
+ //-- genarate FCB
+ f_p=argument1;l=0;
+ while(*f_p!='.'){++f_p;++l;}
+ *(bios.cmdbuf)=0;
+ bios.ldir(bios.cmdbuf+1,8,32);
+ bios.copy(bios.cmdbuf+1,argument1,l);
+ bios.copy(bios.cmdbuf+9,argument1+l+1,3);
+ bios.ldir(bios.cmdbuf+12,25);
+asm{
+ ld hl,_G9K_BLOAD2_CMD
+ ld ix,(#39DA) ;cmd
+ call #159 ;calbas
+ ret
+_G9K_BLOAD2_CMD: defb #DD,#28,#23,#4D,#2C,#11,#29,0
+ }
+}
+
+}

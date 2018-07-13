@@ -1,0 +1,10 @@
+  //--- data
+  static short gra[]={
+  };
+
+  //--- init
+  const GSZ=16;
+  graphic.setpage(1,0);
+  for(i=0;i<4;i++){
+   graphic.put(i*GSZ,0,GSZ,GSZ,&gra+i*GSZ*GSZ/2);} // SC5:GSZ*GSZ/2 SC8:GSZ*GSZ
+  graphic.setpage(0,1);

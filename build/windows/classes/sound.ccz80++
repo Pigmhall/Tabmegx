@@ -1,0 +1,47 @@
+// sound.ccz80++
+//--- the functions for the management of sound
+include String.ccz80++
+include bios.ccz80++
+
+class sound{
+//--- set(address)
+//--- sets the sound data address
+public static void set(int argument1)
+ asm (){
+  ld   hl,2
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ex de,hl
+  ld (__se_address),hl
+  ret
+__se_address:
+  defs 2
+}
+
+//--- play(number)
+//--- plays the sound
+public static void play(short argument1)
+asm{
+ ld   hl,3
+ add  hl,sp
+ ld a,(hl)
+ ld hl,(__se_address)
+ ld iy,(#F342)
+ ld ix,#4067
+ jp #1c
+ }
+
+//--- stop()
+//--- stops the sound
+public static void stop()
+asm{
+ xor a
+ ld hl,(__se_address)
+ ld iy,(#F342)
+ ld ix,#4067
+ jp #1c
+}
+
+}

@@ -1,0 +1,21 @@
+;tulip OPLL
+
+#opll_mode 1
+#alloc { 0=42,9=166,A=112,B=80,F=134 };
+#lfo_mode 0
+#title { "" }
+#tempo 128
+
+; opll track-1
+9 @2v13
+9 [0cder cder gedc dedr
+9 cder cder gedc decr
+9 ggeg aagr eedd crrr]
+
+; opll track-2
+a @4v11
+a [0r]
+
+; rythm
+f vb15vh15
+f [0b4h4 b4h4 b4r4h4r4 b4r4h4r4]

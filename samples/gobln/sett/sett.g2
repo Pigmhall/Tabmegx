@@ -1,0 +1,75 @@
+const SCX=640,SCY=480;
+const imgIm=100;
+const ImMaxSel=40;
+const spT=100;
+const TM=100,IMM=100;
+
+dim t[TM],tx[TM],ty[TM],th[TM],tl[TM],th2[TM],tr[TM],txx[TM],tyy[TM],tc[TM],tn[TM],ts[TM],trs[TM],ta[TM],tsx[TM],tsy[TM],tpri[TM];
+dim imn[IMM],imc[IMM],imw[IMM],imh[IMM],imc[IMM];
+const I_CHR1=0,I_CHR2=4,I_CHR3=8,I_CHR4=12,I_CHR5=16,I_CHR6=20,I_CHR7=24,I_CHR8=28,I_CHR9=32,I_CHR10=36,I_CHR11=40,I_CHR12=44,I_CHR13=48,I_CHR14=52,I_CHR15=56,I_CHR16=60,I_CHR17=64,I_CHR18=68,I_CHR19=72,I_CHR20=76;
+
+setSyncRate(30,0);
+setVirtualResolution(SCX,SCY);
+setWindowSize(SCX/4,SCY/4,0);
+setWindowPosition(SCX/4,768-720/4);
+
+loadChr(I_CHR1,"a");
+initT();
+
+while(1){
+ loopT();
+ sync();
+ if(getRawKeyPressed(27)){exit;}
+}
+
+`---------- T
+sub initT(){
+ cleart(t,TM);
+ for(i=0 to 50){
+  c=setT(rand(SCX),rand(SCY),I_CHR1,1,10);
+ ` spCenter(c,I_CHR1);
+  ts[c]=300+rand(100);ta[c]=50;}}
+
+`--- setT
+sub setT(x,y,imgn,t1,pri){
+ cf(t,TM,i);if(i!=-1){t[i]=t1;tx[i]=x;ty[i]=y;txx[i]=0;tyy[i]=0;tc[i]=imgn;tn[i]=0;th[i]=0;th2[i]=0;tl[i]=0;ts[i]=100;tr[i]=0;trs[i]=0;ta[i]=255;
+  createSprite(spT+i,imn[imgn]);
+  for(j=0 to imc[imgn]){
+   addSpriteAnimationFrame(spT+i,imn[imgn]+j);}
+  tpri[i]=pri;return i;}}
+
+`-- loopT
+sub loopT(){
+ `- move
+ for(i=0 to TM){
+  if(t[i]){sx=tx[i];sy=ty[i];c=tc[i];
+   switch(t[i]){
+   `- move patterns
+case 1:SP=5;if(rand(8)==0){th[i]=rand(4);}
+ switch(th[i]){
+  case 0:sy-=SP;break;
+  case 1:sx+=SP;break;
+  case 2:sy+=SP;break;
+  case 3:sx-=SP;break;}
+ ax=brdRight(i);if(sx>ax){sx=ax;th[i]=rand(4);}
+ ax=brdLeft(i);if(sx<ax){sx=ax;th[i]=rand(4);}
+ ay=brdBottom(i);if(sy>ay){sy=ay;th[i]=rand(4);}
+ ay=brdTop(i);if(sy<ay){sy=ay;th[i]=rand(4);}
+ if(rand(8)==0){++tn[i];if(tn[i]==imc[c]){tn[i]=0;}}
+ `tr[i]=mod(tr[i]+10,360);
+break;
+   }
+   if(t[i]==0){deleteSprite(spT+i);}else{tx[i]=sx;ty[i]=sy;}}
+ }
+ `- draw
+ for(i=0 to TM){
+  if(t[i]){sx=tx[i];sy=ty[i];
+   setSpritePositionByOffset(spT+i,sx,sy);
+   setSpriteAngle(spT+i,tr[i]);f#=ts[i];setSpriteScale(spT+i,f#/100,f#/100);
+   setSpriteDepth(spT+i,tpri[i]);
+   setSpriteColorAlpha(spT+i,ta[i]);
+   setSpriteFrame(spT+i,tn[i]+1);}
+ }
+}  
+
+#include "head.g2"

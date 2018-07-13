@@ -1,0 +1,21 @@
+include bios.ccz80++
+include Random.ccz80++
+include file.ccz80++
+include String.ccz80++
+
+class MainClass{
+ static short buf[]={1,2,3,4,5,6,7,8};
+ static short buf2[8];
+ static void main(){
+  bios.color(15,0,0);
+  bios.keyoff();
+  bios.screen(1);
+  bios.width(32);
+  bios.print(0,0,"FILE TEST");
+  short i;
+
+  file.save("TEST.BIN",&buf,8);
+  file.load("TEST.BIN",&buf2,8);
+  for(i=0;i<8;i++){bios.vpoke(6144+32+i,48+buf2[i]);}
+ }
+}

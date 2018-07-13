@@ -1,0 +1,992 @@
+// graphic.ccz80++
+//--- the functions for the management of the graphics in SCREEN 5~8
+include bitbuster.ccz80++
+include file.ccz80++
+include String.ccz80++
+include bios.ccz80++
+
+class graphic{
+
+//-- logical operation value
+public const SRCIMP=0;
+public const SRCAND=1;
+public const SRCOR=2;
+public const SRCXOR=3;
+public const SRCNOT=4;
+public const SRCTIMP=8;
+public const SRCTAND=9;
+public const SRCTOR=10;
+public const SRCTXOR=11;
+public const SRCTNOT=12;
+
+//-- common code
+static void values()
+asm
+{
+GETSTATUS:
+        PUSH    BC
+        LD      BC,(6)
+        INC     C
+        OUT     (C),A
+        LD      A,#8F
+        OUT     (C),A
+        IN      A,(C)
+        POP     BC
+        RET
+WAITVDP:
+        LD      A,2
+        CALL    GETSTATUS
+        AND     1
+        JP      NZ,WAITVDP
+        XOR     A
+        CALL    GETSTATUS
+        RET
+__drawpage:
+defs 1
+__srcpage:
+defs 1
+}
+
+//--- cls()
+//--- clears the current screen
+ public static void cls()
+ asm inline{
+; call #115
+ ld ix,#115 ; CLS
+ call #15F; extrom
+}
+
+//--- vpoke(VRAM address,value)
+//--- writes the value to VRAM
+ public static void vpoke(int argument1,short argument2)
+ asm {
+  ld   hl,3
+  add  hl,sp
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+ jp #177 ; wrtvrm
+ }
+
+//--- vpeek(VRAM address)
+//--- reads the value from VRAM
+ public static short vpeek(int argument1)
+ asm inline {
+  call #174
+ }
+
+//--- copy(XDest,YDest,Width,Height,XSrc,YSrc,logical operation value)
+//--- copies VRAM to VRAM
+//--- logical operation value:
+//---  graphic.SRCIMP
+//---  graphic.SRCAND
+//---  graphic.SRCOR
+//---  graphic.SRCXOR
+//---  graphic.SRCNOT
+//---  graphic.SRCTIMP
+//---  graphic.SRCTAND
+//---  graphic.SRCTOR
+//---  graphic.SRCTXOR
+//---  graphic.SRCTNOT
+
+ public static void copy(short argument1,short argument2,short argument3,short argument4,short argument5,short argument6,short argument7)
+ asm(values()) 
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 7th parameter
+      push af
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 6nd parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 5st parameter
+      inc  hl
+      inc  hl
+      push bc
+      ld   e,(hl)             ; A = 4st parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; A = 3st parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2st parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      pop hl
+      push bc
+
+	DI                     ;disable interrupt
+        CALL    WAITVDP        ;wait end of command
+
+        LD      A,(7)
+        LD      C,A
+        INC     C               ;C := PORT#'s address
+        LD      A,32
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A           ;R#17 := 32
+
+        INC     C
+        INC     C               ;C := PORT#3's address
+	xor a
+        OUT     (C),H           ;SX
+        OUT     (C),A
+        ld a,(__srcpage)
+        OUT     (C),L           ;SY
+        OUT     (C),A
+
+        pop hl              ;restore DX,DY
+	xor a
+        OUT     (C),H           ;DX
+        OUT     (C),A
+        ld a,(__drawpage)
+        OUT     (C),L           ;DY
+        OUT     (C),A
+	xor a
+        OUT     (C),D           ;NX
+        OUT     (C),A
+        OUT     (C),E           ;NY
+        OUT     (C),A
+        OUT     (C),A           ;dummy
+
+        OUT     (C),A           ;DIX and DIY
+
+;        LD      A,%11010000     ;HMMM command
+	pop	af
+	or	%10010000	;LMMM command or with LOGICAL
+
+        OUT     (C),A
+        EI
+        RET
+ }
+
+//--- setpage(draw page,src page)
+//--- sets the drawing page and the source page of copy, put, box
+public static void setpage(short argument1, short argument2)
+ asm(values()) 
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 2th parameter
+      ld (__srcpage),a
+      inc hl
+      inc hl
+      ld   a,(hl)             ; A = 1th parameter
+      ld (__drawpage),a
+      ret
+ }
+
+//--- page(display page)
+//--- changes the display page
+public static void page(short argument1)
+ asm register {
+      ld c,#99
+      add a,a
+      add a,a
+      add a,a
+      add a,a
+      add a,a
+      or %11111
+      di
+      out (c),a
+      ei
+      ld a,128+2
+      out (c),a
+      ret
+ }
+
+//--- page(draw page,src page)
+//--- sets the drawing page and the source page of copy, put, box
+public static void page(short argument1, short argument2)
+ asm(values()) 
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 2th parameter
+      ld (#faf6),a
+      inc hl
+      inc hl
+      ld   a,(hl)             ; A = 1th parameter
+      ld (#faf5),a
+;      jp #13D; SETPAG
+  ld ix, #13d; SETPAG
+  jp #15F; extrom
+ }
+
+//--- put(XDest,YDest,Width,Height,src pointer)
+//--- copies RAM to VRAM
+// RAM [IX] ---> VRAM (H,L)-(D,E)
+public static void put(short argument1,short argument2,short argument3,short argument4,int argument5)
+ asm(values()) 
+ {
+      ld   hl,2
+      add  hl,sp
+      ld   c,(hl)
+      inc  hl
+      ld   b,(hl)             ; IX = 5th parameter
+      push bc
+      pop ix
+      inc  hl
+      inc  hl
+      ld   e,(hl)             ; E = 4nd parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; D = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2st parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld h,b
+      ld l,c
+HMMC:	DI				;disable interrupt
+	CALL	WAITVDP		;wait end of command
+
+	LD	A,(7)
+	LD	C,A
+	INC	C			;C := PORT#1's address
+	LD	A,36
+	OUT	(C),A
+	LD	A,17+#80
+	OUT	(C),A			;R#17 := 36
+
+	INC	C
+	INC	C			;C := PORT#3's address
+	XOR	A
+	OUT	(C),H			;DX
+	OUT	(C),A
+        ld a,(__drawpage)
+	OUT	(C),L			;DY
+	OUT	(C),A
+
+	xor a
+        OUT     (C),D           ;NX
+        OUT     (C),A
+        OUT     (C),E           ;NY
+        OUT     (C),A
+
+       	LD	H,(IX+0)
+	OUT	(C),H			;first DATA
+	OUT	(C),A			;DIX and DIY
+	LD	A,#F0
+	OUT	(C),A			;HMMC command
+
+	LD	A,(7)
+	LD	C,A			;C := PORT#1's address
+	INC	C
+	LD	A,44+#80
+	OUT	(C),A
+	LD	A,17+#80
+	OUT	(C),A
+	INC	C
+	INC	C
+
+LOOP_HMMC:	LD	A,2
+	CALL	GETSTATUS
+	BIT	0,A			;check CE bit
+	JR	Z,EXIT_HMMC
+	BIT	7,A			;check TR bit
+	JR	Z,LOOP_HMMC
+	INC	IX
+	LD	A,(IX+0)
+	OUT	(C),A
+	JR	LOOP_HMMC
+
+EXIT_HMMC:
+	LD	A,0
+	CALL	GETSTATUS		;when exit, you must select S#0
+	EI
+	RET
+}
+
+
+//--- put_compress(XDest,YDest,Width,Height,src pointer,buffer)
+//--- copies compressed data to VRAM
+public static void put_compress(short argument1,short argument2,short argument3,short argument4,int argument5,int argument6){
+ bitbuster.depack(argument6,argument5);
+ put(argument1,argument2,argument3,argument4,argument6);}
+
+//--- get(XDest,YDest,Width,Height,src pointer)
+//--- copies VRAM to RAM
+// VRAM (H,L)-(D,E) ---> RAM [IX]
+public static void get(short argument1,short argument2,short argument3,short argument4,int argument5)
+ asm(values()) 
+ {
+      ld   hl,2
+      add  hl,sp
+      ld   c,(hl)
+      inc  hl
+      ld   b,(hl)             ; IX = 5th parameter
+      push bc
+      pop ix
+      inc  hl
+      inc  hl
+      ld   e,(hl)             ; E = 4nd parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; D = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2st parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld h,b
+      ld l,c
+	di      
+	xor	a
+	call	hmcm_wait_VDP
+	
+	ld	a,32	;command register R#32
+	out	(#99),a
+	ld	a,128+17	;VDP(17)<=32
+	out	(#99),a
+	xor	a
+	ld	c,#9b
+	out	(c),h		;SX
+	out	(c),a
+        ld a,(__srcpage)
+        xor a
+	out	(c),l		;SY
+	out	(c),a
+	xor a
+	
+	out	(c),a		;dummy 
+	out	(c),a		;dummy 
+	out	(c),a		;dummy 
+	out	(c),a		;dummy
+
+	out	(c),d		;NX in dots
+	out	(c),a		;
+	out	(c),e		;NY in dots
+	out	(c),a		;
+            
+	ld	a,(ix+0)		;first byte of data
+	out	(c),a		;dummy
+	ld	a,d
+	or	e
+	out	(c),a		;DIX and DIY
+	
+	ld	a,#7		;clear TR status
+	call	hmcm_Status
+
+	ld	a,%10100000	;LMCM command 
+	out	(c),a
+
+hmcm_Loop:
+	ld	a,2
+	out	(#99),a
+	ld	a,#8f
+	out	(#99),a
+	in	a,(#99)
+	bit	#0,a		; CE? is over?
+	jr	z, hmcm_exit
+	bit	#7,a		; TR? transferring?
+	jr	z, hmcm_Loop
+
+	; read 2 pixels
+	ld	a,#7		; 1px
+	out	(#99),a
+	ld	a,#8f
+	out	(#99),a
+	in	a,(#99)	
+	rla
+	rla
+	rla
+	rla
+	ld	b,a
+
+	ld	a,#7		; 2nd px
+	out	(#99),a
+	ld	a,#8f
+	out	(#99),a
+	in	a,(#99)
+	or	b
+	
+	ld	(ix+0),a
+	inc	ix
+	
+	jr	hmcm_Loop                                                      
+hmcm_exit:
+	xor	a
+	call	hmcm_Status
+	ei
+	ret
+hmcm_Status:
+	out	(#99),a
+	ld	a,#8f
+	out	(#99),a
+	in	a,(#99)
+	ret
+hmcm_wait_VDP:
+	ld	a,#2
+	call	hmcm_Status
+	and	#1
+	jr	nz,hmcm_wait_VDP
+	xor	a
+	call	hmcm_Status
+	ret
+          }
+
+//--- get_sc8(XDest,YDest,Width,Height,src pointer)
+//--- copies VRAM to RAM in SCREEN8
+// VRAM (H,L)-(D,E) ---> RAM [IX]
+public static void get_sc8(short argument1,short argument2,short argument3,short argument4,int argument5)
+ asm(values()) 
+ {
+      ld   hl,2
+      add  hl,sp
+      ld   c,(hl)
+      inc  hl
+      ld   b,(hl)             ; IX = 5th parameter
+      push bc
+      pop ix
+      inc  hl
+      inc  hl
+      ld   e,(hl)             ; E = 4nd parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; D = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2st parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld h,b
+      ld l,c
+	DI                      ;disable interrupt
+        LD      B,A             ;B := LOGICAL OPERATION
+        CALL    WAITVDP        ;wait end of command
+
+        LD      A,(7)
+        LD      C,A
+        INC     C               ;C := PORT#1's address
+        LD      A,32
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A           ;R#17 := 32
+        INC     C
+        INC     C               ;C := PORT#3's address
+        XOR     A
+        OUT     (C),H           ;SX
+        OUT     (C),A
+        ld a,(__srcpage)
+        OUT     (C),L           ;SY
+        OUT     (C),A
+        xor a
+        OUT     (C),A           ;dummy
+        OUT     (C),A           ;dummy
+        OUT     (C),A           ;dummy
+        OUT     (C),A           ;dummy
+        XOR     A
+        OUT     (C),D           ;NX
+        OUT     (C),A
+        OUT     (C),E           ;NY
+        OUT     (C),A
+
+        LD      A,(IX+0)
+        OUT     (C),A           ;dummy
+        xor a
+        OUT     (C),A           ;DIX and DIY
+
+        LD      A,7
+        CALL    GETSTATUS
+        LD      A,B
+        OR      %10100000
+        OUT     (C),A
+        LD      A,(6)
+        LD      C,A
+__LOOP_GET8:   LD      A,2
+        CALL    GETSTATUS
+        BIT     0,A
+        JP      Z,__EXIT_GET8
+        BIT     7,A
+        JP      Z,__LOOP_GET8
+        LD      A,7
+        CALL    GETSTATUS
+        LD      (IX+0),A
+        INC     IX
+        JP      __LOOP_GET8
+__EXIT_GET8:   LD      A,0
+        CALL    __GETSTATUS
+        EI
+        LD      A,(IX-1)
+        LD      (IX+0),a
+        RET
+}
+//--- color(color numver,R,G,B)
+//--- sets the color palette
+ public static void color(short argument1,short argument2,short argument3,short argument4)
+ asm {
+ ld   hl,3
+ add  hl,sp
+ ld   b,(hl) ; B = 4th parameter
+ inc hl
+ inc hl
+ ld e,(hl)  ; E = 3th parameter
+ inc hl
+ inc hl
+ ld a,(hl)  ; A = 2th parameter
+ inc hl
+ inc hl
+ ld d,(hl)  ; D = 1th parameter
+ sla a
+ sla a
+ sla a
+ sla a
+ add a,b
+ ld ix,#14D ; SETPLT
+ jp #15F; extrom
+ }
+
+//--- filvrm(VRAM address,value,length)
+//--- fills VRAM with value
+public static void filvrm(int argument1,short argument2,int argument3)
+ asm {
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  jp #16B
+}
+
+//--- box(XDest,YDest,width,height,color)
+//--- draws the box
+public static void box(short argument1,short argument2,short argument3,short argument4,short argument5)
+ asm(values()) {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 5th parameter
+      inc  hl
+      inc  hl
+      ld   e,(hl)             ; A = 4th parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; A = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld h,b
+      ld l,c
+      ld b,a
+
+        DI                      ;disable interrupt
+        CALL    WAITVDP        ;wait end of command
+        
+        LD      A,(7)
+        LD      C,A
+        INC     C               ;C := PORT#1's address
+        LD      A,36
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A           ;R#17 := 36
+
+        INC     C
+        INC     C               ;C := PORT#3's address
+        XOR     A
+        OUT     (C),H           ;DX
+        OUT     (C),A
+        ld a,(__drawpage)
+        OUT     (C),L           ;DY
+        OUT     (C),A
+
+        XOR     A
+        OUT     (C),D
+        OUT     (C),A
+        OUT     (C),E
+        OUT     (C),A
+
+	OUT     (C),B
+        OUT     (C),A
+
+        LD      A,%11000000
+        OUT     (C),A
+        
+        EI
+        RET
+}
+
+//--- line(X1,Y1,X2,Y2,color)
+//--- draws the line
+public static void line(short argument1,short argument2,short argument3,short argument4,short argument5)
+ asm(values()) {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 5th parameter
+      inc  hl
+      inc  hl
+      ld   e,(hl)             ; A = 4th parameter
+      inc  hl
+      inc  hl
+      ld   d,(hl)             ; A = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld h,b
+      ld l,c
+      DI                      ;disable interrupt
+        PUSH    AF              ;save FILL DATA
+        CALL    WAITVDP        ;wait end of command
+
+        LD      A,(7)
+        LD      C,A
+        INC     C               ;C := PORT#1's address
+        LD      A,36
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A           ;R#17 := 36
+
+        INC     C
+        INC     C               ;C := PORT#3's address
+        XOR     A
+        OUT     (C),H           ;DX
+        OUT     (C),A
+        ld a,(__drawpage)
+        OUT     (C),L           ;DY
+        OUT     (C),A
+
+        LD      A,H             ;make DX and DIX
+        SUB     D
+        LD      D,%00000100
+        JR      NC,__LINE1
+        LD      D,%00000000
+        NEG     
+__LINE1:  LD      H,A             ;H := NDX , D := DIX
+        LD      A,L             ;make DY and DIY
+        SUB     E
+        LD      E,%00001000
+        JR      NC,__LINE2
+        LD      E,%00000000
+        NEG
+__LINE2:  LD      L,A             ;L := DY , E := DIY
+
+        CP      H               ;make Maj and Min
+        JR      C,__LINE3
+        XOR     A
+        OUT     (C),L           ;long side
+        OUT     (C),A
+        OUT     (C),H           ;short side
+        OUT     (C),A
+        LD      A,%00000001     ;MAJ := 1
+        JR      __LINE4
+
+__LINE3:  XOR     A
+        OUT     (C),H
+        OUT     (C),A
+        OUT     (C),L
+        ld a,(__drawpage)
+        OUT     (C),A
+        LD      A,%00000000     ;MAJ := 0
+
+__LINE4:  OR      D
+        OR      E               ;A := DIX , DIY , MAJ
+        POP     HL              ;H := COLOR
+        OUT     (C),H
+        OUT     (C),A
+;        POP     AF              ;A := LOGICAL OPERATION
+	ld a,%01110000
+        OUT     (C),A
+        LD      A,#8F
+        OUT     (C),A
+        EI
+        RET
+}
+//--- pset(X,Y,color)
+//--- draws the point
+public static void pset(short argument1,short argument2,short argument3)
+ asm(values()) {
+      ld   hl,3
+      add  hl,sp
+      ld   e,(hl)             ; A = 3rd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld l,c
+      ld h,b
+      
+      DI
+        CALL    WAITVDP
+
+        LD      A,(7)
+        LD      C,A
+        INC     C
+        LD      A,36
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A
+
+        PUSH    BC
+        INC     C
+        INC     C
+
+        XOR     A
+        OUT     (C),H
+        OUT     (C),A
+        OUT     (C),L
+        ld a,(__drawpage)
+        OUT     (C),A
+        POP     BC
+
+        LD      A,44
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A
+
+        INC     C
+        INC     C
+        OUT     (C),E
+        XOR     A
+        OUT     (C),A
+
+        LD      A,%01010000
+        OUT     (C),A
+
+        EI
+        RET
+}
+
+//--- point(X,Y)
+//--- gets color from the point
+public static short point(short argument1,short argument2)
+ asm(values()) {
+      ld   hl,3
+      add  hl,sp
+      ld   c,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   b,(hl)             ; A = 1st parameter
+      ld l,c
+      ld h,b
+      
+	DI
+        CALL    WAITVDP
+
+        LD      A,(7)
+        LD      C,A
+                
+        INC     C
+        LD      A,32
+        OUT     (C),A
+        LD      A,#80+17
+        OUT     (C),A
+                
+        INC     C
+        INC     C
+        XOR     A
+        OUT     (C),H
+        OUT     (C),A
+        OUT     (C),L
+        ld a,(__drawpage)
+        OUT     (C),A
+                
+        DEC     C
+        DEC     C
+        OUT     (C),A
+        LD      A,#80+45
+        OUT     (C),A
+        LD      A,%1000000
+        OUT     (C),A
+        LD      A,#80+46
+        OUT     (C),A
+        CALL    WAITVDP
+        LD      A,7
+        CALL    GETSTATUS
+        PUSH    AF
+        XOR     A
+        CALL    GETSTATUS
+        POP     AF
+        EI
+        RET
+}
+
+
+
+//--- save(filename,XSrc,YSrc,width,height)
+//--- saves the picture to the file
+public static short save(int argument1,short argument2,short argument3,short argument4,short argument5){
+ file.setfile(argument1);
+ return bltdv(argument2,argument3,argument4,argument5);
+}
+
+static short bltdv(short argument1,short argument2,short argument3,short argument4)
+asm{
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)       ; A = 4th parameter
+      ld (#f56c),a	; NY
+      xor  a
+      ld (#f56d),a
+      inc  hl
+      inc  hl
+
+      ld   a,(hl)      ; A = 3nd parameter(NX)
+      ld (#f56a),a     ; NX
+      xor  a
+      ld (#f56b),a
+      inc  hl
+      inc  hl
+
+      ld   a,(hl)      ; A = 2nd parameter
+      ld (#f564),a     ; SY
+      xor  a
+      ld (#f565),a
+      inc  hl
+      inc  hl
+      ld   a,(hl)      ; A = 1st parameter
+      ld (#f562),a     ; SX
+      xor  a
+      ld (#f563),a
+      ld (#F56F),a     ; ARG
+
+ ld hl,__file_buf
+ ld (#f566),hl
+; call __file_set_herror
+
+;ld a,(__srcpage)
+;ld (#faf6),a
+;call #13d
+	
+ ld hl,#f562
+ ld ix,#1a1
+ call #15f ;extrom
+ ld a,#c9
+ ld (#FFB1),a
+ xor a
+ ret
+}
+
+//--- load(filename,XDest,YDest)
+//--- loads the picture from the file
+public static short load(int argument1,short argument2,short argument3){
+ file.setfile(argument1);
+ return bltvd(argument2,argument3);
+}
+
+static short bltvd(short argument1,short argument2)
+asm{
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)       ; A = 2nd parameter
+      ld (#f568),a      ; DY
+      xor  a
+      ld (#f569),a
+      inc  hl
+      inc  hl
+
+      ld   a,(hl)       ; A = 1st parameter
+      ld (#f566),a      ; DX
+      xor  a
+      ld (#f567),a
+      inc  hl
+      inc  hl
+
+      xor  a
+      ld (#f56f),a     ; ARG
+      ld (#F570),a     ; LOGOP
+
+ ld hl,__file_buf
+ ld (#f562),hl        ;FNPTR
+; call __file_set_herror
+
+;ld a,(__srcpage)
+;ld (#faf6),a
+;call #13d
+
+ ld hl,#f562
+ ld ix,#19d ;BLTVD
+ call #15f ;extrom
+ ld a,#c9
+ ld (#FFB1),a
+ xor a
+ ret
+}
+
+
+//--- vdp(port,value)
+//--- writes the value to vdp
+ public static void vdp(short argument1,short argument2)
+ asm
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   b,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 1sr parameter
+      ld ix, #12d ; WRTVDP
+ jp #15F; extrom
+}
+
+//--- vdp(port)
+//--- read the value from vdp
+ public static short vdp(short argument1)
+ asm inline{
+  ld ix, #131; VDPSTA
+  call #15F; extrom
+}
+
+//--- colorrestore()
+//--- restores the color palette
+ public static short colorrestore()
+ asm inline{
+  ld ix, #145; VDPSTA
+  call #15F; extrom
+}
+
+//--- colorinit()
+//--- initilizes the color palette
+public static short colorinit()
+ asm inline{
+  ld ix, #141; INIPLT
+  call #15F; extrom
+}
+
+//--- bload(file)
+//--- loads VRAM from the file. Same as BLOAD"...",S in MSX-BASIC
+public static void bload(int argument1){
+ String.Copy(bios.cmdbuf,"\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,S");
+ bios.calbas(bios.cmdbuf,#39ca);
+}
+
+//--- bsave(file,start vram address,end vram address)
+//--- saves VRAM to the file. Same as BSAVE"...",from,to,S in MSX-BASIC
+public static void bsave(int argument1,int argument2,int argument3){
+ String.Copy(bios.cmdbuf,"\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.IntToDec(bios.cmdnum,argument2);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument3);String.Concat(bios.cmdbuf,bios.cmdnum);String.Concat(bios.cmdbuf,",S");
+ bios.calbas(bios.cmdbuf,#39cc);
+}
+
+}

@@ -1,0 +1,10 @@
+array byte chptn={
+};
+
+// character init
+word v,v2;
+byte i,a;
+v=1*8;v2=chptn;a=8;
+for(i=0;i<a;i++){
+ ldirvm(v2,v,8);ldirvm(v2,#800+v,8);ldirvm(v2,#1000+v,8);v2+=8;
+ ldirvm(v2,#2000+v,8);ldirvm(v2,#2800+v,8);ldirvm(v2,#3000+v,8);v2+=8;v+=8;}

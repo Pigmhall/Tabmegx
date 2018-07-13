@@ -1,0 +1,48 @@
+include bios.ccz80++
+include Random.ccz80++
+include sprite.ccz80++
+include graphic.ccz80++
+include timer.ccz80++
+
+class MainClass{
+ const TM=4;
+ // sprites pattern data
+ static short spptn[]={
+#0E,#71,#70,#30,#18,#08,#10,#60,#80,#80,#40,#20,#30,#18,#06,#01,#00,#E0,#70,#10,#10,#10,#10,#10,#18,#10,#17,#1F,#01,#02,#06,#F8,
+#00,#0E,#0F,#0D,#07,#07,#0F,#1F,#7F,#7F,#3F,#1F,#0F,#07,#01,#00,#00,#00,#80,#E0,#E0,#E0,#E0,#E0,#E0,#E0,#E0,#E0,#FE,#FC,#F8,#00};
+ static short tx[TM],ty[TM];
+ static int i;
+
+ static void main(){
+
+  //--- initialize
+  bios.color(15,0,0);
+  bios.screen(1);
+  bios.keyoff();
+
+  //-- sprites initialize
+  sprite.mode(3); // 0:8x8 1:8x8(x2) 2:16x16 3:16x16(x2)
+
+  for(i=0;i<2;i++){
+   sprite.sprite(i,&spptn+i*32);}
+   
+  //-- erase sprites
+  for(i=0;i<32;i++)sprite.put(i,0,217,0,0);
+
+  //-- init
+  for(i=0;i<TM;i++){
+   tx[i]=Random.Next()%240;
+   ty[i]=i*24+16;}
+  bios.print(1,0,"2 layers sprites demo for MSX 1");
+  timer.start(&loop());
+  while(1);
+ }
+ 
+ //---- move sprites
+ static void loop(){
+  for(i=0;i<TM;i++){
+   sprite.put(i*2,tx[i],ty[i],5+i,0);
+   sprite.put(i*2+1,tx[i],ty[i],10+i,4);
+   tx[i]-=i+1;}
+ }
+}

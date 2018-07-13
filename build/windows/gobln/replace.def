@@ -1,0 +1,1030 @@
+xor ([\w]*)=([^;]*);([^<]*)<([^;]*);[^ ]* :,for $1=$2 to $4-1:
+cf\(([\w]*)\x2c([\w]*)\x2c([\w]*)\);,tmp1=0:$3=-1:for tmp1=0 to $2:if $1(tmp1)=0 and $3=-1:$3=tmp1:endif:next:
+cleart\(([\w]*)\x2c([\w]*)\);,for i=0 to $2:$1(i)=0:next:
+setArray\(([\s\w]*)\x2c([\s\w]*)\x2c([\s\w\-\x2c]*)\);,restore _$1:for i=0 to $2:read $1[i]:next\n_$1:data $3
+rand\(([^\)]*)\),int(rnd(($1)-1))
+pops3\(([\w]*)\);,sx=$1x[i];sy=$1y[i];sz1=$1z[i];
+pushs3\(([\w]*)\);,$1x[i]=sx;$1y[i]=sy;$1z[i]=sz1;
+Sub ,function 
+return,exitfunction
+switch ,SELECT 
+default:,CASE DEFAULT:
+break;,ENDCASE
+\+\+([\w\[\]@#]*);,inc $1;
+--([\w\[\]@#]*);,dec $1;
+([\w\d\[\]@#]*)\+=([\w\d\[\]@\/#\.\*]*);,inc $1,$2;
+([\w\d\[\]@#]*)-=([\w\d\[\]@\/#\.\*]*);,dec $1,$2;
+;,:
+\\:,;
+==,=
+!=,<>
+&&, and 
+\|\|, or 
+%, mod 
+\\ mod ,%
+@,gw.
+\/\/,`
+\/\*[^\*]*\*\/, 
+\/\*,remstart:
+\*\/,remend:
+addMatrix4 ,ADD MATRIX4 
+addVector2 ,ADD VECTOR2 
+addVector3 ,ADD VECTOR3 
+addVector4 ,ADD VECTOR4 
+buildLookatLhmatrix4 ,BUILD LOOKAT LHMATRIX4 
+buildLookatRhmatrix4 ,BUILD LOOKAT RHMATRIX4 
+buildOrthoLhmatrix4 ,BUILD ORTHO LHMATRIX4 
+buildOrthoRhmatrix4 ,BUILD ORTHO RHMATRIX4 
+buildFovLhmatrix4 ,BUILD FOV LHMATRIX4 
+buildFovRhmatrix4 ,BUILD FOV RHMATRIX4 
+buildPerspectiveLhmatrix4 ,BUILD PERSPECTIVE LHMATRIX4 
+buildPerspectiveRhmatrix4 ,BUILD PERSPECTIVE RHMATRIX4 
+buildReflectionMatrix4 ,BUILD REFLECTION MATRIX4 
+buildRotationAxisMatrix4 ,BUILD ROTATION AXIS MATRIX4 
+catmullromVector2 ,CATMULLROM VECTOR2 
+catmullromVector3 ,CATMULLROM VECTOR3 
+catmullromVector4 ,CATMULLROM VECTOR4 
+copyMatrix4 ,COPY MATRIX4 
+copyVector2 ,COPY VECTOR2 
+copyVector3 ,COPY VECTOR3 
+copyVector4 ,COPY VECTOR4 
+crossProductVector3 ,CROSS PRODUCT VECTOR3 
+deleteMatrix4\(,DELETE MATRIX4\(
+deleteVector2\(,DELETE VECTOR2\(
+deleteVector3\(,DELETE VECTOR3\(
+deleteVector4\(,DELETE VECTOR4\(
+divideMatrix4 ,DIVIDE MATRIX4 
+divideVector2 ,DIVIDE VECTOR2 
+divideVector3 ,DIVIDE VECTOR3 
+divideVector4 ,DIVIDE VECTOR4 
+dotProductVector2\(,DOT PRODUCT VECTOR2\(
+dotProductVector3\(,DOT PRODUCT VECTOR3\(
+bccVector2 ,BCC VECTOR2 
+bccVector3 ,BCC VECTOR3 
+bccVector4 ,BCC VECTOR4 
+ccwVector2\(,CCW VECTOR2\(
+squaredLengthVector2\(,SQUARED LENGTH VECTOR2\(
+squaredLengthVector3\(,SQUARED LENGTH VECTOR3\(
+squaredLengthVector4\(,SQUARED LENGTH VECTOR4\(
+lengthVector2\(,LENGTH VECTOR2\(
+lengthVector3\(,LENGTH VECTOR3\(
+lengthVector4\(,LENGTH VECTOR4\(
+projectionMatrix4 ,PROJECTION MATRIX4 
+viewMatrix4 ,VIEW MATRIX4 
+wVector4\(,W VECTOR4\(
+worldMatrix4 ,WORLD MATRIX4 
+xVector2\(,X VECTOR2\(
+xVector3\(,X VECTOR3\(
+xVector4\(,X VECTOR4\(
+yVector2\(,Y VECTOR2\(
+yVector3\(,Y VECTOR3\(
+yVector4\(,Y VECTOR4\(
+zVector3\(,Z VECTOR3\(
+zVector4\(,Z VECTOR4\(
+hermiteVector2 ,HERMITE VECTOR2 
+hermiteVector3 ,HERMITE VECTOR3 
+hermiteVector4 ,HERMITE VECTOR4 
+inverseMatrix4\(,INVERSE MATRIX4\(
+isEqualMatrix4\(,IS EQUAL MATRIX4\(
+isEqualVector2\(,IS EQUAL VECTOR2\(
+isEqualVector3\(,IS EQUAL VECTOR3\(
+isEqualVector4\(,IS EQUAL VECTOR4\(
+isIdentityMatrix4\(,IS IDENTITY MATRIX4\(
+linearInterpolateVector2 ,LINEAR INTERPOLATE VECTOR2 
+linearInterpolateVector3 ,LINEAR INTERPOLATE VECTOR3 
+linearInterpolateVector4 ,LINEAR INTERPOLATE VECTOR4 
+makeMatrix4\(,MAKE MATRIX4\(
+makeVector2\(,MAKE VECTOR2\(
+makeVector3\(,MAKE VECTOR3\(
+makeVector4\(,MAKE VECTOR4\(
+maximizeVector2 ,MAXIMIZE VECTOR2 
+maximizeVector3 ,MAXIMIZE VECTOR3 
+maximizeVector4 ,MAXIMIZE VECTOR4 
+minimizeVector2 ,MINIMIZE VECTOR2 
+minimizeVector3 ,MINIMIZE VECTOR3 
+minimizeVector4 ,MINIMIZE VECTOR4 
+multiplyMatrix4 ,MULTIPLY MATRIX4 
+multiplyVector2 ,MULTIPLY VECTOR2 
+multiplyVector3 ,MULTIPLY VECTOR3 
+multiplyVector4 ,MULTIPLY VECTOR4 
+normalizeVector2 ,NORMALIZE VECTOR2 
+normalizeVector3 ,NORMALIZE VECTOR3 
+normalizeVector4 ,NORMALIZE VECTOR4 
+projectVector3 ,PROJECT VECTOR3 
+rotateXMatrix4 ,ROTATE X MATRIX4 
+rotateYMatrix4 ,ROTATE Y MATRIX4 
+rotateYprMatrix4 ,ROTATE YPR MATRIX4 
+rotateZMatrix4 ,ROTATE Z MATRIX4 
+scaleMatrix4 ,SCALE MATRIX4 
+scaleVector2 ,SCALE VECTOR2 
+scaleVector3 ,SCALE VECTOR3 
+scaleVector4 ,SCALE VECTOR4 
+setIdentityMatrix4 ,SET IDENTITY MATRIX4 
+setVector2 ,SET VECTOR2 
+setVector3 ,SET VECTOR3 
+setVector4 ,SET VECTOR4 
+subtractMatrix4 ,SUBTRACT MATRIX4 
+subtractVector2 ,SUBTRACT VECTOR2 
+subtractVector3 ,SUBTRACT VECTOR3 
+subtractVector4 ,SUBTRACT VECTOR4 
+transformVector4 ,TRANSFORM VECTOR4 
+transformCoordsVector2 ,TRANSFORM COORDS VECTOR2 
+transformCoordsVector3 ,TRANSFORM COORDS VECTOR3 
+transformNormalsVector3 ,TRANSFORM NORMALS VECTOR3 
+translateMatrix4 ,TRANSLATE MATRIX4 
+transposeMatrix4 ,TRANSPOSE MATRIX4 
+loadAnimation ,LOAD ANIMATION 
+loadDvdAnimation ,LOAD DVD ANIMATION 
+deleteAnimation ,DELETE ANIMATION 
+playAnimation ,PLAY ANIMATION 
+playAnimationToImage ,PLAY ANIMATION TO IMAGE 
+loopAnimation ,LOOP ANIMATION 
+stopAnimation ,STOP ANIMATION 
+pauseAnimation ,PAUSE ANIMATION 
+resumeAnimation ,RESUME ANIMATION 
+placeAnimation ,PLACE ANIMATION 
+setAnimationVolume ,SET ANIMATION VOLUME 
+setAnimationSpeed ,SET ANIMATION SPEED 
+setDvdChapter ,SET DVD CHAPTER 
+animationExist\(,ANIMATION EXIST\(
+animationWidth\(,ANIMATION WIDTH\(
+animationHeight\(,ANIMATION HEIGHT\(
+animationPlaying\(,ANIMATION PLAYING\(
+animationLooping\(,ANIMATION LOOPING\(
+animationPaused\(,ANIMATION PAUSED\(
+animationPositionX\(,ANIMATION POSITION X\(
+animationPositionY\(,ANIMATION POSITION Y\(
+animationVolume\(,ANIMATION VOLUME\(
+animationSpeed\(,ANIMATION SPEED\(
+totalDvdChapters\(,TOTAL DVD CHAPTERS\(
+lockPixels,LOCK PIXELS
+unlockPixels,UNLOCK PIXELS
+getPixelsPointer\(,GET PIXELS POINTER\(
+getPixelsPitch\(,GET PIXELS PITCH\(
+loadObject ,LOAD OBJECT 
+appendObject ,APPEND OBJECT 
+cloneObject ,CLONE OBJECT 
+instanceObject ,INSTANCE OBJECT 
+deleteObject ,DELETE OBJECT 
+deleteObjects ,DELETE OBJECTS 
+saveObject ,SAVE OBJECT 
+positionObject ,POSITION OBJECT 
+scaleObject ,SCALE OBJECT 
+rotateObject ,ROTATE OBJECT 
+moveObject ,MOVE OBJECT 
+pointObject ,POINT OBJECT 
+moveObjectDown ,MOVE OBJECT DOWN 
+moveObjectLeft ,MOVE OBJECT LEFT 
+moveObjectRight ,MOVE OBJECT RIGHT 
+moveObjectUp ,MOVE OBJECT UP 
+xrotateObject ,XROTATE OBJECT 
+yrotateObject ,YROTATE OBJECT 
+zrotateObject ,ZROTATE OBJECT 
+turnObjectLeft ,TURN OBJECT LEFT 
+turnObjectRight ,TURN OBJECT RIGHT 
+pitchObjectUp ,PITCH OBJECT UP 
+pitchObjectDown ,PITCH OBJECT DOWN 
+rollObjectLeft ,ROLL OBJECT LEFT 
+rollObjectRight ,ROLL OBJECT RIGHT 
+showObject ,SHOW OBJECT 
+hideObject ,HIDE OBJECT 
+playObject ,PLAY OBJECT 
+loopObject ,LOOP OBJECT 
+stopObject ,STOP OBJECT 
+setObjectFrame ,SET OBJECT FRAME 
+setObjectSpeed ,SET OBJECT SPEED 
+setObjectInterpolation ,SET OBJECT INTERPOLATION 
+setGlobalObjectCreation ,SET GLOBAL OBJECT CREATION 
+makeObject ,MAKE OBJECT 
+makeObjectBox ,MAKE OBJECT BOX 
+makeObjectCone ,MAKE OBJECT CONE 
+makeObjectCube ,MAKE OBJECT CUBE 
+makeObjectCylinder ,MAKE OBJECT CYLINDER 
+makeObjectFromLimb ,MAKE OBJECT FROM LIMB 
+makeObjectPlain ,MAKE OBJECT PLAIN 
+makeObjectSphere ,MAKE OBJECT SPHERE 
+makeObjectTriangle ,MAKE OBJECT TRIANGLE 
+textureObject ,TEXTURE OBJECT 
+colorObject ,COLOR OBJECT 
+ghostObjectOn ,GHOST OBJECT ON 
+ghostObjectOff ,GHOST OBJECT OFF 
+fadeObject ,FADE OBJECT 
+lockObjectOn ,LOCK OBJECT ON 
+lockObjectOff ,LOCK OBJECT OFF 
+setObjectTexture ,SET OBJECT TEXTURE 
+scaleObjectTexture ,SCALE OBJECT TEXTURE 
+scrollObjectTexture ,SCROLL OBJECT TEXTURE 
+setTextureMd3 ,SET TEXTURE MD3 
+setObjectSmoothing ,SET OBJECT SMOOTHING 
+showObjectBounds ,SHOW OBJECT BOUNDS 
+hideObjectBounds ,HIDE OBJECT BOUNDS 
+excludeObjectOn ,EXCLUDE OBJECT ON 
+excludeObjectOff ,EXCLUDE OBJECT OFF 
+setObject ,SET OBJECT 
+setObjectWireframe ,SET OBJECT WIREFRAME 
+setObjectTransparency ,SET OBJECT TRANSPARENCY 
+setObjectCull ,SET OBJECT CULL 
+setObjectFilter ,SET OBJECT FILTER 
+setObjectLight ,SET OBJECT LIGHT 
+setObjectFog ,SET OBJECT FOG 
+setObjectAmbient ,SET OBJECT AMBIENT 
+setObjectRotationXyz ,SET OBJECT ROTATION XYZ 
+setObjectRotationZyx ,SET OBJECT ROTATION ZYX 
+setObjectToCameraOrientation ,SET OBJECT TO CAMERA ORIENTATION 
+setObjectToObjectOrientation ,SET OBJECT TO OBJECT ORIENTATION 
+disableObjectZdepth ,DISABLE OBJECT ZDEPTH 
+enableObjectZdepth ,ENABLE OBJECT ZDEPTH 
+glueObjectToLimb ,GLUE OBJECT TO LIMB 
+unglueObject ,UNGLUE OBJECT 
+fixObjectPivot ,FIX OBJECT PIVOT 
+setObjectDiffuse ,SET OBJECT DIFFUSE 
+setObjectAmbience ,SET OBJECT AMBIENCE 
+setObjectSpecular ,SET OBJECT SPECULAR 
+setObjectEmissive ,SET OBJECT EMISSIVE 
+setObjectSpecularPower ,SET OBJECT SPECULAR POWER 
+setLightMappingOn ,SET LIGHT MAPPING ON 
+setDetailMappingOn ,SET DETAIL MAPPING ON 
+setBlendMappingOn ,SET BLEND MAPPING ON 
+setSphereMappingOn ,SET SPHERE MAPPING ON 
+setCubeMappingOn ,SET CUBE MAPPING ON 
+setBumpMappingOn ,SET BUMP MAPPING ON 
+setCartoonShadingOn ,SET CARTOON SHADING ON 
+setRainbowShadingOn ,SET RAINBOW SHADING ON 
+setShadowShadingOn ,SET SHADOW SHADING ON 
+setReflectionShadingOn ,SET REFLECTION SHADING ON 
+setAlphaMappingOn ,SET ALPHA MAPPING ON 
+setEffectOn ,SET EFFECT ON 
+setShadingOff ,SET SHADING OFF 
+setShadowShadingOff ,SET SHADOW SHADING OFF 
+loadEffect ,LOAD EFFECT 
+deleteEffect ,DELETE EFFECT 
+setObjectEffect ,SET OBJECT EFFECT 
+setLimbEffect ,SET LIMB EFFECT 
+performChecklistForEffectValues ,PERFORM CHECKLIST FOR EFFECT VALUES 
+performChecklistForEffectErrors ,PERFORM CHECKLIST FOR EFFECT ERRORS 
+setEffectConstantBoolean ,SET EFFECT CONSTANT BOOLEAN 
+setEffectConstantInteger ,SET EFFECT CONSTANT INTEGER 
+setEffectConstantFloat ,SET EFFECT CONSTANT FLOAT 
+setEffectConstantVector ,SET EFFECT CONSTANT VECTOR 
+setEffectConstantMatrix ,SET EFFECT CONSTANT MATRIX 
+setEffectTechnique ,SET EFFECT TECHNIQUE 
+setEffectTranspose ,SET EFFECT TRANSPOSE 
+setObjectFov ,SET OBJECT FOV 
+setObjectNormals ,SET OBJECT NORMALS 
+enableObjectZbias ,ENABLE OBJECT ZBIAS 
+disableObjectZbias ,DISABLE OBJECT ZBIAS 
+makeObjectCollisionBox ,MAKE OBJECT COLLISION BOX 
+deleteObjectCollisionBox ,DELETE OBJECT COLLISION BOX 
+setObjectCollisionOn ,SET OBJECT COLLISION ON 
+setObjectCollisionOff ,SET OBJECT COLLISION OFF 
+setObjectCollisionToBoxes ,SET OBJECT COLLISION TO BOXES 
+setObjectCollisionToPolygons ,SET OBJECT COLLISION TO POLYGONS 
+setObjectCollisionToSpheres ,SET OBJECT COLLISION TO SPHERES 
+setGlobalCollisionOn,SET GLOBAL COLLISION ON
+setGlobalCollisionOff,SET GLOBAL COLLISION OFF
+setObjectRadius ,SET OBJECT RADIUS 
+automaticObjectCollision ,AUTOMATIC OBJECT COLLISION 
+automaticCameraCollision ,AUTOMATIC CAMERA COLLISION 
+calculateAutomaticCollision,CALCULATE AUTOMATIC COLLISION
+performChecklistForObjectLimbs ,PERFORM CHECKLIST FOR OBJECT LIMBS 
+offsetLimb ,OFFSET LIMB 
+scaleLimb ,SCALE LIMB 
+rotateLimb ,ROTATE LIMB 
+showLimb ,SHOW LIMB 
+hideLimb ,HIDE LIMB 
+textureLimb ,TEXTURE LIMB 
+colorLimb ,COLOR LIMB 
+scaleLimbTexture ,SCALE LIMB TEXTURE 
+scrollLimbTexture ,SCROLL LIMB TEXTURE 
+addLimb ,ADD LIMB 
+linkLimb ,LINK LIMB 
+removeLimb ,REMOVE LIMB 
+setLimbSmoothing ,SET LIMB SMOOTHING 
+setLimbNormals ,SET LIMB NORMALS 
+loadMesh ,LOAD MESH 
+saveMesh ,SAVE MESH 
+deleteMesh ,DELETE MESH 
+changeMesh ,CHANGE MESH 
+makeMeshFromObject ,MAKE MESH FROM OBJECT 
+createVertexShaderFromFile ,CREATE VERTEX SHADER FROM FILE 
+deleteVertexShader ,DELETE VERTEX SHADER 
+setVertexShaderOn ,SET VERTEX SHADER ON 
+setVertexShaderOff ,SET VERTEX SHADER OFF 
+setVertexShaderVector ,SET VERTEX SHADER VECTOR 
+setVertexShaderMatrix ,SET VERTEX SHADER MATRIX 
+setVertexShaderStream ,SET VERTEX SHADER STREAM 
+setVertexShaderStreamcount ,SET VERTEX SHADER STREAMCOUNT 
+convertObjectFvf ,CONVERT OBJECT FVF 
+createPixelShaderFromFile ,CREATE PIXEL SHADER FROM FILE 
+deletePixelShader ,DELETE PIXEL SHADER 
+setPixelShaderOn ,SET PIXEL SHADER ON 
+setPixelShaderOff ,SET PIXEL SHADER OFF 
+setPixelShaderTexture ,SET PIXEL SHADER TEXTURE 
+flushVideoMemory,FLUSH VIDEO MEMORY
+compileCsg ,COMPILE CSG 
+lockVertexdataForLimb ,LOCK VERTEXDATA FOR LIMB 
+lockVertexdataForLimb ,LOCK VERTEXDATA FOR LIMB 
+lockVertexdataForMesh ,LOCK VERTEXDATA FOR MESH 
+addMeshToVertexdata ,ADD MESH TO VERTEXDATA 
+deleteMeshFromVertexdata ,DELETE MESH FROM VERTEXDATA 
+convertMeshToVertexdata ,CONVERT MESH TO VERTEXDATA 
+unlockVertexdata,UNLOCK VERTEXDATA
+setIndexdata ,SET INDEXDATA 
+setVertexdataUv ,SET VERTEXDATA UV 
+setVertexdataNormals ,SET VERTEXDATA NORMALS 
+setVertexdataPosition ,SET VERTEXDATA POSITION 
+setVertexdataDiffuse ,SET VERTEXDATA DIFFUSE 
+getVertexdataIndexCount\(,GET VERTEXDATA INDEX COUNT\(
+getIndexdata\(,GET INDEXDATA\(
+getVertexdataVertexCount\(,GET VERTEXDATA VERTEX COUNT\(
+getVertexdataPositionX\(,GET VERTEXDATA POSITION X\(
+getVertexdataPositionY\(,GET VERTEXDATA POSITION Y\(
+getVertexdataPositionZ\(,GET VERTEXDATA POSITION Z\(
+getVertexdataNormalsX\(,GET VERTEXDATA NORMALS X\(
+getVertexdataNormalsY\(,GET VERTEXDATA NORMALS Y\(
+getVertexdataNormalsZ\(,GET VERTEXDATA NORMALS Z\(
+getVertexdataU ,GET VERTEXDATA U 
+getVertexdataV ,GET VERTEXDATA V 
+getVertexdataDiffuse\(,GET VERTEXDATA DIFFUSE\(
+objectExist\(,OBJECT EXIST\(
+objectVisible\(,OBJECT VISIBLE\(
+objectPlaying\(,OBJECT PLAYING\(
+objectLooping\(,OBJECT LOOPING\(
+objectPositionX\(,OBJECT POSITION X\(
+objectPositionY\(,OBJECT POSITION Y\(
+objectPositionZ\(,OBJECT POSITION Z\(
+objectSize\(,OBJECT SIZE\(
+objectSizeX\(,OBJECT SIZE X\(
+objectSizeY\(,OBJECT SIZE Y\(
+objectSizeZ\(,OBJECT SIZE Z\(
+objectAngleX\(,OBJECT ANGLE X\(
+objectAngleY\(,OBJECT ANGLE Y\(
+objectAngleZ\(,OBJECT ANGLE Z\(
+objectFrame\(,OBJECT FRAME\(
+objectSpeed\(,OBJECT SPEED\(
+objectInterpolation\(,OBJECT INTERPOLATION\(
+totalObjectFrames\(,TOTAL OBJECT FRAMES\(
+objectHit\(,OBJECT HIT\(
+objectCollision\(,OBJECT COLLISION\(
+getObjectCollisionX\(,GET OBJECT COLLISION X\(
+getObjectCollisionY\(,GET OBJECT COLLISION Y\(
+getObjectCollisionZ\(,GET OBJECT COLLISION Z\(
+objectCollisionRadius\(,OBJECT COLLISION RADIUS\(
+objectCollisionCenterX\(,OBJECT COLLISION CENTER X\(
+objectCollisionCenterY\(,OBJECT COLLISION CENTER Y\(
+objectCollisionCenterZ\(,OBJECT COLLISION CENTER Z\(
+intersectObject\(,INTERSECT OBJECT\(
+limbExist\(,LIMB EXIST\(
+limbName$\(,LIMB NAME$\(
+limbVisible\(,LIMB VISIBLE\(
+limbOffsetX\(,LIMB OFFSET X\(
+limbOffsetY\(,LIMB OFFSET Y\(
+limbOffsetZ\(,LIMB OFFSET Z\(
+limbScaleX\(,LIMB SCALE X\(
+limbScaleY\(,LIMB SCALE Y\(
+limbScaleZ\(,LIMB SCALE Z\(
+limbAngleX\(,LIMB ANGLE X\(
+limbAngleY\(,LIMB ANGLE Y\(
+limbAngleZ\(,LIMB ANGLE Z\(
+limbTexture\(,LIMB TEXTURE\(
+limbTextureName\(,LIMB TEXTURE NAME\(
+limbDirectionX\(,LIMB DIRECTION X\(
+limbDirectionY\(,LIMB DIRECTION Y\(
+limbDirectionZ\(,LIMB DIRECTION Z\(
+limbPositionX\(,LIMB POSITION X\(
+limbPositionY\(,LIMB POSITION Y\(
+limbPositionZ\(,LIMB POSITION Z\(
+checkLimbLink\(,CHECK LIMB LINK\(
+objectInScreen\(,OBJECT IN SCREEN\(
+objectScreenX\(,OBJECT SCREEN X\(
+objectScreenY\(,OBJECT SCREEN Y\(
+pickObject\(,PICK OBJECT\(
+pickScreen ,PICK SCREEN 
+getPickDistance\(,GET PICK DISTANCE\(
+getPickVectorX\(,GET PICK VECTOR X\(
+getPickVectorY\(,GET PICK VECTOR Y\(
+getPickVectorZ\(,GET PICK VECTOR Z\(
+alphablendingAvailable\(,ALPHABLENDING AVAILABLE\(
+alphaAvailable\(,ALPHA AVAILABLE\(
+alphacomparisonAvailable\(,ALPHACOMPARISON AVAILABLE\(
+anistropicfilteringAvailable\(,ANISTROPICFILTERING AVAILABLE\(
+antialiasAvailable\(,ANTIALIAS AVAILABLE\(
+blitsystolocalAvailable\(,BLITSYSTOLOCAL AVAILABLE\(
+calibrategammaAvailable\(,CALIBRATEGAMMA AVAILABLE\(
+clipandscalepointsAvailable\(,CLIPANDSCALEPOINTS AVAILABLE\(
+cliptlvertsAvailable\(,CLIPTLVERTS AVAILABLE\(
+colorperspectiveAvailable\(,COLORPERSPECTIVE AVAILABLE\(
+colorwriteenableAvailable\(,COLORWRITEENABLE AVAILABLE\(
+cubemapAvailable\(,CUBEMAP AVAILABLE\(
+cullccwAvailable\(,CULLCCW AVAILABLE\(
+cullcwAvailable\(,CULLCW AVAILABLE\(
+getDeviceType\(,GET DEVICE TYPE\(
+ditherAvailable\(,DITHER AVAILABLE\(
+filteringAvailable\(,FILTERING AVAILABLE\(
+fograngeAvailable\(,FOGRANGE AVAILABLE\(
+fogtableAvailable\(,FOGTABLE AVAILABLE\(
+fogvertexAvailable\(,FOGVERTEX AVAILABLE\(
+fogAvailable\(,FOG AVAILABLE\(
+fullscreengammaAvailable\(,FULLSCREENGAMMA AVAILABLE\(
+getMaximumLights\(,GET MAXIMUM LIGHTS\(
+getMaximumPixelShaderValue\(,GET MAXIMUM PIXEL SHADER VALUE\(
+getMaximumTextureHeight\(,GET MAXIMUM TEXTURE HEIGHT\(
+getMaximumTextureWidth\(,GET MAXIMUM TEXTURE WIDTH\(
+getMaximumVertexShaderConstants\(,GET MAXIMUM VERTEX SHADER CONSTANTS\(
+getMaximumVolumeExtent\(,GET MAXIMUM VOLUME EXTENT\(
+mipcubemapAvailable\(,MIPCUBEMAP AVAILABLE\(
+mipmapAvailable\(,MIPMAP AVAILABLE\(
+mipmaplodbiasAvailable\(,MIPMAPLODBIAS AVAILABLE\(
+mipmapvolumeAvailable\(,MIPMAPVOLUME AVAILABLE\(
+nonpowtexturesAvailable\(,NONPOWTEXTURES AVAILABLE\(
+perspectivetexturesAvailable\(,PERSPECTIVETEXTURES AVAILABLE\(
+getMaximumPixelShaderVersion\(,GET MAXIMUM PIXEL SHADER VERSION\(
+projectedtexturesAvailable\(,PROJECTEDTEXTURES AVAILABLE\(
+renderafterflipAvailable\(,RENDERAFTERFLIP AVAILABLE\(
+renderwindowedAvailable\(,RENDERWINDOWED AVAILABLE\(
+seperatetexturememoriesAvailable\(,SEPERATETEXTUREMEMORIES AVAILABLE\(
+onlysquaretexturesAvailable\(,ONLYSQUARETEXTURES AVAILABLE\(
+tnlAvailable\(,TNL AVAILABLE\(
+tlvertexsystemmemoryAvailable\(,TLVERTEXSYSTEMMEMORY AVAILABLE\(
+tlvertexvideomemoryAvailable\(,TLVERTEXVIDEOMEMORY AVAILABLE\(
+nonlocalvideomemoryAvailable\(,NONLOCALVIDEOMEMORY AVAILABLE\(
+texturesystemmemoryAvailable\(,TEXTURESYSTEMMEMORY AVAILABLE\(
+texturevideomemoryAvailable\(,TEXTUREVIDEOMEMORY AVAILABLE\(
+getMaximumVertexShaderVersion\(,GET MAXIMUM VERTEX SHADER VERSION\(
+volumemapAvailable\(,VOLUMEMAP AVAILABLE\(
+wbufferAvailable\(,WBUFFER AVAILABLE\(
+wfogAvailable\(,WFOG AVAILABLE\(
+zbufferAvailable\(,ZBUFFER AVAILABLE\(
+zfogAvailable\(,ZFOG AVAILABLE\(
+meshExist\(,MESH EXIST\(
+effectExist\(,EFFECT EXIST\(
+vertexShaderExist\(,VERTEX SHADER EXIST\(
+pixelShaderExist\(,PIXEL SHADER EXIST\(
+loadBitmap ,LOAD BITMAP 
+createBitmap ,CREATE BITMAP 
+deleteBitmap ,DELETE BITMAP 
+copyBitmap ,COPY BITMAP 
+flipBitmap ,FLIP BITMAP 
+mirrorBitmap ,MIRROR BITMAP 
+fadeBitmap ,FADE BITMAP 
+blurBitmap ,BLUR BITMAP 
+setCurrentBitmap ,SET CURRENT BITMAP 
+setBitmapFormat ,SET BITMAP FORMAT 
+currentBitmap\(,CURRENT BITMAP\(
+bitmapExist\(,BITMAP EXIST\(
+bitmapWidth\(,BITMAP WIDTH\(
+bitmapHeight\(,BITMAP HEIGHT\(
+bitmapDepth\(,BITMAP DEPTH\(
+bitmapMirrored\(,BITMAP MIRRORED\(
+bitmapFlipped\(,BITMAP FLIPPED\(
+makeCamera ,MAKE CAMERA 
+deleteCamera ,DELETE CAMERA 
+moveCamera ,MOVE CAMERA 
+positionCamera ,POSITION CAMERA 
+pointCamera ,POINT CAMERA 
+rotateCamera ,ROTATE CAMERA 
+xrotateCamera ,XROTATE CAMERA 
+yrotateCamera ,YROTATE CAMERA 
+zrotateCamera ,ZROTATE CAMERA 
+turnCameraLeft ,TURN CAMERA LEFT 
+turnCameraRight ,TURN CAMERA RIGHT 
+pitchCameraUp ,PITCH CAMERA UP 
+pitchCameraDown ,PITCH CAMERA DOWN 
+rollCameraLeft ,ROLL CAMERA LEFT 
+rollCameraRight ,ROLL CAMERA RIGHT 
+setCurrentCamera ,SET CURRENT CAMERA 
+clearCameraView ,CLEAR CAMERA VIEW 
+setCameraFov ,SET CAMERA FOV 
+setCameraRange ,SET CAMERA RANGE 
+setCameraView ,SET CAMERA VIEW 
+setCameraAspect ,SET CAMERA ASPECT 
+setCameraRotationXyz,SET CAMERA ROTATION XYZ
+setCameraRotationZyx,SET CAMERA ROTATION ZYX
+setCameraToFollow ,SET CAMERA TO FOLLOW 
+setCameraToImage ,SET CAMERA TO IMAGE 
+setCameraToObjectOrientation ,SET CAMERA TO OBJECT ORIENTATION 
+setVector3ToCameraPosition ,SET VECTOR3 TO CAMERA POSITION 
+setVector3ToCameraRotation ,SET VECTOR3 TO CAMERA ROTATION 
+controlCameraUsingArrowkeys ,CONTROL CAMERA USING ARROWKEYS 
+autocamOn,AUTOCAM ON
+autocamOff,AUTOCAM OFF
+backdropOn,BACKDROP ON
+backdropOff,BACKDROP OFF
+colorBackdrop ,COLOR BACKDROP 
+textureBackdrop ,TEXTURE BACKDROP 
+scrollBackdrop ,SCROLL BACKDROP 
+cameraExist\(,CAMERA EXIST\(
+cameraPositionX\(,CAMERA POSITION X\(
+cameraPositionY\(,CAMERA POSITION Y\(
+cameraPositionZ\(,CAMERA POSITION Z\(
+cameraAngleX\(,CAMERA ANGLE X\(
+cameraAngleY\(,CAMERA ANGLE Y\(
+cameraAngleZ\(,CAMERA ANGLE Z\(
+syncOn,SYNC ON
+syncOff,SYNC OFF
+syncRate ,SYNC RATE 
+syncSleep ,SYNC SLEEP 
+syncMask ,SYNC MASK 
+setCursor ,SET CURSOR 
+caseDefault,CASE DEFAULT
+saveArray ,SAVE ARRAY 
+loadArray ,LOAD ARRAY 
+waitKey,WAIT KEY
+waitMouse,WAIT MOUSE
+suspendForKey,SUSPEND FOR KEY
+suspendForMouse,SUSPEND FOR MOUSE
+drawToBack,DRAW TO BACK
+drawToFront,DRAW TO FRONT
+drawSpritesFirst,DRAW SPRITES FIRST
+drawSpritesLast,DRAW SPRITES LAST
+makeMemory\(,MAKE MEMORY\(
+deleteMemory ,DELETE MEMORY 
+fillMemory ,FILL MEMORY 
+copyMemory ,COPY MEMORY 
+emptyArray ,EMPTY ARRAY 
+arrayInsertAtTop ,ARRAY INSERT AT TOP 
+arrayInsertAtBottom ,ARRAY INSERT AT BOTTOM 
+arrayInsertAtElement ,ARRAY INSERT AT ELEMENT 
+arrayDeleteElement ,ARRAY DELETE ELEMENT 
+nextArrayIndex ,NEXT ARRAY INDEX 
+previousArrayIndex ,PREVIOUS ARRAY INDEX 
+arrayIndexToTop ,ARRAY INDEX TO TOP 
+arrayIndexToBottom ,ARRAY INDEX TO BOTTOM 
+arrayIndexToQueue ,ARRAY INDEX TO QUEUE 
+addToQueue ,ADD TO QUEUE 
+removeFromQueue ,REMOVE FROM QUEUE 
+arrayIndexToStack ,ARRAY INDEX TO STACK 
+addToStack ,ADD TO STACK 
+removeFromStack ,REMOVE FROM STACK 
+getDate$\(,GET DATE$\(
+getTime$\(,GET TIME$\(
+arrayCount\(,ARRAY COUNT\(
+arrayIndexValid\(,ARRAY INDEX VALID\(
+performChecklistForGraphicsCards,PERFORM CHECKLIST FOR GRAPHICS CARDS
+performChecklistForDisplayModes,PERFORM CHECKLIST FOR DISPLAY MODES
+setDisplayMode ,SET DISPLAY MODE 
+setGraphicsCard ,SET GRAPHICS CARD 
+setGamma ,SET GAMMA 
+showWindow,SHOW WINDOW
+hideWindow,HIDE WINDOW
+maximizeWindow,MAXIMIZE WINDOW
+minimizeWindow,MINIMIZE WINDOW
+restoreWindow,RESTORE WINDOW
+setWindowOn,SET WINDOW ON
+setWindowOff,SET WINDOW OFF
+setWindowSize ,SET WINDOW SIZE 
+setWindowTitle ,SET WINDOW TITLE 
+setWindowLayout ,SET WINDOW LAYOUT 
+setWindowPosition ,SET WINDOW POSITION 
+lockBackbuffer,LOCK BACKBUFFER
+unlockBackbuffer,UNLOCK BACKBUFFER
+screenType\(,SCREEN TYPE\(
+screenWidth\(,SCREEN WIDTH\(
+screenHeight\(,SCREEN HEIGHT\(
+screenDepth\(,SCREEN DEPTH\(
+screenInvalid\(,SCREEN INVALID\(
+screenFps\(,SCREEN FPS\(
+currentGraphicsCard$\(,CURRENT GRAPHICS CARD$\(
+checkDisplayMode\(,CHECK DISPLAY MODE\(
+getBackbufferPtr\(,GET BACKBUFFER PTR\(
+getBackbufferWidth\(,GET BACKBUFFER WIDTH\(
+getBackbufferHeight\(,GET BACKBUFFER HEIGHT\(
+getBackbufferDepth\(,GET BACKBUFFER DEPTH\(
+getBackbufferPitch\(,GET BACKBUFFER PITCH\(
+setDir ,SET DIR 
+makeFile ,MAKE FILE 
+makeDirectory ,MAKE DIRECTORY 
+deleteFile ,DELETE FILE 
+deleteDirectory ,DELETE DIRECTORY 
+copyFile ,COPY FILE 
+moveFile ,MOVE FILE 
+renameFile ,RENAME FILE 
+executeFile ,EXECUTE FILE 
+findFirst,FIND FIRST
+findNext,FIND NEXT
+openToRead ,OPEN TO READ 
+openToWrite ,OPEN TO WRITE 
+closeFile ,CLOSE FILE 
+readByte ,READ BYTE 
+readFile ,READ FILE 
+readDirblock ,READ DIRBLOCK 
+readFileblock ,READ FILEBLOCK 
+readFloat ,READ FLOAT 
+readLong ,READ LONG 
+readMemblock ,READ MEMBLOCK 
+readString ,READ STRING 
+readWord ,READ WORD 
+writeWord ,WRITE WORD 
+writeByte ,WRITE BYTE 
+writeLong ,WRITE LONG 
+writeDirblock ,WRITE DIRBLOCK 
+writeFileblock ,WRITE FILEBLOCK 
+writeFloat ,WRITE FLOAT 
+writeFile ,WRITE FILE 
+writeMemblock ,WRITE MEMBLOCK 
+writeString ,WRITE STRING 
+skipBytes ,SKIP BYTES 
+writeByteToFile ,WRITE BYTE TO FILE 
+readByteFromFile\(,READ BYTE FROM FILE\(
+performChecklistForDrives,PERFORM CHECKLIST FOR DRIVES
+performChecklistForFiles,PERFORM CHECKLIST FOR FILES
+makeMemblockFromFile ,MAKE MEMBLOCK FROM FILE 
+makeFileFromMemblock ,MAKE FILE FROM MEMBLOCK 
+fileExist\(,FILE EXIST\(
+pathExist\(,PATH EXIST\(
+getDir$\(,GET DIR$\(
+fileEnd\(,FILE END\(
+fileOpen\(,FILE OPEN\(
+fileSize\(,FILE SIZE\(
+getFileDate$\(,GET FILE DATE$\(
+getFileName$\(,GET FILE NAME$\(
+getFileType\(,GET FILE TYPE\(
+getFileCreation$\(,GET FILE CREATION$\(
+ftpConnect ,FTP CONNECT 
+ftpDisconnect,FTP DISCONNECT
+ftpTerminate,FTP TERMINATE
+ftpSetDir ,FTP SET DIR 
+ftpGetFile ,FTP GET FILE 
+ftpPutFile ,FTP PUT FILE 
+ftpDeleteFile ,FTP DELETE FILE 
+ftpProceed,FTP PROCEED
+ftpFindFirst,FTP FIND FIRST
+ftpFindNext,FTP FIND NEXT
+getFtpStatus\(,GET FTP STATUS\(
+getFtpDir$\(,GET FTP DIR$\(
+getFtpProgress\(,GET FTP PROGRESS\(
+getFtpFailure\(,GET FTP FAILURE\(
+getFtpError$\(,GET FTP ERROR$\(
+getFtpFileType\(,GET FTP FILE TYPE\(
+getFtpFileName$\(,GET FTP FILE NAME$\(
+getFtpFileSize\(,GET FTP FILE SIZE\(
+loadImage ,LOAD IMAGE 
+saveImage ,SAVE IMAGE 
+deleteImage ,DELETE IMAGE 
+getImage ,GET IMAGE 
+pasteImage ,PASTE IMAGE 
+setImageColorkey ,SET IMAGE COLORKEY 
+imageExist\(,IMAGE EXIST\(
+showMouse,SHOW MOUSE
+hideMouse,HIDE MOUSE
+positionMouse ,POSITION MOUSE 
+changeMouse ,CHANGE MOUSE 
+clearEntryBuffer,CLEAR ENTRY BUFFER
+writeToClipboard ,WRITE TO CLIPBOARD 
+writeToRegistry ,WRITE TO REGISTRY 
+writeStringToRegistry ,WRITE STRING TO REGISTRY 
+performChecklistForControlDevices,PERFORM CHECKLIST FOR CONTROL DEVICES
+setControlDevice ,SET CONTROL DEVICE 
+forceUp ,FORCE UP 
+forceDown ,FORCE DOWN 
+forceLeft ,FORCE LEFT 
+forceRight ,FORCE RIGHT 
+forceAngle ,FORCE ANGLE 
+forceNoEffect,FORCE NO EFFECT
+forceWaterEffect ,FORCE WATER EFFECT 
+forceShoot ,FORCE SHOOT 
+forceChainsaw ,FORCE CHAINSAW 
+forceImpact ,FORCE IMPACT 
+forceAutoCenterOn,FORCE AUTO CENTER ON
+forceAutoCenterOff,FORCE AUTO CENTER OFF
+getClipboard$\(,GET CLIPBOARD$\(
+getRegistry\(,GET REGISTRY\(
+getRegistry$\(,GET REGISTRY$\(
+joystickUp\(,JOYSTICK UP\(
+joystickDown\(,JOYSTICK DOWN\(
+joystickLeft\(,JOYSTICK LEFT\(
+joystickRight\(,JOYSTICK RIGHT\(
+joystickX\(,JOYSTICK X\(
+joystickY\(,JOYSTICK Y\(
+joystickZ\(,JOYSTICK Z\(
+joystickFireA\(,JOYSTICK FIRE A\(
+joystickFireB\(,JOYSTICK FIRE B\(
+joystickFireC\(,JOYSTICK FIRE C\(
+joystickFireD\(,JOYSTICK FIRE D\(
+joystickFireX\(,JOYSTICK FIRE X\(
+joystickSliderA\(,JOYSTICK SLIDER A\(
+joystickSliderB\(,JOYSTICK SLIDER B\(
+joystickSliderC\(,JOYSTICK SLIDER C\(
+joystickSliderD\(,JOYSTICK SLIDER D\(
+joystickTwistX\(,JOYSTICK TWIST X\(
+joystickTwistY\(,JOYSTICK TWIST Y\(
+joystickTwistZ\(,JOYSTICK TWIST Z\(
+joystickHatAngle\(,JOYSTICK HAT ANGLE\(
+controlDeviceName$\(,CONTROL DEVICE NAME$\(
+controlDeviceX\(,CONTROL DEVICE X\(
+controlDeviceY\(,CONTROL DEVICE Y\(
+controlDeviceZ\(,CONTROL DEVICE Z\(
+makeLight ,MAKE LIGHT 
+deleteLight ,DELETE LIGHT 
+showLight ,SHOW LIGHT 
+hideLight ,HIDE LIGHT 
+colorLight ,COLOR LIGHT 
+positionLight ,POSITION LIGHT 
+rotateLight ,ROTATE LIGHT 
+pointLight ,POINT LIGHT 
+setDirectionalLight ,SET DIRECTIONAL LIGHT 
+setPointLight ,SET POINT LIGHT 
+setSpotLight ,SET SPOT LIGHT 
+setLightRange ,SET LIGHT RANGE 
+setLightToObjectPosition ,SET LIGHT TO OBJECT POSITION 
+setLightToObjectOrientation ,SET LIGHT TO OBJECT ORIENTATION 
+setVector3ToLightPosition ,SET VECTOR3 TO LIGHT POSITION 
+setVector3ToLightRotation ,SET VECTOR3 TO LIGHT ROTATION 
+setNormalizationOn,SET NORMALIZATION ON
+setNormalizationOff,SET NORMALIZATION OFF
+fogOn,FOG ON
+fogOff,FOG OFF
+fogColor ,FOG COLOR 
+fogDistance ,FOG DISTANCE 
+setAmbientLight ,SET AMBIENT LIGHT 
+colorAmbientLight ,COLOR AMBIENT LIGHT 
+lightExist\(,LIGHT EXIST\(
+lightType\(,LIGHT TYPE\(
+lightVisible\(,LIGHT VISIBLE\(
+lightRange\(,LIGHT RANGE\(
+lightPositionX\(,LIGHT POSITION X\(
+lightPositionY\(,LIGHT POSITION Y\(
+lightPositionZ\(,LIGHT POSITION Z\(
+lightDirectionX\(,LIGHT DIRECTION X\(
+lightDirectionY\(,LIGHT DIRECTION Y\(
+lightDirectionZ\(,LIGHT DIRECTION Z\(
+makeMatrix ,MAKE MATRIX 
+deleteMatrix ,DELETE MATRIX 
+prepareMatrixTexture ,PREPARE MATRIX TEXTURE 
+positionMatrix ,POSITION MATRIX 
+fillMatrix ,FILL MATRIX 
+randomizeMatrix ,RANDOMIZE MATRIX 
+ghostMatrixOn ,GHOST MATRIX ON 
+ghostMatrixOff ,GHOST MATRIX OFF 
+setMatrixWireframeOn ,SET MATRIX WIREFRAME ON 
+setMatrixWireframeOff ,SET MATRIX WIREFRAME OFF 
+setVector3ToMatrixPosition ,SET VECTOR3 TO MATRIX POSITION 
+setMatrixTexture ,SET MATRIX TEXTURE 
+setMatrix ,SET MATRIX 
+setMatrixTrim ,SET MATRIX TRIM 
+setMatrixPriority ,SET MATRIX PRIORITY 
+shiftMatrixDown ,SHIFT MATRIX DOWN 
+shiftMatrixLeft ,SHIFT MATRIX LEFT 
+shiftMatrixRight ,SHIFT MATRIX RIGHT 
+shiftMatrixUp ,SHIFT MATRIX UP 
+setMatrixHeight ,SET MATRIX HEIGHT 
+setMatrixNormal ,SET MATRIX NORMAL 
+setMatrixTile ,SET MATRIX TILE 
+updateMatrix ,UPDATE MATRIX 
+matrixExist\(,MATRIX EXIST\(
+matrixPositionX\(,MATRIX POSITION X\(
+matrixPositionY\(,MATRIX POSITION Y\(
+matrixPositionZ\(,MATRIX POSITION Z\(
+matrixTileCount\(,MATRIX TILE COUNT\(
+matrixTilesExist\(,MATRIX TILES EXIST\(
+matrixWireframeState\(,MATRIX WIREFRAME STATE\(
+getGroundHeight\(,GET GROUND HEIGHT\(
+getMatrixHeight\(,GET MATRIX HEIGHT\(
+makeMemblock ,MAKE MEMBLOCK 
+makeMemblockFromBitmap ,MAKE MEMBLOCK FROM BITMAP 
+makeMemblockFromImage ,MAKE MEMBLOCK FROM IMAGE 
+makeMemblockFromSound ,MAKE MEMBLOCK FROM SOUND 
+makeMemblockFromMesh ,MAKE MEMBLOCK FROM MESH 
+deleteMemblock ,DELETE MEMBLOCK 
+copyMemblock ,COPY MEMBLOCK 
+makeBitmapFromMemblock ,MAKE BITMAP FROM MEMBLOCK 
+makeImageFromMemblock ,MAKE IMAGE FROM MEMBLOCK 
+makeSoundFromMemblock ,MAKE SOUND FROM MEMBLOCK 
+makeMeshFromMemblock ,MAKE MESH FROM MEMBLOCK 
+changeMeshFromMemblock ,CHANGE MESH FROM MEMBLOCK 
+writeMemblockByte ,WRITE MEMBLOCK BYTE 
+writeMemblockWord ,WRITE MEMBLOCK WORD 
+writeMemblockDword ,WRITE MEMBLOCK DWORD 
+writeMemblockFloat ,WRITE MEMBLOCK FLOAT 
+memblockExist\(,MEMBLOCK EXIST\(
+getMemblockPtr\(,GET MEMBLOCK PTR\(
+getMemblockSize\(,GET MEMBLOCK SIZE\(
+memblockByte\(,MEMBLOCK BYTE\(
+memblockWord\(,MEMBLOCK WORD\(
+memblockDword\(,MEMBLOCK DWORD\(
+memblockFloat\(,MEMBLOCK FLOAT\(
+defaultNetGame\(,DEFAULT NET GAME\(
+createNetGame ,CREATE NET GAME 
+joinNetGame ,JOIN NET GAME 
+freeNetGame,FREE NET GAME
+createNetPlayer ,CREATE NET PLAYER 
+freeNetPlayer ,FREE NET PLAYER 
+setNetConnection ,SET NET CONNECTION 
+performChecklistForNetConnections,PERFORM CHECKLIST FOR NET CONNECTIONS
+performChecklistForNetSessions,PERFORM CHECKLIST FOR NET SESSIONS
+performChecklistForNetPlayers,PERFORM CHECKLIST FOR NET PLAYERS
+sendNetMessageInteger ,SEND NET MESSAGE INTEGER 
+sendNetMessageFloat ,SEND NET MESSAGE FLOAT 
+sendNetMessageString ,SEND NET MESSAGE STRING 
+sendNetMessageMemblock ,SEND NET MESSAGE MEMBLOCK 
+sendNetMessageBitmap ,SEND NET MESSAGE BITMAP 
+sendNetMessageImage ,SEND NET MESSAGE IMAGE 
+sendNetMessageSound ,SEND NET MESSAGE SOUND 
+sendNetMessageMesh ,SEND NET MESSAGE MESH 
+getNetMessage,GET NET MESSAGE
+netMessageInteger\(,NET MESSAGE INTEGER\(
+netMessageFloat\(,NET MESSAGE FLOAT\(
+netMessageString$\(,NET MESSAGE STRING$\(
+netMessageMemblock ,NET MESSAGE MEMBLOCK 
+netMessageImage ,NET MESSAGE IMAGE 
+netMessageBitmap ,NET MESSAGE BITMAP 
+netMessageSound ,NET MESSAGE SOUND 
+netMessageMesh ,NET MESSAGE MESH 
+netGameExists\(,NET GAME EXISTS\(
+netMessageExists\(,NET MESSAGE EXISTS\(
+netMessagePlayerFrom\(,NET MESSAGE PLAYER FROM\(
+netMessagePlayerTo\(,NET MESSAGE PLAYER TO\(
+netMessageType\(,NET MESSAGE TYPE\(
+netGameLost\(,NET GAME LOST\(
+netGameNowHosting\(,NET GAME NOW HOSTING\(
+netBufferSize\(,NET BUFFER SIZE\(
+netPlayerDestroyed\(,NET PLAYER DESTROYED\(
+netPlayerCreated\(,NET PLAYER CREATED\(
+loadMusic ,LOAD MUSIC 
+loadCdmusic ,LOAD CDMUSIC 
+deleteMusic ,DELETE MUSIC 
+playMusic ,PLAY MUSIC 
+loopMusic ,LOOP MUSIC 
+stopMusic ,STOP MUSIC 
+pauseMusic ,PAUSE MUSIC 
+resumeMusic ,RESUME MUSIC 
+setMusicSpeed ,SET MUSIC SPEED 
+setMusicVolume ,SET MUSIC VOLUME 
+musicExist\(,MUSIC EXIST\(
+musicPlaying\(,MUSIC PLAYING\(
+musicLooping\(,MUSIC LOOPING\(
+musicPaused\(,MUSIC PAUSED\(
+musicSpeed\(,MUSIC SPEED\(
+musicVolume\(,MUSIC VOLUME\(
+getNumberOfCdTracks\(,GET NUMBER OF CD TRACKS\(
+makeParticles ,MAKE PARTICLES 
+makeSnowParticles ,MAKE SNOW PARTICLES 
+makeFireParticles ,MAKE FIRE PARTICLES 
+deleteParticles ,DELETE PARTICLES 
+showParticles ,SHOW PARTICLES 
+hideParticles ,HIDE PARTICLES 
+positionParticles ,POSITION PARTICLES 
+positionParticleEmissions ,POSITION PARTICLE EMISSIONS 
+rotateParticles ,ROTATE PARTICLES 
+setVector3ToParticlesPosition ,SET VECTOR3 TO PARTICLES POSITION 
+setVector3ToParticlesRotation ,SET VECTOR3 TO PARTICLES ROTATION 
+colorParticles ,COLOR PARTICLES 
+setParticleEmissions ,SET PARTICLE EMISSIONS 
+setParticleVelocity ,SET PARTICLE VELOCITY 
+setParticleGravity ,SET PARTICLE GRAVITY 
+setParticleSpeed ,SET PARTICLE SPEED 
+setParticleChaos ,SET PARTICLE CHAOS 
+setParticleFloor ,SET PARTICLE FLOOR 
+setParticleLife ,SET PARTICLE LIFE 
+ghostParticlesOn ,GHOST PARTICLES ON 
+ghostParticlesOff ,GHOST PARTICLES OFF 
+particlesExist\(,PARTICLES EXIST\(
+particlesPositionX\(,PARTICLES POSITION X\(
+particlesPositionY\(,PARTICLES POSITION Y\(
+particlesPositionZ\(,PARTICLES POSITION Z\(
+loadSound ,LOAD SOUND 
+load3dsound ,LOAD 3DSOUND 
+saveSound ,SAVE SOUND 
+deleteSound ,DELETE SOUND 
+cloneSound ,CLONE SOUND 
+playSound ,PLAY SOUND 
+loopSound ,LOOP SOUND 
+stopSound ,STOP SOUND 
+pauseSound ,PAUSE SOUND 
+resumeSound ,RESUME SOUND 
+positionSound ,POSITION SOUND 
+recordSound ,RECORD SOUND 
+stopRecordingSound,STOP RECORDING SOUND
+setSoundPan ,SET SOUND PAN 
+setSoundSpeed ,SET SOUND SPEED 
+setSoundVolume ,SET SOUND VOLUME 
+positionListener ,POSITION LISTENER 
+rotateListener ,ROTATE LISTENER 
+scaleListener ,SCALE LISTENER 
+soundExist\(,SOUND EXIST\(
+soundType\(,SOUND TYPE\(
+soundPlaying\(,SOUND PLAYING\(
+soundLooping\(,SOUND LOOPING\(
+soundPaused\(,SOUND PAUSED\(
+soundPositionX\(,SOUND POSITION X\(
+soundPositionY\(,SOUND POSITION Y\(
+soundPositionZ\(,SOUND POSITION Z\(
+soundPan\(,SOUND PAN\(
+soundSpeed\(,SOUND SPEED\(
+soundVolume\(,SOUND VOLUME\(
+listenerPositionX\(,LISTENER POSITION X\(
+listenerPositionY\(,LISTENER POSITION Y\(
+listenerPositionZ\(,LISTENER POSITION Z\(
+listenerAngleX\(,LISTENER ANGLE X\(
+listenerAngleY\(,LISTENER ANGLE Y\(
+listenerAngleZ\(,LISTENER ANGLE Z\(
+setSprite ,SET SPRITE 
+deleteSprite ,DELETE SPRITE 
+cloneSprite ,CLONE SPRITE 
+showSprite ,SHOW SPRITE 
+hideSprite ,HIDE SPRITE 
+hideAllSprites,HIDE ALL SPRITES
+showAllSprites,SHOW ALL SPRITES
+moveSprite ,MOVE SPRITE 
+offsetSprite ,OFFSET SPRITE 
+scaleSprite ,SCALE SPRITE 
+sizeSprite ,SIZE SPRITE 
+stretchSprite ,STRETCH SPRITE 
+rotateSprite ,ROTATE SPRITE 
+flipSprite ,FLIP SPRITE 
+mirrorSprite ,MIRROR SPRITE 
+pasteSprite ,PASTE SPRITE 
+createAnimatedSprite ,CREATE ANIMATED SPRITE 
+playSprite ,PLAY SPRITE 
+setSpriteFrame ,SET SPRITE FRAME 
+setSpritePriority ,SET SPRITE PRIORITY 
+setSpriteImage ,SET SPRITE IMAGE 
+setSpriteAlpha ,SET SPRITE ALPHA 
+setSpriteDiffuse ,SET SPRITE DIFFUSE 
+setSpriteTextureCoord ,SET SPRITE TEXTURE COORD 
+spriteExist\(,SPRITE EXIST\(
+spriteX\(,SPRITE X\(
+spriteY\(,SPRITE Y\(
+spriteOffsetX\(,SPRITE OFFSET X\(
+spriteOffsetY\(,SPRITE OFFSET Y\(
+spriteScaleX\(,SPRITE SCALE X\(
+spriteScaleY\(,SPRITE SCALE Y\(
+spriteWidth\(,SPRITE WIDTH\(
+spriteHeight\(,SPRITE HEIGHT\(
+spriteImage\(,SPRITE IMAGE\(
+spriteMirrored\(,SPRITE MIRRORED\(
+spriteFlipped\(,SPRITE FLIPPED\(
+spriteHit\(,SPRITE HIT\(
+spriteCollision\(,SPRITE COLLISION\(
+spriteAngle\(,SPRITE ANGLE\(
+spriteFrame\(,SPRITE FRAME\(
+spriteAlpha\(,SPRITE ALPHA\(
+spriteRed\(,SPRITE RED\(
+spriteGreen\(,SPRITE GREEN\(
+spriteBlue\(,SPRITE BLUE\(
+spriteVisible\(,SPRITE VISIBLE\(
+loadDll ,LOAD DLL 
+deleteDll ,DELETE DLL 
+callDll ,CALL DLL 
+dllExist\(,DLL EXIST\(
+dllCallExist\(,DLL CALL EXIST\(
+emptyChecklist,EMPTY CHECKLIST
+checklistQuantity\(,CHECKLIST QUANTITY\(
+checklistString$\(,CHECKLIST STRING$\(
+checklistValueA\(,CHECKLIST VALUE A\(
+checklistValueB\(,CHECKLIST VALUE B\(
+checklistValueC\(,CHECKLIST VALUE C\(
+checklistValueD\(,CHECKLIST VALUE D\(
+disableEscapekey,DISABLE ESCAPEKEY
+enableEscapekey,ENABLE ESCAPEKEY
+disableSystemkeys,DISABLE SYSTEMKEYS
+enableSystemkeys,ENABLE SYSTEMKEYS
+exitPrompt ,EXIT PROMPT 
+systemTmemAvailable\(,SYSTEM TMEM AVAILABLE\(
+systemDmemAvailable\(,SYSTEM DMEM AVAILABLE\(
+systemSmemAvailable\(,SYSTEM SMEM AVAILABLE\(
+centerText ,CENTER TEXT 
+setTextFont ,SET TEXT FONT 
+setTextSize ,SET TEXT SIZE 
+setTextOpaque,SET TEXT OPAQUE
+setTextTransparent,SET TEXT TRANSPARENT
+setTextToNormal,SET TEXT TO NORMAL
+setTextToItalic,SET TEXT TO ITALIC
+setTextToBold,SET TEXT TO BOLD
+setTextToBolditalic,SET TEXT TO BOLDITALIC
+performChecklistForFonts,PERFORM CHECKLIST FOR FONTS
+textBackgroundType\(,TEXT BACKGROUND TYPE\(
+textFont$\(,TEXT FONT$\(
+textSize\(,TEXT SIZE\(
+textStyle\(,TEXT STYLE\(
+textWidth\(,TEXT WIDTH\(
+textHeight\(,TEXT HEIGHT\(
+loadBsp ,LOAD BSP 
+deleteBsp,DELETE BSP
+setBspCamera ,SET BSP CAMERA 
+setBspCameraCollision ,SET BSP CAMERA COLLISION 
+setBspObjectCollision ,SET BSP OBJECT COLLISION 
+setBspCollisionThreshhold ,SET BSP COLLISION THRESHHOLD 
+setBspCollisionOff ,SET BSP COLLISION OFF 
+setBspCameraCollisionRadius ,SET BSP CAMERA COLLISION RADIUS 
+setBspObjectCollisionRadius ,SET BSP OBJECT COLLISION RADIUS 
+setBspCollisionHeightAdjustment ,SET BSP COLLISION HEIGHT ADJUSTMENT 
+setBspMultitexturingOn,SET BSP MULTITEXTURING ON
+setBspMultitexturingOff,SET BSP MULTITEXTURING OFF
+processBspCollision ,PROCESS BSP COLLISION 
+makeTerrain ,MAKE TERRAIN 
+deleteTerrain ,DELETE TERRAIN 
+positionTerrain ,POSITION TERRAIN 
+textureTerrain ,TEXTURE TERRAIN 
+bspCollisionHit\(,BSP COLLISION HIT\(
+bspCollisionX\(,BSP COLLISION X\(
+bspCollisionY\(,BSP COLLISION Y\(
+bspCollisionZ\(,BSP COLLISION Z\(
+terrainExist\(,TERRAIN EXIST\(
+terrainPositionX\(,TERRAIN POSITION X\(
+terrainPositionY\(,TERRAIN POSITION Y\(
+terrainPositionZ\(,TERRAIN POSITION Z\(
+getTerrainHeight\(,GET TERRAIN HEIGHT\(
+getTotalTerrainHeight\(,GET TOTAL TERRAIN HEIGHT\(
+\[,(
+\],)

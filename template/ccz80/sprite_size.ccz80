@@ -1,0 +1,7 @@
+//--- sprite setting
+asm{"_RG1SAV: equ #F3E0","ld a,(_RG1SAV)", // sprite size
+"and #fc", // x1
+//"or #2", // set 16x16
+"ld (_RG1SAV),a",
+"ld hl,#1b00","ld (__satblad),hl" // screen 1~3:#1b00/screen 4 #1e00
+}

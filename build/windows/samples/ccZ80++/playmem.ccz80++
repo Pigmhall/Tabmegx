@@ -1,0 +1,28 @@
+// background music test(playmem)
+include bios.ccz80++
+include sprite.ccz80++
+include music.ccz80++
+include Random.ccz80++
+include gtext.ccz80++
+include file.ccz80++
+
+class MainClass{
+ static int pos[]={0,256};
+
+ static void main(){
+  bios.color(15,0,0);
+  bios.screen(1);
+  file.load_ext("MUSI1.MPK",#3000);
+  
+  music.play(#3000+pos[0]);
+  
+  bios.print(0,5,"PUSH SPACE");
+  while(bios.strig(0)==0);
+  bios.print(0,6,"DONE");
+  music.stop();
+  music.play(#3000+pos[1]);
+  
+  file.save_ext("MUSI1.MP3",#3000,640);
+  
+ }
+}

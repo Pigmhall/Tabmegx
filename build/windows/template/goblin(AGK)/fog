@@ -1,0 +1,4 @@
+setFogMode(1);
+setFogRange(10,1000);
+setFogColor(255,0,0);
+setFogSunColor(0,255,0);

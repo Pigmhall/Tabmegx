@@ -1,0 +1,2 @@
+rand\(([^\)]*)\)##int(rnd(1)*($1))
+elsif##endif else if

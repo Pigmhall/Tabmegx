@@ -1,0 +1,30 @@
+include bios.ccz80++
+
+class MainClass{
+//-------------------- page 0(0000-3fff)
+//The variable with _p0 is put in page 0.
+static short sd_p0[]={1,2,3,4,5,6,7,8};
+
+//-------------------- page 3(c000-ffff)
+static short slt,a;
+static int i;
+
+//-------------------- MAIN
+static void main(){
+ //-- slot change
+ slt=(bios.rslreg()>>2)&3;
+ bios.enaslt(slt);
+
+ //-- screen
+ bios.color(15,0,0);
+ bios.screen(1);
+ 
+ //-- print page 0 data
+ for(i=0;i<8;i++){
+  a=bios.rdslt(&sd_p0+i,slt);
+  bios.vpoke(6144+i,48+a);}
+ 
+ //-- 
+ while(1); 
+ }
+}

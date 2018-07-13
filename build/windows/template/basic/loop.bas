@@ -1,0 +1,3 @@
+*lop
+
+goto *lop

@@ -1,0 +1,9 @@
+  //--- data
+  static short chptn[]={
+  };
+
+  //--- init
+  for(i=0;i<3;i++){
+   chr.chr(1+i,&chptn+i*16);
+   chr.chrcolor(1+i,&chptn+i*16+8);
+  }

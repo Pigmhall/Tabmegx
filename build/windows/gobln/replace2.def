@@ -1,0 +1,30 @@
+xor ([\w]*)=([^;]*);([^<]*)<([^;]*);[^ ]* :,for $1=$2 to $4-1:
+cf\(([\w]*)\x2c([\w]*)\x2c([\w]*)\);,tmp1=0:$3=-1:for tmp1=0 to $2:if $1[tmp1]=0 and $3=-1:$3=tmp1:endif:next:
+cleart\(([\w]*)\x2c([\w]*)\);,for i=0 to $2:$1[i]=0:next:
+setArray\(([\s\w]*)\x2c([\s\w]*)\x2c([\s\w\-\x2c]*)\);,restore _$1:for i=0 to $2:read $1[i]:next\n_$1:data $3
+rand\(([^\)]*)\),random(0,($1)-1)
+wrapvalue\(([^\)]*)\),mod($1,360)
+pops3\(([\w]*)\);,sx=$1x[i];sy=$1y[i];sz1=$1z[i];
+pushs3\(([\w]*)\);,$1x[i]=sx;$1y[i]=sy;$1z[i]=sz1;
+Sub ,function 
+return,exitfunction
+switch ,SELECT 
+default:,CASE DEFAULT:
+break;,ENDCASE
+\+\+([\w\[\]@#]*);,inc $1;
+--([\w\[\]@#]*);,dec $1;
+([\w\d\[\]@#]*)\+=([\w\d\[\]@\/#\.\*]*);,inc $1,$2;
+([\w\d\[\]@#]*)-=([\w\d\[\]@\/#\.\*]*);,dec $1,$2;
+;,:
+\\:,;
+==,=
+!=,<>
+&&, and 
+\|\|, or 
+%, mod 
+\\ mod ,%
+@,gw.
+\/\/,`
+\/\*[^\*]*\*\/, 
+\/\*,remstart:
+\*\/,remend:

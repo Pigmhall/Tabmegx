@@ -1,0 +1,63 @@
+// music.ccz80++
+//--- the functions for the management of music
+include String.ccz80++
+include bios.ccz80++
+
+class music{
+//--- load(MGS filename,bank[0-15])
+//--- loads the MGS file
+public static void load(int argument1,short argument2){
+ static short cmdhead[]={76,79,65,68,40,34,0};
+ static short cmdfoot[]={34,44,38,72,51,48,48,48,41,0};
+ String.Copy(bios.cmdbuf,&cmdhead);
+ String.Concat(bios.cmdbuf,argument1);
+ cmdfoot[5]=((argument2>9)?55:48)+argument2;
+ String.Concat(bios.cmdbuf,&cmdfoot);
+ bios.call();
+ }
+
+//--- play(bank number)
+//--- plays the music
+public static void play(short argument1){
+ static short cmdplay[]={66,71,77,79,78,40,38,72,51,48,48,48,41,0};
+ cmdplay[9]=((argument1>9)?55:48)+argument1;
+ bios.call(&cmdplay);
+ }
+
+//--- playMem(address)
+//--- plays the music from the ram address
+public static void playMem(int argument1){
+ String.Copy(bios.cmdbuf,"BGMON(");
+ String.IntToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ bios.call();}
+
+//--- stop()
+//--- stops the music
+public static void stop(){
+ bios.call("BGMOFF");}
+
+//--- stop(milliseconds)
+//--- fades out the music
+public static void stop(short argument1){
+ call("BGMOFF(",argument1);}
+
+//--- speed(percent)
+//--- changes the music speed
+public static void speed(short argument1){
+ call("BGMTMP(",argument1);} 
+
+//--- volume(percent)
+//--- changes the music volume
+public static void volume(short argument1){
+ call("BGMVOL(",argument1);} 
+
+static void call(int argument1,short argument2){
+ String.Copy(bios.cmdbuf,argument1);
+ String.ShortToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ bios.call();}
+
+}

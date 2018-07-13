@@ -1,0 +1,532 @@
+// Gold Fan / (2016 N.I)
+include bios.ccz80++
+include bitbuster.ccz80++
+include sprite.ccz80++
+include graphic.ccz80++
+include Random.ccz80++
+include Math.ccz80++
+include String.ccz80++
+
+class MainClass{
+//--- sprite pattern data
+ static short spptn[]={
+//-- me
+#07,#0F,#1F,#30,#02,#07,#03,#01,#00,#00,#60,#60,#07,#00,#00,#0E,#E0,#F0,#FC,#00,#D0,#F0,#E0,#80,#00,#00,#04,#0C,#E0,#00,#00,#70,
+#00,#00,#00,#0F,#1C,#08,#04,#00,#0F,#3F,#1F,#07,#00,#06,#06,#00,#00,#00,#00,#F8,#00,#00,#00,#00,#E0,#F0,#F8,#E0,#00,#60,#60,#00,
+#07,#0F,#1F,#30,#02,#07,#03,#01,#00,#00,#60,#60,#07,#00,#00,#0E,#E0,#F0,#FC,#00,#D0,#F0,#E0,#80,#00,#02,#06,#00,#F0,#08,#10,#00,
+#00,#00,#00,#0F,#1C,#08,#04,#00,#0F,#3F,#1F,#07,#00,#06,#06,#00,#00,#00,#00,#F8,#00,#00,#00,#00,#E0,#FC,#F8,#E0,#00,#70,#20,#00,
+#07,#0F,#1F,#30,#02,#07,#03,#01,#00,#60,#60,#00,#07,#10,#08,#00,#E0,#F0,#FC,#00,#D0,#F0,#E0,#80,#00,#00,#04,#0C,#E0,#00,#00,#70,
+#00,#00,#00,#0F,#1C,#08,#04,#00,#1F,#1F,#17,#07,#00,#0E,#04,#00,#00,#00,#00,#F8,#00,#00,#00,#00,#E0,#F0,#F8,#E0,#00,#60,#60,#00,
+#07,#0F,#3F,#00,#0B,#0F,#07,#01,#00,#00,#20,#30,#07,#00,#00,#0E,#E0,#F0,#F8,#0C,#40,#E0,#C0,#80,#00,#00,#06,#06,#E0,#00,#00,#70,
+#00,#00,#00,#1F,#00,#00,#00,#00,#07,#0F,#1F,#07,#00,#06,#06,#00,#00,#00,#00,#F0,#38,#10,#20,#00,#F0,#FC,#F8,#E0,#00,#60,#60,#00,
+#07,#0F,#3F,#00,#0B,#0F,#07,#01,#00,#40,#60,#00,#0F,#10,#08,#00,#E0,#F0,#F8,#0C,#40,#E0,#C0,#80,#00,#00,#06,#06,#E0,#00,#00,#70,
+#00,#00,#00,#1F,#00,#00,#00,#00,#07,#3F,#1F,#07,#00,#0E,#04,#00,#00,#00,#00,#F0,#38,#10,#20,#00,#F0,#FC,#F8,#E0,#00,#60,#60,#00,
+#07,#0F,#3F,#00,#0B,#0F,#07,#01,#00,#00,#20,#30,#07,#00,#00,#0E,#E0,#F0,#F8,#0C,#40,#E0,#C0,#80,#00,#06,#06,#00,#E0,#08,#10,#00,
+#00,#00,#00,#1F,#00,#00,#00,#00,#07,#0F,#1F,#07,#00,#06,#06,#00,#00,#00,#00,#F0,#38,#10,#20,#00,#F8,#F8,#E8,#E0,#00,#70,#20,#00,
+#07,#0F,#1F,#3F,#00,#00,#00,#01,#00,#00,#40,#60,#07,#00,#00,#0E,#E0,#F0,#F8,#FC,#00,#00,#00,#80,#06,#02,#00,#00,#E0,#08,#10,#00,
+#00,#00,#00,#00,#0F,#0F,#07,#00,#0F,#3F,#3F,#07,#00,#06,#06,#00,#00,#00,#00,#00,#F0,#F0,#E0,#00,#F8,#FC,#F0,#E0,#00,#70,#20,#00,
+#07,#0F,#1F,#3F,#00,#00,#00,#01,#60,#40,#00,#00,#07,#10,#08,#00,#E0,#F0,#F8,#FC,#00,#00,#00,#80,#00,#00,#02,#06,#E0,#00,#00,#70,
+#00,#00,#00,#00,#0F,#0F,#07,#00,#1F,#3F,#0F,#07,#00,#0E,#04,#00,#00,#00,#00,#00,#F0,#F0,#E0,#00,#F0,#FC,#FC,#E0,#00,#60,#60,#00,
+#07,#0F,#1F,#30,#02,#07,#03,#01,#60,#60,#00,#00,#07,#10,#08,#00,#E0,#F0,#FC,#00,#D0,#F0,#E0,#80,#04,#0C,#00,#00,#E0,#08,#10,#00,
+#00,#00,#00,#0F,#1C,#08,#04,#00,#1F,#1F,#0F,#07,#00,#0E,#04,#00,#00,#00,#00,#F8,#00,#00,#00,#00,#F8,#F0,#E0,#E0,#00,#70,#20,#00,
+#07,#0F,#3F,#00,#0B,#0F,#07,#01,#20,#30,#00,#00,#07,#10,#08,#00,#E0,#F0,#F8,#0C,#40,#E0,#C0,#80,#06,#06,#00,#00,#E0,#08,#10,#00,
+#00,#00,#00,#1F,#00,#00,#00,#00,#1F,#0F,#07,#07,#00,#0E,#04,#00,#00,#00,#00,#F0,#38,#10,#20,#00,#F8,#F8,#F0,#E0,#00,#70,#20,#00,
+#07,#0F,#1F,#30,#05,#07,#07,#01,#00,#00,#60,#60,#07,#00,#00,#0E,#E0,#F0,#F8,#0C,#A0,#E0,#E0,#80,#00,#00,#06,#06,#E0,#00,#00,#70,
+#00,#00,#00,#0F,#18,#08,#00,#00,#0F,#1F,#1F,#07,#00,#06,#06,#00,#00,#00,#00,#F0,#18,#10,#00,#00,#F0,#F8,#F8,#E0,#00,#60,#60,#00,
+#07,#0F,#1F,#30,#05,#07,#07,#61,#60,#00,#00,#00,#07,#00,#00,#0E,#E0,#F0,#F8,#0C,#A0,#E0,#E0,#86,#06,#00,#00,#00,#E0,#00,#00,#70,
+#00,#00,#00,#0F,#18,#08,#00,#00,#1F,#3F,#07,#07,#00,#06,#06,#00,#00,#00,#00,#F0,#18,#10,#00,#00,#F8,#FC,#E0,#E0,#00,#60,#60,#00,
+//--enmemy(24~)
+#07,#0F,#1F,#18,#1C,#18,#1C,#01,#0F,#3F,#1F,#07,#07,#07,#06,#0E,#E0,#F0,#F0,#00,#00,#00,#00,#80,#E0,#F0,#F8,#E0,#E0,#E0,#60,#70,
+#00,#00,#00,#07,#06,#07,#03,#00,#00,#03,#61,#60,#00,#00,#00,#00,#00,#00,#00,#F0,#D0,#F0,#E0,#00,#00,#C0,#84,#0C,#00,#00,#00,#00,
+#07,#0F,#1F,#18,#1C,#18,#1C,#01,#0F,#3F,#1F,#07,#07,#07,#06,#0E,#E0,#F0,#F0,#00,#00,#00,#00,#80,#E0,#FC,#F8,#E0,#F0,#F0,#20,#00,
+#00,#00,#00,#07,#06,#07,#03,#00,#00,#03,#61,#60,#00,#00,#00,#00,#00,#00,#00,#F0,#D0,#F0,#E0,#00,#00,#C2,#86,#00,#00,#08,#10,#00,
+#07,#0F,#1F,#18,#1C,#18,#1C,#01,#1F,#1F,#17,#07,#07,#0F,#04,#00,#E0,#F0,#F0,#00,#00,#00,#00,#80,#E0,#F0,#F8,#E0,#E0,#E0,#60,#70,
+#00,#00,#00,#07,#06,#07,#03,#00,#00,#63,#61,#00,#00,#10,#08,#00,#00,#00,#00,#F0,#D0,#F0,#E0,#00,#00,#C0,#84,#0C,#00,#00,#00,#00,
+#07,#0F,#0F,#00,#00,#00,#00,#01,#07,#0F,#1F,#07,#07,#07,#06,#0E,#E0,#F0,#F8,#18,#38,#18,#38,#80,#F0,#FC,#F8,#E0,#E0,#E0,#60,#70,
+#00,#00,#00,#0F,#0B,#0F,#07,#00,#00,#03,#21,#30,#00,#00,#00,#00,#00,#00,#00,#E0,#60,#E0,#C0,#00,#00,#C0,#86,#06,#00,#00,#00,#00,
+#07,#0F,#0F,#00,#00,#00,#00,#01,#07,#3F,#1F,#07,#0F,#0F,#04,#00,#E0,#F0,#F8,#18,#38,#18,#38,#80,#F0,#FC,#F8,#E0,#E0,#E0,#60,#70,
+#00,#00,#00,#0F,#0B,#0F,#07,#00,#00,#43,#61,#00,#00,#10,#08,#00,#00,#00,#00,#E0,#60,#E0,#C0,#00,#00,#C0,#86,#06,#00,#00,#00,#00,
+#07,#0F,#0F,#00,#00,#00,#00,#01,#07,#0F,#1F,#07,#07,#07,#06,#0E,#E0,#F0,#F8,#18,#38,#18,#38,#80,#F8,#F8,#E8,#E0,#E0,#F0,#20,#00,
+#00,#00,#00,#0F,#0B,#0F,#07,#00,#00,#03,#21,#30,#00,#00,#00,#00,#00,#00,#00,#E0,#60,#E0,#C0,#00,#00,#C6,#86,#00,#00,#08,#10,#00,
+#07,#0F,#0F,#0F,#0F,#0F,#0C,#01,#0F,#3F,#3F,#07,#07,#07,#06,#0E,#E0,#F0,#F0,#F0,#F0,#F0,#30,#80,#F8,#FC,#F0,#E0,#E0,#F0,#20,#00,
+#00,#00,#00,#00,#00,#00,#07,#00,#00,#00,#40,#60,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#E0,#00,#06,#02,#00,#00,#00,#08,#10,#00,
+#07,#0F,#0F,#0F,#0F,#0F,#0C,#01,#1F,#3F,#0F,#07,#07,#0F,#04,#00,#E0,#F0,#F0,#F0,#F0,#F0,#30,#80,#F0,#FC,#FC,#E0,#E0,#E0,#60,#70,
+#00,#00,#00,#00,#00,#00,#07,#00,#60,#40,#00,#00,#00,#10,#08,#00,#00,#00,#00,#00,#00,#00,#E0,#00,#00,#00,#02,#06,#00,#00,#00,#00
+};
+
+//--- sprite color data
+ static short spcol[]={
+#05,#03,#05,#05,#02,#02,#02,#02,#02,#02,#02,#02,#05,#03,#03,#03,
+#40,#40,#40,#47,#47,#47,#47,#40,#45,#45,#45,#47,#40,#45,#45,#40,
+#01,#01,#01,#01,#01,#01,#01,#02,#01,#01,#01,#01,#01,#01,#01,#09,
+#40,#40,#40,#43,#42,#42,#42,#40,#42,#42,#42,#42,#42,#49,#49,#40
+};
+
+//--- palette data
+static short colors[]={0,0,0, 7,4,7, 7,6,5, 4,4,7, 3,2,0, 4,7,1, 5,4,0, 7,3,2, 7,6,2, 0,5,2, 4,5,6, 3,6,4, 1,4,7, 4,4,3, 6,6,5, 7,7,7};
+
+//--- font graphic data(compressed)
+static short gfontw[]={// 498 bytes,
+// 498 bytes,
+#6A,#00,#00,#FD,#02,#1C,#0F,#DF,#D0,#03,#69,#0B,#FF,#D0,#0F,#99,#03,#04,#C6,#03,#71,#0B,#17,#9F,#00,#47,#3F,#91,#0F,#FF,#0C,#53,#3F,#03,#FD,#2F,#7C,#03,#AD,#0F,#04,#FB,#3F,#59,#FF,#3B,#37,#C7,#73,#5D,#03,#F1,#0F,#94,#1A,#FD,#F8,#38,#BC,#06,#B9,#7F,#78,#D0,#6F,#A3,#00,#C7,#CA,#D7,#35,#FF,#13,#D7,#07,#5C,#1C,#F8,#00,#F1,#1F,#37,#9C,#2E,#75,#1B,#7F,#F6,#7B,#0F,#47,#C3,#34,#03,#3B,#FD,#E3,#03,#23,#C2,#FF,#3C,#FB,#7A,#79,#FD,#7E,#47,#BF,#97,#0B,#19,#1C,#3E,#DC,#FF,#BC,#1E,#3F,#53,#92,#F5,#FC,#00,#F1,#F2,#ED,#D7,#1E,
+#1B,#07,#0B,#C6,#20,#4B,#87,#0E,#FF,#07,#7C,#17,#3C,#30,#39,#75,#E2,#2A,#EB,#37,#01,#23,#8B,#9E,#01,#5C,#00,#13,#4B,#F2,#7E,#01,#32,#E4,#E3,#D7,#2D,#76,#33,#0F,#9E,#F3,#A5,#9C,#A9,#C3,#62,#DB,#3B,#CF,#44,#3F,#09,#BB,#6B,#37,#63,#9F,#BE,#41,#25,#D7,#BD,#70,#96,#FB,#23,#C3,#B8,#D7,#F3,#7B,#FD,#7E,#CF,#80,#85,#AB,#6F,#57,#7B,#08,#A3,#4C,#F8,#73,#C7,#BB,#3E,#3F,#3E,#7F,#9D,#1F,#C7,#9E,#84,#D4,#F5,#B7,#1D,#78,#1F,#53,#FF,#5C,#03,#47,#FF,#94,#FF,#B7,#4F,#B2,#EB,#DC,#93,#70,#FD,#9F,#97,#69,#FB,#F3,#97,#FF,#2A,#80,#7C,
+#F9,#FB,#F7,#9F,#FF,#39,#AF,#61,#FF,#7B,#CC,#8F,#79,#CF,#DF,#1C,#1B,#4F,#C9,#8F,#09,#7E,#1F,#0A,#DF,#A3,#DB,#B7,#5E,#0B,#6F,#F6,#C6,#BB,#7C,#A5,#93,#65,#97,#8C,#4A,#63,#DF,#A3,#5E,#25,#5B,#3B,#26,#CC,#F1,#B8,#CB,#D3,#87,#3F,#72,#E7,#DB,#FD,#3F,#C6,#8E,#48,#8B,#F3,#E6,#3F,#CB,#36,#87,#F8,#8E,#C7,#BB,#3F,#BE,#C2,#F7,#3F,#03,#8A,#BF,#6A,#EB,#38,#F9,#7F,#29,#87,#CB,#7F,#CE,#B7,#BB,#78,#00,#47,#C7,#FF,#DE,#FD,#8F,#FF,#2F,#3F,#39,#C3,#6E,#FF,#5D,#E3,#8B,#89,#FF,#72,#B6,#AF,#F9,#1B,#F1,#3B,#FD,#00,#FD,#77,#4B,#0F,#AF,
+#55,#8B,#DF,#01,#C7,#9F,#5E,#14,#B3,#E5,#92,#5C,#FA,#01,#D7,#F3,#7F,#17,#04,#A3,#B1,#D3,#9E,#4E,#DF,#0C,#7D,#25,#FD,#3F,#E5,#CF,#9B,#C3,#66,#C6,#DB,#B7,#DF,#08,#BF,#EA,#BF,#5B,#DF,#FB,#0E,#01,#E7,#B0,#AB,#CB,#70,#EF,#D7,#3B,#D2,#72,#A6,#8F,#7C,#7C,#3C,#77,#5C,#FD,#07,#FA,#3B,#3E,#FD,#3F,#29,#DB,#F0,#F5,#3F,#AD,#E7,#C7,#9F,#3F,#D3,#73,#F3,#3F,#AF,#C3,#38,#AF,#F3,#97,#D3,#39,#FF,#71,#9F,#87,#1E,#CF,#EF,#00,#F6,#FF,#00,#FF,#E0};
+
+//--- bricks graphic data(compressed)
+static short gersrng[]={
+// 261 bytes,
+#02,#06,#88,#80,#00,#00,#08,#04,#1A,#88,#88,#00,#07,#88,#D9,#0E,#00,#04,#0D,#BF,#00,#21,#66,#66,#1A,#82,#06,#86,#88,#07,#6B,#80,#0D,#68,#06,#89,#10,#68,#2F,#F3,#AC,#46,#22,#4E,#1D,#68,#68,#46,#2F,#1C,#44,#40,#5F,#3E,#44,#28,#0B,#72,#7C,#83,#46,#46,#2F,#61,#64,#40,#46,#60,#3D,#BF,#57,#46,#58,#28,#86,#00,#8B,#91,#44,#88,#A7,#06,#48,#27,#47,#44,#48,#28,#C2,#08,#8E,#D3,#6A,#2F,#00,#86,#2A,#21,#00,#9D,#58,#44,#27,#BE,#04,#58,#3D,#56,#E6,#2F,#EB,#37,#23,#63,#AD,#E1,#E1,#58,#80,#73,#CE,#56,#EE,#06,#60,#F4,#1A,#40,#8F,
+#B1,#93,#1D,#9C,#58,#F4,#5F,#8F,#E1,#A7,#2F,#9C,#58,#F4,#5F,#9F,#76,#08,#36,#2B,#04,#75,#99,#C1,#39,#5F,#D4,#60,#88,#06,#88,#26,#86,#80,#9D,#9E,#D5,#7E,#00,#51,#44,#64,#64,#5F,#E5,#35,#94,#2B,#D1,#63,#48,#63,#8F,#37,#8E,#BB,#69,#C3,#E3,#5F,#8E,#2F,#27,#E4,#89,#DF,#E1,#06,#80,#2E,#1F,#66,#23,#64,#1E,#16,#44,#04,#3B,#A6,#64,#07,#60,#2F,#4E,#07,#48,#61,#22,#A5,#F8,#66,#F5,#68,#44,#2B,#6A,#3B,#44,#07,#62,#40,#13,#64,#06,#E2,#2F,#B1,#38,#97,#84,#96,#29,#C9,#2F,#38,#44,#07,#CA,#44,#EF,#9E,#8E,#00,#BF,#00,#FF,#E0};
+
+//--- title graphic data(compressed)
+ static short gtit[]={
+// 233 bytes,
+#18,#00,#00,#88,#00,#80,#4C,#00,#00,#08,#07,#CE,#06,#0D,#77,#0C,#0E,#8E,#18,#BA,#14,#DD,#27,#17,#E2,#0F,#0E,#EE,#11,#04,#EF,#07,#2E,#8E,#09,#FC,#0B,#79,#27,#CE,#36,#29,#79,#12,#F1,#03,#F2,#39,#E3,#0E,#0B,#CA,#85,#3A,#EB,#39,#1D,#8F,#60,#0E,#4A,#FD,#44,#23,#96,#87,#80,#39,#9A,#88,#A0,#3C,#2E,#05,#5F,#A3,#A3,#C7,#51,#C3,#39,#B7,#00,#39,#CA,#00,#FB,#39,#E3,#D3,#A8,#98,#EB,#01,#7F,#39,#19,#88,#39,#F1,#11,#66,#60,#0A,#06,#66,#00,#5B,#03,#23,#05,#BB,#11,#09,#CF,#04,#3C,#06,#32,#06,#14,#24,#E6,#10,#20,#C7,#30,#60,#27,
+#3B,#1A,#39,#F8,#79,#00,#39,#E2,#44,#61,#40,#0B,#04,#44,#02,#BC,#08,#F3,#11,#0F,#CF,#14,#3D,#06,#E7,#18,#09,#18,#07,#44,#EF,#0B,#30,#C3,#04,#78,#03,#F0,#23,#F1,#39,#F0,#11,#EB,#39,#0B,#8D,#14,#EF,#03,#5A,#8F,#5D,#1F,#39,#95,#04,#35,#DA,#44,#84,#3B,#78,#40,#07,#78,#16,#7B,#39,#3C,#44,#39,#72,#0C,#06,#8E,#B2,#79,#40,#DE,#00,#0C,#3C,#38,#77,#09,#05,#1C,#40,#04,#6E,#2F,#3D,#FF,#00,#FF,#C0};
+
+//--- graphic data
+static short gradata[]={
+// door(12)
+#00,#AA,#AA,#AA,#AA,#AA,#AA,#00,#0A,#DD,#DD,#DD,#DD,#DD,#DD,#A0,#AD,#D0,#00,#00,#00,#00,#0D,#DA,#AD,#00,#00,#00,#00,#00,#00,#DA,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#A0,#00,#00,#00,#00,#00,#00,#0A,#D0,#00,#00,#00,#00,#00,#00,#0D,#99,#00,#00,#00,#00,#00,#00,#99,#99,#00,#00,#00,#00,#00,#00,#99,
+// gold(13)
+#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#06,#80,#00,#00,#00,#00,#00,#00,#68,#82,#00,#00,#00,#00,#00,#06,#86,#28,#20,#00,#00,#00,#00,#08,#88,#82,#80,#00,#00,#00,#00,#86,#88,#28,#28,#00,#00,#00,#00,#68,#28,#88,#82,#00,#00,#00,#06,#88,#88,#88,#28,#20,#00,#00,#08,#68,#88,#28,#88,#80,#00,#00,#86,#88,#88,#88,#88,#28,#00,#00,#68,#68,#88,#82,#82,#82,#00,#06,#86,#86,#86,#88,#88,#28,#20,#08,#68,#68,#68,#68,#68,#68,#60,
+// ladder(14)
+#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#FF,#FF,#FF,#FF,#FF,#FF,#F0,#0D,#FD,#DD,#DD,#DD,#DD,#DD,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#FF,#FF,#FF,#FF,#FF,#FF,#F0,#0D,#FD,#DD,#DD,#DD,#DD,#DD,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#FF,#FF,#FF,#FF,#FF,#FF,#F0,#0D,#FD,#DD,#DD,#DD,#DD,#DD,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,#0D,#FF,#FF,#FF,#FF,#FF,#FF,#F0,#0D,#FD,#DD,#DD,#DD,#DD,#DD,#F0,#0D,#F0,#00,#00,#00,#00,#0D,#F0,
+// ladder(15)
+#00,#00,#BB,#09,#B0,#00,#00,#00,#00,#0B,#99,#99,#B0,#00,#00,#00,#00,#B9,#99,#49,#B0,#00,#00,#00,#00,#00,#00,#09,#B0,#BB,#B0,#00,#00,#00,#B0,#09,#99,#99,#BB,#B0,#00,#BB,#BB,#B9,#04,#99,#90,#00,#0B,#B9,#99,#B9,#00,#00,#00,#00,#00,#00,#94,#B9,#B0,#00,#00,#00,#00,#00,#00,#09,#BB,#BB,#B0,#00,#00,#00,#00,#09,#49,#9B,#BB,#00,#00,#0B,#B0,#94,#09,#99,#90,#00,#0B,#BB,#9B,#9B,#00,#00,#00,#00,#00,#99,#49,#99,#B0,#00,#00,#00,#00,#00,#04,#49,#B0,#BB,#B0,#00,#00,#00,#00,#09,#49,#99,#BB,#B0,#00,#00,#00,#04,#94,#99,#90,#00,
+// brick(16)
+#06,#88,#88,#88,#88,#88,#88,#80,#66,#66,#66,#86,#86,#86,#86,#88,#46,#66,#66,#66,#66,#68,#68,#68,#46,#66,#66,#66,#86,#66,#66,#88,#46,#66,#66,#66,#66,#86,#68,#68,#46,#66,#66,#66,#66,#66,#66,#88,#46,#66,#66,#66,#66,#68,#66,#68,#44,#66,#66,#66,#66,#66,#66,#88,#46,#66,#66,#66,#66,#66,#86,#68,#44,#66,#46,#66,#66,#66,#66,#88,#46,#66,#66,#66,#66,#66,#66,#68,#44,#66,#66,#46,#66,#66,#66,#68,#46,#46,#46,#66,#64,#66,#66,#68,#44,#64,#64,#66,#66,#66,#46,#66,#44,#46,#46,#46,#46,#46,#66,#66,#04,#44,#44,#44,#44,#44,#44,#40,
+// conc(17)
+#DF,#FF,#FF,#FF,#FF,#FF,#FF,#FE,#DD,#FF,#FF,#FF,#FF,#FF,#FF,#EF,#DD,#EE,#EE,#EE,#EE,#EE,#EE,#FF,#DD,#ED,#DD,#DD,#DD,#DD,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#ED,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#EE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#FE,#EE,#EE,#EE,#DE,#FF,#DD,#EF,#FF,#FF,#FF,#FF,#DE,#FF,#DD,#EE,#EE,#EE,#EE,#EE,#EE,#FF,#DE,#DD,#DD,#DD,#DD,#DD,#DD,#DF,#ED,#DD,#DD,#DD,#DD,#DD,#DD,#DD
+  };
+
+//--- stage data
+ static short sd[]={#14,#00,#66,#00,#BF,#00,#18,#01,#75,#01,#CC,#01,#28,#02,#8E,#02,#ED,#02,#50,#03,
+//0
+#7B,#11,#00,#82,#00,#0C,#00,#00,#0D,#00,#35,#00,#21,#04,#00,#12,#C3,#0F,#18,#93,#10,#10,#0F,#51,#00,#00,#0F,#00,#22,#95,#0A,#1F,#11,#63,#0F,#0E,#22,#BC,#0D,#6B,#00,#0F,#00,#22,#C1,#00,#0F,#E3,#2C,#78,#48,#E5,#1A,#2C,#4F,#AE,#0F,#4F,#73,#0E,#6B,#6E,#5E,#0F,#F6,#4A,#02,#E9,#0F,#20,#04,#6C,#13,#90,#5B,#55,#AE,#1F,#07,#00,#FF,#FC,
+//1
+#7B,#11,#00,#83,#00,#0D,#0D,#21,#00,#00,#5B,#0D,#08,#0F,#37,#0F,#13,#00,#1C,#0E,#1C,#67,#0F,#1B,#0B,#0C,#0F,#24,#8D,#0F,#31,#0D,#00,#23,#10,#18,#BA,#22,#0F,#53,#10,#00,#0F,#00,#04,#4E,#10,#00,#2F,#AB,#0A,#23,#0F,#2D,#50,#0F,#5B,#10,#2A,#2E,#18,#99,#29,#0F,#AE,#0D,#5F,#33,#24,#72,#3A,#6F,#B9,#28,#4C,#D1,#4F,#00,#20,#0D,#7B,#71,#34,#00,#F1,#FF,#00,#FF,#C0,
+//2
+#7B,#11,#00,#82,#00,#00,#11,#0D,#0D,#04,#CE,#06,#04,#27,#0C,#0F,#14,#16,#13,#16,#A3,#0E,#0A,#10,#0F,#18,#AA,#09,#00,#61,#0E,#1A,#0F,#20,#1D,#8D,#00,#00,#6A,#21,#1F,#0F,#15,#66,#21,#19,#08,#72,#4F,#0F,#66,#00,#0D,#21,#F1,#37,#0F,#AD,#0D,#2E,#CD,#37,#55,#EE,#75,#15,#CE,#2E,#0E,#39,#1E,#36,#0F,#0C,#32,#37,#E1,#65,#10,#09,#6F,#18,#20,#5E,#00,#BF,#00,#FF,#F0,
+//3
+#7B,#11,#00,#B1,#00,#00,#0D,#05,#C6,#00,#E1,#0F,#0D,#00,#15,#D6,#17,#20,#21,#09,#0D,#10,#0F,#21,#9C,#12,#0D,#1C,#B3,#10,#02,#03,#09,#11,#0F,#01,#0D,#0F,#9B,#12,#19,#C4,#0F,#10,#A9,#26,#0C,#47,#11,#40,#CD,#0F,#53,#86,#0F,#10,#2B,#B3,#20,#26,#2D,#33,#0A,#0F,#9D,#5B,#CD,#2D,#0F,#75,#00,#3F,#02,#5B,#0D,#44,#0F,#C3,#11,#2A,#12,#0D,#00,#0C,#14,#B7,#0F,#7F,#00,#DB,#00,#FF,#FE,
+//4
+#7B,#11,#00,#8D,#00,#0D,#0D,#02,#EB,#00,#0F,#17,#10,#00,#16,#19,#0D,#17,#6B,#0F,#20,#19,#D3,#12,#66,#00,#0C,#1F,#2C,#21,#02,#0F,#4E,#10,#0C,#0E,#31,#06,#11,#0F,#11,#07,#E3,#34,#0E,#20,#17,#21,#02,#0F,#2D,#0F,#1A,#D6,#1F,#0F,#38,#EF,#06,#70,#0B,#11,#1E,#76,#78,#16,#69,#10,#59,#0F,#10,#78,#CE,#16,#69,#0F,#0D,#0F,#94,#1B,#6C,#9E,#00,#DF,#00,#FF,#F0,
+//5
+#7B,#11,#00,#81,#00,#00,#0D,#0C,#0D,#21,#04,#66,#07,#03,#63,#0F,#0F,#15,#52,#0F,#07,#10,#00,#73,#0F,#0F,#17,#5B,#0F,#1F,#0F,#DD,#03,#1F,#AE,#00,#1F,#E5,#37,#20,#04,#1E,#91,#01,#0F,#21,#39,#87,#10,#11,#39,#15,#06,#00,#07,#65,#0F,#23,#20,#63,#13,#11,#61,#8C,#13,#AC,#3A,#16,#0A,#DC,#45,#46,#EA,#6F,#2E,#A6,#12,#13,#21,#0B,#5A,#44,#09,#0D,#E7,#16,#00,#E1,#FF,#00,#FF,#80,
+//6
+#7B,#11,#00,#A3,#00,#00,#0D,#00,#04,#B4,#00,#0F,#0D,#13,#0D,#20,#0E,#03,#0F,#18,#56,#11,#13,#20,#35,#10,#03,#0F,#20,#AB,#0D,#13,#16,#14,#10,#0A,#02,#0F,#56,#10,#00,#23,#11,#09,#11,#0C,#10,#05,#10,#2F,#2D,#0D,#14,#13,#DD,#2B,#00,#CC,#31,#1F,#E3,#2F,#49,#89,#01,#0F,#43,#C6,#5F,#B7,#00,#0F,#41,#46,#0F,#21,#10,#5E,#A2,#00,#03,#21,#0E,#1F,#D6,#12,#0D,#3E,#E1,#0F,#0D,#0E,#51,#96,#02,#0A,#7B,#00,#FF,#00,#FF,#C0,
+//7
+#7B,#11,#00,#A0,#00,#00,#21,#00,#0D,#0D,#B0,#05,#09,#10,#00,#8A,#0F,#0D,#0F,#06,#00,#4B,#11,#05,#11,#15,#0F,#56,#10,#09,#00,#EB,#0F,#11,#02,#6C,#1A,#1C,#33,#0C,#20,#15,#33,#37,#2F,#1C,#71,#47,#0E,#35,#99,#37,#2F,#86,#10,#0E,#2C,#B5,#0E,#19,#10,#4F,#BB,#15,#3B,#C6,#50,#71,#1F,#07,#96,#1B,#1E,#71,#5F,#3C,#B5,#07,#01,#7C,#AE,#0D,#7F,#31,#18,#21,#8C,#1D,#C7,#AE,#C1,#00,#FF,#FF,#00,
+//8
+#7B,#11,#00,#83,#00,#0E,#00,#0D,#00,#00,#12,#0C,#05,#11,#05,#B1,#0F,#0E,#10,#13,#15,#0D,#0F,#09,#02,#0A,#6B,#1F,#10,#0F,#0B,#0E,#0F,#04,#0F,#38,#2F,#51,#21,#20,#2B,#0F,#00,#02,#09,#0D,#0D,#21,#0F,#0D,#1F,#9B,#00,#10,#6F,#05,#53,#3B,#36,#0F,#BA,#4F,#00,#DC,#44,#49,#CC,#30,#68,#CE,#1B,#13,#33,#5E,#0D,#78,#50,#D5,#00,#0F,#09,#42,#9B,#0F,#16,#91,#01,#20,#0F,#05,#AA,#0F,#69,#AE,#3E,#0F,#00,#FF,#F8,
+//9
+#7B,#11,#00,#AB,#00,#01,#02,#07,#78,#00,#C0,#07,#0D,#0D,#21,#11,#59,#0D,#05,#07,#0E,#50,#09,#0F,#10,#10,#0F,#61,#00,#25,#0E,#10,#1A,#96,#03,#27,#99,#10,#0E,#1C,#03,#66,#0E,#2F,#1B,#21,#0D,#10,#24,#4C,#0B,#0F,#36,#CB,#48,#2E,#1C,#8A,#00,#36,#29,#0E,#0D,#0E,#0C,#0F,#1C,#9A,#31,#0F,#B7,#16,#1E,#4E,#29,#27,#0F,#10,#00,#BB,#6F,#5E,#AB,#0F,#0F,#58,#72,#66,#2F,#89,#0F,#20,#0D,#0F,#0C,#38,#99,#00,#AE,#1F,#07,#00,#FF,#FC};
+
+//---------- play table
+static short ply_tbl[]={
+#07,#F2,#07,#14,#0D,#5D,#0B,#E7,#0A,#9B,#0A,#02,#08,#EB,
+#03,#F9,#03,#8A,#06,#AF,#05,#F4,#05,#4E,#05,#01,#04,#76,
+#01,#FD,#01,#C5,#03,#57,#02,#FA,#02,#A7,#02,#81,#02,#3B,
+#00,#FE,#00,#E3,#01,#AC,#01,#7D,#01,#53,#01,#40,#01,#1D,
+#00,#7F,#00,#71,#00,#D6,#00,#BE,#00,#AA,#00,#A0,#00,#8F,
+#00,#40,#00,#39,#00,#6B,#00,#5F,#00,#55,#00,#50,#00,#47,
+#00,#20,#00,#1C,#00,#35,#00,#30,#00,#2A,#00,#28,#00,#24,
+#00,#10,#00,#0E,#00,#1B,#00,#18,#00,#15,#00,#14,#00,#12};
+static int ply_p;static short ply_flg,ply_l,ply_o,snd_flg,snd_flg2;
+
+//---
+const WX=16,WY=12,SZ=16,TM=4,HM=20,MLV=10;
+const BC=16,NBC=15,LDC=14,SP=4,STN=46,BMSZ=8,BLENM=1;
+const DMGM=2,IWASLP=40,FUKATU=150,SATAD=#7600;
+
+static short i,j,sx,sy,x,y,c,a,xx,yy,yy2,ld,f_i,k1,k1s,ks,kzs,mu,jp,mo,drx,dry,ik,tk,lv,dmg,die,slt,pw;
+static short t[TM],tx[TM],ty[TM],txs[TM],tys[TM],th[TM],tl[TM],tc[TM],tp[TM],ts[TM],h[HM],hx[HM],hy[HM],hh[HM];
+static int v,p,q,f_p,sco,hs;
+static short g1[2048],buf[32];
+
+static void main(){
+ //--- change slot(8000h)
+ slt=(bios.rslreg()>>2)&3;
+ bios.enaslt(slt);
+ //---------- initilize
+ bios.color(15,0,0);
+ bios.screen(5);
+ bios.cliksw(0);
+ sprite.mode(2); // 0:8x8 1:8x8(x2) 2:16x16 3:16x16(x2)
+
+ //---------- color palette
+ for(i=0;i<16;i++)graphic.color(i,colors[i*3],colors[i*3+1],colors[i*3+2]);
+
+ //---------- sprite
+ for(v=0;v<40;v++){
+  sprite.sprite(v,&spptn+v*32);}
+ sprite.spritecolor(0,&spcol+16*0);
+ sprite.spritecolor(1,&spcol+16*1);
+ for(i=2;i<18;i+=2){sprite.spritecolor(i,&spcol+16*2);sprite.spritecolor(i+1,&spcol+16*3);}
+   
+ //---------- fonts
+ graphic.setpage(1,0);
+ graphic.box(0,0,256,212,0);
+ graphic.put_compress(0,96,128,32,&gfontw,&g1);
+
+ //---------- graphic
+ const GSZ=16;
+ for(v=0;v<6;v++){
+  sx=((v+12)&15)*16;sy=((v+12)/16)*16;
+  graphic.put(sx,sy,GSZ,GSZ,&gradata+v*GSZ*GSZ/2);} // SC5:GSZ*GSZ/2 SC8:GSZ*GSZ
+ graphic.put_compress(0,32,96,16,&gersrng,&g1);
+ graphic.put_compress(0,48,116,14,&gtit,&g1);
+ graphic.setpage(0,1);
+
+ //--- 
+ hs=0;titleInit();
+
+ //---------- main loop
+ while(1){
+  k1=bios.stick(0)|bios.stick(1);
+  if(k1==2||k1==8)k1=1;if(k1==4||k1==6)k1=5;if(k1==0)k1s=0;
+  ks=bios.strig(0)|bios.strig(1);if((bios.getkey(5)&128)==0)ks=1;if(!ks){kzs=0;}
+  
+  if(mo==0){
+   titleLoop();
+   if(ks&&kzs==0){gInit();}
+   }
+  else if(mo==1){
+   mainLoop();
+   if((bios.getkey(6)&32)==0||bios.strig(3)){--pw;printStatus();if(pw)gInit();else initFailed();}
+   }
+  else if(mo==2){
+   //- blink
+   if(die&&die<127){
+    if((die&31)>15){graphic.vpoke(SATAD,229);graphic.vpoke(SATAD+4,229);}
+    else{graphic.vpoke(SATAD,y-1);graphic.vpoke(SATAD+4,y-1);}
+    ++die;}
+   if(pw)print((32-6)/2*8,11*8,"FAILED");else{ print((32-9)/2*8,10*8,"GAME OVER");a=12*8;printHs();}
+   for(i=0;i<60;i++){
+    if(ks&&kzs==0&&ply_flg==0){if(!pw)titleInit();else gInit(); }}}
+  else if(mo==3){
+    print((32-6)/2*8,11*8,"CLEAR");
+   if(ks&&kzs==0){if(lv==MLV)endInit();else gInit();}}
+  else if(mo==5){
+   endLoop();
+   if(ks&&kzs==0)titleInit();}
+
+ //-- sounds
+ if(ply_flg){playLoop();}
+ if(snd_flg){--snd_flg;
+  if(snd_flg2==1){bios.sound(8,13);snd_flg2=0;}
+  if(snd_flg==0){bios.sound(8,0);bios.sound(9,0);}}
+  }
+ }
+ 
+ //-------------------- TITLE
+static void titleInit(){
+ clearAll();
+ a=0;printHs();
+ graphic.copy((256-116)/2,40,116,14, 0,48,graphic.SRCIMP);
+
+ print((32-14)/2*8,12*8,"PUSH SPACE KEY");
+ print((32-22)/2*8,16*8,"[ARROW]/JOYSTICK:MOVE");
+ print((32-22)/2*8,17*8,"[SPACE]/TRIG-A  :JUMP");
+ print((32-22)/2*8,18*8,"[F1]   /TRIG-B  :RETRY");
+// print((32-16)/2*8,19*8,"[F5]: BACK");
+ print((32-8)/2*8,23*8,"2016 N.I");
+ pw=3;lv=0;sco=0;kzs=1;mo=0;
+ bios.sound(7,170);bios.sound(8,0);bios.sound(9,0);bios.sound(10,0);
+ playSet("5CDCDGG");
+}
+
+static void titleLoop(){
+ p=Random.Next();
+}
+
+//-------------------- GINIT
+static void gInit(){
+ clearAll();
+ bios.ldir(&t,TM);bios.ldir(&h,HM);
+
+ //-- extract stage
+ p=*(&sd+lv*2);q=*(&sd+lv*2+1);
+ bitbuster.depack(&g1,&sd+((q<<8)|p));
+
+ //-- analyze stage
+ p=&g1;ik=0;tk=0;
+ for(i=0;i<WY;i++)for(j=0;j<WX;j++){
+  a=*p;
+  switch(a){
+   case 12:a=0;drx=j*SZ;dry=i*SZ;break;
+   case 13:++ik;break;
+   case 32:a=0;x=j*SZ;y=i*SZ;xx=1;c=0;break;
+   case 33:if(tk!=TM){t[tk]=a-32;txs[tk]=j*SZ;tys[tk]=i*SZ;tx[tk]=j*SZ;ty[tk]=i*SZ;th[tk]=1;tl[tk]=0;tc[tk]=0;tp[tk]=0;ts[tk]=0;++tk;}a=0;break;
+   }
+  *(p++)=a;
+  graphic.copy(j*SZ,i*SZ,16,16, (a&15)*16,(a/16)*16,graphic.SRCIMP);
+  }
+ 
+ printStatus();
+ mu=0;die=0;c=0;jp=0;ld=0;mo=1;yy=0;kzs=1;
+ }
+ //-------------------- GFUNC
+static void print(int X,int Y,int S){
+ while(*S){
+  graphic.copy(X,Y,8,8,((*S-32)&15)*8,((*S-32)/16)*8+96, graphic.SRCIMP);
+  ++S;X+=8;}}
+
+static void clearAll(){
+ graphic.cls();for(f_i=0;f_i<32;f_i++)sprite.put(f_i,0,229,0,0);
+ ply_flg=0;snd_flg=0;snd_flg2=0;bios.sound(8,0);bios.sound(9,0);bios.sound(10,0);
+ }
+
+static int vpeek(int X,int Y){
+ return &g1+X/SZ+(Y/SZ)*WX;}
+
+static void printStatus(){
+ String.ShortToDec(&buf,lv+1);
+ f_i=0;while(*(&buf+f_i)=='0'){*(&buf+f_i)=32;++f_i;}
+ print(1*8,200,"STAGE:");
+ print(7*8,200,&buf+1);
+
+ String.IntToDec(&buf,sco);
+ f_i=0;while(*(&buf+f_i)=='0'){*(&buf+f_i)=32;++f_i;}
+ *(&buf+5)='0';*(&buf+6)=0;
+ print(10*8+4,200,"SCORE:");
+ print(16*8+4,200,&buf);
+
+ String.ShortToDec(&buf,pw);
+ print(24*8,200,"LIFE:");
+ print(30*8,200,&buf+2);
+}
+
+static void printHs(){
+ String.IntToDec(&buf,hs);
+ f_i=0;while(*(&buf+f_i)=='0'){*(&buf+f_i)=32;++f_i;}
+ *(&buf+5)='0';*(&buf+6)=0;
+ print(11*8,a,"HS:");
+ print(14*8,a,&buf);
+}
+
+//----- colid enm
+static short chkT(short X,short Y){
+ f_p=&t;for(f_i=0;f_i<TM;f_i++){
+  if((*f_p==8||(*f_p==BLENM))&&Math.ShortAbs(X-tx[f_i])<SZ&&Y==ty[f_i]){return 1;}
+ ++f_p;}return 0;}
+
+//static short chkTY(short X,short Y){
+// f_p=&t;for(f_i=0;f_i<TM;f_i++){
+//  if(((jp&&*f_p==8)||(*f_p==BLENM))&&X==tx[f_i]&&Math.ShortAbs(Y-ty[f_i])<SZ){return 1;}
+// ++f_p;}return 0;}
+
+static short chkT2(short X,short Y){
+ f_p=&t;for(f_i=0;f_i<TM;f_i++){
+  if((*f_p==8||(*f_p==BLENM))&&*f_p<16&&Math.ShortAbs(X-tx[f_i])<SZ&&Math.ShortAbs(Y-ty[f_i])<SZ&&Y<ty[f_i]&&(ty[f_i]&7)==0){return 1;}//&&tc[f_i]&&tc[f_i]<IWASLP
+ ++f_p;}return 0;}
+
+static short chkT3(short X,short Y,short A){
+ f_p=&t;for(f_i=0;f_i<TM;f_i++){
+  if(f_i!=A&&(*f_p==8||(A!=255&&*f_p==BLENM))&&Math.ShortAbs(X-tx[f_i])<SZ&&Math.ShortAbs(Y-ty[f_i])<SZ&&(ty[f_i]&7)==0){return 1;}
+ ++f_p;}return 0;}
+ 
+static void setErsRng(int X,int Y){
+ X=(X/SZ)*SZ;Y=(Y/SZ)*SZ;
+ f_i=0;f_p=&h;while(f_i!=HM&&*f_p){++f_p;++f_i;}if(f_i!=HM){*f_p=1;hx[f_i]=X;hy[f_i]=Y;hh[f_i]=0;Sound(11);}
+ }
+
+//---
+static void pickItm(int P,short X,short Y){
+ X/=SZ;Y/=SZ;
+ switch(*P){
+  case 13:Sound(0);*P=0;if(--ik==0){playSet("1C");
+   graphic.copy(drx,dry,SZ,SZ,12*SZ,0,graphic.SRCIMP);}
+   graphic.copy(X*SZ,Y*SZ,SZ,SZ,0,0,graphic.SRCIMP);
+   ++sco;printStatus();
+   break;
+  case 16:die=1;break;
+  }}
+
+static void initFailed(){
+ if(pw==0){playSet("2GFEDCCC");}else{playSet("2CCCCC");}
+ if(sco>hs)hs=sco;
+ bios.sound(8,0);bios.sound(9,0);
+ mo=2;}
+
+static void eraseEnemy(){
+ for(j=0;j<6;j++){sprite.put(2+i*2,0,229,0,0);sprite.put(3+i*2,0,229,0,0);}}
+
+//-------------------- MAINLOOP
+static int q1,q2;
+static short uk,chT,fl,ax,ay,xxs,yys,sc,sh,sl,EI_SKIP1;
+const ESP1=2,ESP2=2;
+
+static void mainLoop(){
+//---------- me
+q=vpeek(x,y);ax=x%SZ;ay=y%SZ;xxs=x;yys=y;fl=0;chT=chkT(x,y+SZ);
+
+if(*q&&ax<6&&ay<6)pickItm(q,x,y); if(ax>10&&ay<6&&*(q+1))pickItm(q+1,x+SZ,y);
+if(ay&&ay>10&&ax<6&&*(q+WX))pickItm(q+WX,x,y+SZ);
+if(ax&&ay&&ay>10&&ax>10&&*(q+WX+1))pickItm(q+WX+1,x+SZ,y+SZ);
+
+if(!jp&&*(q+WX)<LDC&&*q!=15&&*q!=14&&(!ax||(*(q+WX+1)<LDC&&*(q+1)!=15&&*(q+1)!=14 ) )&&!chT){if(yy<2)yy=2;fl=1;}//strt fall
+if(ld&&*(q+WX)!=15&&*(q+WX)!=14&&(!ax||(*(q+WX+1)!=15&&*(q+WX+1)!=14) )){ld=0;yy=0;}//not ld
+if(!jp&&ks&&kzs==0&&(*(q+WX)>=LDC||(ax&&*(q+WX+1)>=LDC)||chT)&&(ay||(*(q-WX)<BC&&(!ax||*(q-WX+1)<BC)))){kzs=1;jp=1;ld=0;c=(xx==1)?8:9;yy=-4;}//jmp
+if(!ld){if(yy>128){y+=yy*2+1;}else if(yy>1)y+=yy*2-1;if(yy!=5)++yy;}//fall
+
+ax=x%SZ;ay=y%SZ;q=vpeek(x,y);q1=q+WX;q2=q+WX+1;
+if((!jp&&!ld&&(*q1>=LDC||(ax&&*q2>=LDC)))||(*q1>NBC||(ax&&*q2>NBC))||chkT2(x,y)){//Coli-foot
+ if(*q1==16&&yy>2&&yy<128){setErsRng(x,y+SZ);}
+ if(ax&&*q2==16&&yy>2&&yy<128){setErsRng(x+SZ,y+SZ);}
+ y=(y/SZ)*SZ;yy=0;jp=0;}
+else if(*q>NBC||(ax&&*(q+1)>NBC)){//Coli-head
+ if(*q1==16&&yy>128){setErsRng(x,y+SZ);}
+ if(ax&&*q2==16&&yy>128){setErsRng(x+SZ,y+SZ);}
+ y=(y/SZ)*SZ+SZ;yy=0;}
+ax=x%SZ;ay=y%SZ;q=vpeek(x,y);
+
+//--- climb/move CAni(C,A) C=(C==A)?(A+1):A
+short dod;dod=0;
+if(k1==1){dod=1;if(ax){x+=(xx==1)?SP:-SP;if(xx==1)c=(c==1)?2:1;else c=(c==4)?5:4;}else if(!jp&&!fl&&(ay||(y&&(*q==15||*q==14)&&*(q-WX)<=NBC&&!chkT(x,y-SZ)))){y-=SP;yy2=255;c=(c==6)?7:6;ld=1;}else dod=1;}
+else if(k1==5){dod=1;if(ax){x+=(xx==1)?SP:-SP;if(xx==1)c=(c==1)?2:1;else c=(c==4)?5:4;}else if(!jp&&(y!=WY*SZ-SZ&&((*(q+WX)==15||*(q+WX)==14))||((*q==15||*q==14)&&*(q+WX)<NBC))&&(ay||!chkT(x,y+SZ))){y+=SP;yy2=1;c=(c==6)?7:6;ld=1;}else dod=1;}
+if(dod==0){
+if(!fl){
+ if(k1==3){if(ld&&ay&&(*(q+1)>NBC||*(q+WX+1)>NBC)){y+=(yy2==1)?SP:-SP;}else{x+=SP;if(jp)c=8;else c=(c==1)?2:1;xx=1;}}
+ else if(k1==7){if(ld&&ay&&(*(q-1)>NBC||*(q+WX-1)>NBC)){y+=(yy2==1)?SP:-SP;}else{x-=SP;if(jp)c=9;else c=(c==4)?5:4;xx=255;}}
+ else if(c==1||c==2||(!jp&&c==8))c=0;else if(c==4||c==5||(!jp&&c==9))c=3;
+ ax=x%SZ;ay=y%SZ;q=vpeek(x,y);
+ if(xx==255&&ax&&((*q>NBC&&*q!=STN)||(ay&&*(q+WX)>NBC&&*(q+WX)!=STN))){x=(x/SZ)*SZ+SZ;}
+ else if(xx==1&&ax&&((*(q+1)>NBC&&*(q+1)!=STN)||(ay&&*(q+1+WX)>NBC&&*(q+1+WX)!=STN))){x=(x/SZ)*SZ;}
+}}
+//if(x<0)x=0;else if(x>(WX-1)*SZ)x=(WX-1)*SZ;
+//if(y<0){yy=0;y=0;}else if(y>(WY-1)*SZ)y=(WY-1)*SZ;
+
+//---------- erase bricks
+p=&h;
+for(i=0;i<HM;i++){
+ if(*p){sx=hx[i];sy=hy[i];sh=hh[i];
+  if(sh==2){q=vpeek(sx,sy);*q=0;}
+  if(sh==104){*p=0;graphic.copy(sx,sy,16,16, 0,16,graphic.SRCIMP);}
+  else if(sh<3){graphic.copy(sx,sy,16,16, sh*16,32,graphic.SRCIMP);}
+  else if(sh==4){graphic.copy(sx,sy,16,16, 0,0,graphic.SRCIMP);}
+  else if(sh>100){graphic.copy(sx,sy,16,16, (sh-101+3)*16,32,graphic.SRCIMP);
+   if(sh==102){q=vpeek(sx,sy);*q=16;}}
+  ++sh;hh[i]=sh;
+   }
+ ++p;}
+
+//---------- enemy
+p=&t;//enem
+for(i=0;i<TM;i++){
+ //--- recovery enemy
+ if(*p>15){sh=th[i];sl=tl[i];sc=tc[i];++sh;
+   if(sh>FUKATU){eraseEnemy();
+    if((sh&1)==0){sprite.put(2+i*2,txs[i],tys[i]-1,0,sc*8+24);sprite.put(3+i*2,txs[i],tys[i]-1,0,sc*8+28);}//else{sprite.put(2+i*2,0,229,0,0);sprite.put(3+i*2,0,229,0,0);}
+   if(sh==FUKATU+10){*p=sl;sl=0;tx[i]=txs[i];ty[i]=tys[i];tl[i]=0;sh=1;}}th[i]=sh;}
+ //--- move enemy
+ else if(*p){sx=tx[i];sy=ty[i];ax=sx&15;ay=sy&15;q=sy/SZ;q=&g1+q*WX+sx/SZ;uk=0;sc=tc[i];sh=th[i];sl=tl[i];
+
+if((*q==16&&ax<6&&ay<6)||(ax>10&&ay<6&&*(q+1)==16)||(ay&&ay>10&&ax<6&&*(q+WX)==16)||(ax&&ay&&ay>10&&ax>10&&*(q+WX+1)==16))uk=1;
+  switch(*p){
+//---------------------------------------- start of ido_switch
+case 1://yellow
+EI_SKIP1=0;
+if(sy!=SZ*(WY-1)&&*q!=15&&*q!=14&&*(q+WX)<LDC&&(!ax||(*(q+1)!=15&&*(q+1)!=14&&*(q+WX+1)<LDC))&&!chkT(sx,sy+SZ)){sy+=2;}
+else if(sl==255){if(ay||(sy&&(*q==15||*q==14)&&*(q-WX)<BC)){sy-=2;sc=(sc==6)?7:6;}else{sl=0;if(x>sx)sh=1;else if(x<sx)sh=255;EI_SKIP1=1;}}
+else if(sl==1){if(*(q+WX)<BC){sy+=2;sc=(sc==6)?7:6;}else{sl=0;if(x>sx)sh=1;else if(x<sx)sh=-1;EI_SKIP1=1;}}
+else{
+ if(!ax&&(*q==15||*q==14)&&*(q-WX)<BC&&y<sy){sl=-1;sy-=2;}
+ else if(!ax&&(*(q+WX)==15||*(q+WX)==14)&&y>sy){sl=1;sy+=2;}
+ else EI_SKIP1=1;}
+if(EI_SKIP1){if(!ax&&*(q+((sh==1)?1:-1))>NBC){sh=(sh==1)?255:1;
+  if(*(q+((sh==1)?1:-1))>NBC){if(sc==1||sc==2)sc=0;else if(sc==4||sc==5)sc=3;}
+  }else{sx+=(sh==1)?ESP2:-ESP2;
+   if(sh==1){sc=(sc==1)?2:1;}else{sc=(sc==4)?5:4;}
+   if(chkT3(sx,sy,-1)){sx-=(sh==1)?ESP2:-ESP2;sh=(sh==1)?255:1;}
+   else if(sx==0||sx==(WX-1)*SZ)sh=(sh==1)?255:1; }}
+ break;
+//case 2://block
+// sc=15;
+// if(sy!=(WY-1)*SZ&&*(q+WX)<LDC&&(!ax||*(q+WX+1)<LDC)&&!chkT(sx,sy+SZ)){
+// sy+=4;}break;
+//---------------------------------------- end of ido_switch
+    }
+  //-- collide with me
+  if(Math.ShortAbs(x-sx)<14&&Math.ShortAbs(y-sy)<14&&*p<9&&*p){//!die&&!cl&&!mu
+   if(*p==8){if((ax||*(q+((xx==1)?1:-1))<BC)&&y==sy){sx+=(xx==1)?SP:-SP;sh=xx;sl=1;}else{if(!jp)x-=(xx==1)?SP:-SP;}}else if(mu)uk=1;else{dmg+=2;if(dmg>DMGM)die=1;}
+  }
+    if(uk){if(*p==8)*p=0;else {Sound(8);
+    switch(*p){case 1:sc=0;break; case 2:sc=0;break; case 3:sc=8;break; case 4:sc=12;break;}
+    if(!ts[i]){ts[i]=1;sco+=2;printStatus();}tp[i]=0;
+    sl=*p;sh=1;*p=16;sprite.put(2+i*2,0,229,0,0);sprite.put(3+i*2,0,229,0,0);}}
+   else{sprite.put(2+i*2,sx,sy-1,0,sc*8+96);
+    sprite.put(3+i*2,sx,sy-1,0,sc*8+96+4);
+   }tx[i]=sx;ty[i]=sy;tc[i]=sc;th[i]=sh;tl[i]=sl;}
+  else{eraseEnemy();}
+ ++p;}
+ if(dmg)--dmg;
+
+//---------- draw me
+ if(die){if(mu)die=0;else{kzs=1;--pw;initFailed();printStatus();}}
+ if(!ik&&x==drx&&y==dry){mo=3;playSet("7CDEFGAB8C");c=(xx==1)?0:3;++lv;++pw;kzs=1;}
+ sprite.put(0,x,y-1, 0,c*8);
+ sprite.put(1,x,y-1, 0,c*8+4);
+
+}
+
+//------------------------------ END
+static void endInit(){
+ clearAll();
+ for(i=0;i<HM;i++){hx[i]=Random.Next()&255;hy[i]=Random.Next()%211;}
+ c=0;mo=5;kzs=1;}
+
+static void endLoop(){
+ c=c+1;
+ if(ply_flg==0)playSet("6CECECECE7CECECE4CECECEC6GECGECGEC5GECGECGEC6GGGGGGGG");
+ for(i=0;i<HM;i++){
+  graphic.pset(hx[i],hy[i],Random.Next()%15+1);
+  if(Random.Next()%20==0){graphic.pset(hx[i],hy[i],0);hx[i]=Random.Next()&255;hy[i]=Random.Next()%211;}
+ }
+ a=(10+((c/8)&1))*8;
+ sprite.put(0,120,120,0,a);
+ sprite.put(1,120,120,0,a+4);
+ print((32-16)/2*8,5*8,"CONGRATULATIONS!");
+}
+
+
+//-------------------- PLAY
+static void playSet(int P){
+
+ ply_p=P;ply_flg=1;ply_l=0;}
+
+static void playLoop(){
+ a=*ply_p;
+ if(a==0){bios.sound(10,0);ply_flg=0;return;}
+ if(a>='1'&&a<='8'){ply_o=a-'1';++ply_p;a=*ply_p;}
+ p=ply_o;p=&ply_tbl+p*14+(a-'A')*2;
+ a=*(p+1);if(a>255-8)a=255;else a+=ply_l;
+ bios.sound(10,15);bios.sound(4,a);bios.sound(5,*p);
+ if(++ply_l==8){ply_l=0;++ply_p;}
+ }
+
+//-------------------- SOUND
+static void Sound(short A){
+ switch(A){
+  case 0:bios.sound(0,50);bios.sound(1,0);bios.sound(12,8);bios.sound(8,16);bios.sound(9,0);bios.sound(13,0);break;//gold
+  case 1:bios.sound(8,15);bios.sound(1,0);for(f_i=20;f_i<255;f_i++){bios.sound(0,f_i);};bios.sound(8,0);break;//dia
+  case 2:bios.sound(8,15);bios.sound(9,0);bios.sound(0,33);bios.sound(1,10);bios.sound(6,20);snd_flg=2;snd_flg2=1;break;//enemy
+//  case 3:bios.sound(0,50);bios.sound(1,0);bios.sound(8,16);bios.sound(9,0);bios.sound(12,10);bios.sound(13,0);break;
+//  case 3:bios.sound(8,15);bios.sound(9,0);bios.sound(0,128);snd_flg=1;break;//input password
+  case 4:bios.sound(8,15);bios.sound(1,6);for(f_i=0;f_i<88;f_i++)bios.sound(0,255-f_i);bios.sound(8,0);break;//dril
+  case 5:bios.sound(8,15);bios.sound(1,0);for(f_i=0;f_i<30;f_i++)bios.sound(0,Random.Next()%128+100);bios.sound(8,0);break;//knife
+  case 6:bios.sound(8,15);bios.sound(1,0);for(f_i=128;f_i<245;f_i++)bios.sound(0,f_i);bios.sound(8,0);break;//pick item
+  case 7:bios.sound(6,0);bios.sound(0,58);bios.sound(1,7);bios.sound(12,4);bios.sound(8,16);bios.sound(9,16);bios.sound(13,0);break;//pick
+  case 8:bios.sound(0,128);bios.sound(1,0);bios.sound(6,10);bios.sound(12,3);bios.sound(8,16);bios.sound(9,16);bios.sound(13,4);break;//++pw
+//  case 9:bios.sound(9,0);bios.sound(6,20);bios.sound(8,0);bios.sound(9,16);bios.sound(12,20);bios.sound(13,0);break; //bmb
+  case 11:bios.sound(8,14);bios.sound(1,1);for(f_i=0;f_i<28;f_i++)bios.sound(0,f_i);bios.sound(8,0);break;//ldr
+  case 12:bios.sound(6,0);bios.sound(8,0);bios.sound(9,13);if(!snd_flg)snd_flg=24;break;//firk
+  case 13:bios.sound(0,88);bios.sound(1,0);bios.sound(8,13);snd_flg=1;break;//jump
+  case 16:bios.sound(1,11);bios.sound(0,11);bios.sound(8,15);snd_flg=2;snd_flg2=1;break;//rock
+//  case 17:bios.sound(0,80);bios.sound(12,5);bios.sound(8,16);bios.sound(9,0);bios.sound(13,4);break;//
+ }
+}
+
+}

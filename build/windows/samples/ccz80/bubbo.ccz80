@@ -1,0 +1,303 @@
+include "mymsx.ccz80";
+
+//---------- data
+array byte spptn={
+#3C,#3C,#3C,#18,#7E,#18,#3C,#24,
+#3C,#3C,#3C,#1A,#7C,#18,#3E,#20,
+#3C,#3C,#3C,#58,#3E,#18,#7C,#02,
+#3C,#3C,#3C,#5A,#3C,#18,#7E,#00
+};
+
+array byte chptn={
+#81,#BD,#81,#BD,#81,#BD,#81,#BD,//-1:ladder
+#C3,#81,#F1,#F9,#FF,#FF,#81,#C3,//0:stone
+#FF,#FF,#E7,#E7,#C3,#C3,#81,#81,//1:gold
+#FF,#BD,#E7,#C3,#C3,#E7,#BD,#FF,//2:warp
+#FF,#80,#A2,#80,#80,#80,#A2,#80,//3:block
+#FF,#DF,#DF,#DF,#FF,#FB,#FB,#FB,//4:brick
+#C3,#BD,#BD,#BD,#BD,#BD,#BD,#C3,//5:warp
+#FF,#EE,#EE,#EE,#FF,#EE,#EE,#EE,//6:brik2
+#FF,#E3,#C1,#9C,#9C,#9C,#C1,#E3,//7:brik3
+#FF,#81,#FF,#B6,#FF,#FF,#81,#FF,//8:brik4
+#FF,#81,#81,#81,#81,#81,#81,#FF,//9:brik5
+#FF,#81,#81,#81,#81,#81,#81,#FF,//10:brik6
+#FF,#81,#BD,#A5,#A5,#BD,#81,#FF,//11:brik7
+#C3,#C3,#BD,#99,#99,#BD,#FF,#FF,//12:brik8
+};
+
+array byte chcol={
+#0E,#0E,#0E,#0E,#0E,#0E,#0E,#0E,
+#0C,#0C,#C2,#C2,#CC,#CC,#0C,#0C,
+#00,#00,#0B,#0B,#0B,#0A,#0A,#0A,
+#00,#06,#09,#09,#09,#09,#06,#00,
+#CC,#CE,#CE,#CE,#CE,#CE,#CE,#CE,
+#44,#84,#64,#64,#44,#84,#64,#64,
+#08,#08,#80,#80,#80,#80,#08,#08,
+#CC,#3C,#2C,#2C,#CC,#3C,#2C,#2C,
+#BB,#B4,#B4,#B4,#B4,#A4,#A4,#A4,
+#66,#56,#55,#75,#77,#55,#59,#99,
+#DD,#D7,#D8,#D7,#D8,#D7,#D8,#DD,
+#77,#74,#74,#7D,#7D,#74,#74,#77,
+#88,#8B,#8B,#8B,#8B,#8B,#8B,#88,
+#7A,#7A,#A0,#A0,#A0,#A0,#66,#AA};
+
+//----------
+define wy=22,wx=32;
+byte a,a2,s,i,j,x,y,c,ax,ay,l,lv,lg,lgk,kz,kx,kzs,kxs,pw,mu,mo,ld,ly,xx,snd;
+word v,v2,vi,vi2,vl,ldv,sc,hs,up;
+define randi(num)=rand()%(num);
+array byte fonts[#800];
+array byte buf[32];
+
+gosub init;
+gosub title_init;
+
+//--------------------
+mainloop:
+
+s=stick(0)|stick(1);
+kz=getkey(5)&128;if(strig(1))kz=0;
+if(kz){kzs=0;}
+kx=getkey(5)&32;if(strig(3))kx=0;
+if(kx){kxs=0;}
+
+if(mo==0){
+ gosub title_move;
+ if(kz==0&&kzs==0){gosub game_init;}}
+else if(mo==1){
+ gosub move_mine;
+ gosub move_stone;
+ ldirvm(fonts,6144,736);}
+else if(mo==2){
+// gosub move_stone;
+// ldirvm(fonts,6144,736);
+ print((32-9)/2,11,"GAME OVER");
+ a=13;gosub print_hs;
+ gosub print_status;
+ //wait
+ for(v=0;v<100;v++){a=randi(255);}
+ if(kz==0&&kzs==0&&snd==0){gosub title_init;}}
+//wait
+//for(v=0;v<500;v++){a=randi(255);}
+//- sound
+if(snd){--snd;if(mo==2)sound(1,10-snd);
+ else if(snd==1)sound(8,10);if(snd==0){sound(0,0);sound(1,0);}}
+//-- back to basic
+if((getkey(7)&4)==0){kilbuf();return;}
+goto mainloop;
+
+//--------------------
+init:
+screen(1);
+ldirmv(0,fonts,#800);
+//--- sprite setting
+asm{"_RG1SAV: equ #F3E0","ld a,(_RG1SAV)", // sprite size
+"and #fc", // x1
+//"or #2", // set 16x16
+"ld (_RG1SAV),a",
+"ld hl,#1b00","ld (__satblad),hl" // screen1~3
+}
+
+cliksw(0);
+color(15,0,0);
+screen(2);
+// sprite init
+ldirvm(spptn,#3800,8*4);
+// fonts init
+cls();
+ldirvm(fonts,#0,#800);
+ldirvm(fonts,#800,#800);
+ldirvm(fonts,#1000,#800);
+filvrm(#2000,#f0,#1800);
+//filvrm(6144,32,32*24);
+// character init
+define ch=97;v=ch-1;
+define chnum=14;
+ldirvm(chptn,v*8,8*chnum);
+ldirvm(chptn,#800+v*8,8*chnum);
+ldirvm(chptn,#1000+v*8,8*chnum);
+ldirvm(chcol,#2000+v*8,8*chnum);
+ldirvm(chcol,#2800+v*8,8*chnum);
+ldirvm(chcol,#3000+v*8,8*chnum);
+hs=0;
+return;
+
+//--------------------
+title_init:
+cls();
+print((32-16)/2,4,"dddddddddddddddd");
+print((32-16)/2,5,"e BUBBO  WORLD e");
+print((32-16)/2,6,"dddddddddddddddd");
+print((22-12)/2,12,"PUSH [Z] KEY TO START");
+print((32-14)/2,16,"[ARROW]:MOVE");
+print((32-14)/2,17,"[Z]:MAKE LADDER");
+print((32-14)/2,18,"[X]:WARP");
+print((32-14)/2,19,"[ESC]:QUIT");
+print((32-8)/2,22,"2016 N.I");
+a=0;gosub print_hs;
+kzs=1;mo=0;x=124;y=10*8;xx=(randi(2))?-2:2;
+sound(7,172);sound(8,16);sound(9,0);sound(0,0);sound(1,0);sound(6,0);sound(0,100);sound(12,32);sound(13,0);
+return;
+
+//----------
+title_move:
+//if(randi(20)==0){sound(0,randi(255));sound(1,randi(3)+1);sound(12,32);sound(13,0);}
+if(randi(5)==0){xx=-xx;}
+x+=xx;
+if(x<64){x=64;xx=2;}
+if(x>255-64){x=255-64;xx=-2;}
+c=(c==1)?2:1;
+putsprite(0,x,y,7,c);
+//wait
+for(v=0;v<100;v++){a=randi(255);}
+return;
+
+//--------------------
+game_init:
+cls();putsprite(0,0,211,0,0);
+//-- make world
+v=6144;v2=wy-1;v2=6144+v2*32;
+for(i=0;i<wx;i++){if(i==0||i==wx-1)vpoke(v,ch+3);if(randi(2)==0||i==0||i==wx-1)vpoke(v2,ch+3);++v;++v2;}
+v=6144+32;
+for(i=1;i<wy-1;i++){
+ vpoke(v,ch+3);++v;
+ for(j=1;j<wx-1;j++){
+  if(randi(3)==0){vpoke(v,ch+4);}
+  ++v;}
+ vpoke(v,ch+3);++v;
+ }
+//filvrm(6144+22*32,ch+6,32);
+x=(wx/2)*8;y=(wy/2)*8;v=y/8;v=6144+v*32+x/8;vpoke(v,32);
+ldirmv(6144,fonts,736);
+for(i=0;i<30;i++){gosub put_gold;}
+l=0;kzs=1;kxs=1;sc=0;lg=0;ld=0;lgk=0;mu=0;pw=3;lv=0;mo=1;up=10;
+sound(7,172);sound(8,15);sound(0,0);sound(1,0); gosub print_status;
+return;
+
+//--------------------
+move_mine:
+if(y==(wy-1)*8){gosub gameover;gosub print_status;return;}
+
+//-- make ladder
+if(kz==0&&kzs==0&&y>4){ld=1;ly=y/8;ldv=ly;a=x;if(a&7)a+=xx;ldv=fonts+ldv*32+a/8;kzs=1;}
+if(ld){a=*(ldv);
+ if(a==32){*(ldv)=ch-1;a=4;gosub play_sound;ldv-=32;--ly;if(ly==0)ld=0;}else{ld=0;}}
+
+//-- warp
+if(kx==0&&kxs==0&&y>4&&y<(wy-1)*8){kxs=1;gosub put_warp;
+ x=randi(wx-2)*8+8;y=randi(wy-8)*8+8;
+ gosub put_warp;
+ a=0;gosub play_sound;}
+
+//-- grab
+ax=x&7;ay=y&7;v=y/8;v=fonts+v*32+x/8;
+a=*(v);a2=*(v+32);
+if(ax==0&&ay==0&&a==ch+1){++sc;*(v)=32;lg=16;++lgk;a=1;gosub play_sound;gosub print_status;
+ if(up==sc)gosub levelup;}
+if(mu==0&&(a==ch||(ax&&*(v+1)==ch))){
+ mu=32;--pw;a=2;gosub play_sound; gosub print_status;if(pw==0){gosub gameover;return;}}
+
+//-- move
+if(a2<ch+3&&a2!=ch&&a2!=ch-1&&(!ax||(*(v+33)<ch+3&&*(v+33)!=ch-1))){y+=4;c=3;}
+else if(s==1){if(ax){x+=xx;}else if((a==ch-1&&*(v-32)<ch+3)||(ay&&a2==ch-1)){y-=4;c=(c==1)?2:1;}else c=0;}
+else if(s==5){if(ax){x+=xx;}else if(a2<ch+3){y+=4;c=(c==1)?2:1;}else c=0;}
+else if(s==3&&(ax||(*(v+1)<ch+3&&(!ay||*(v+33)<ch+3)))){x+=4;c=(c==1)?2:1;xx=4;}
+else if(s==7&&(ax||(*(v-1)<ch+3&&(!ay||*(v+31)<ch+3)))){x-=4;c=(c==1)?2:1;xx=-4;}
+else c=0;
+if(mu>0)--mu;
+putsprite(0,x,y-1,(mu&1)?8:7,c);
+return;
+
+//--------------------
+move_stone:
+vl=(vl+1)&1;
+++l;if(l>=9-lv){l=0;*(fonts+1+randi(wx-2))=ch;}
+if(lg>0){--lg;if(lg==0){gosub put_gold;if(lgk>0){--lgk;lg=16;}}}
+//ldirmv(6144,fonts,736-32);
+v=wy;vi=fonts+v*32-1+vl;v=v*32+32;
+for(i=0;i<wx/2;i++){
+ a=*(vi);
+ if(a==ch||a==ch+5){*(vi)=32;}
+ v-=2;vi-=2;}
+while(v>32){
+ a=*(vi);
+ if(a==ch){a2=*(vi+32);
+  if(randi(2)){v2=vi+1;vi2=vi+1;a=0;}else{v2=vi-1;vi2=vi-1;a=1;}
+  if(a2<ch+2&&a2!=ch){*(vi)=32;*(vi+32)=ch;if(a2==ch+1){++lgk;lg=6;}}
+  else{a2=*(vi2);if(a2<ch+2&&a2!=ch){*(vi)=32;*(vi2)=ch;if(a2==ch+1){++lgk;lg=6;}
+   if(a==1){v-=2;vi-=2;}}}}
+ else if(a==ch+2){*(vi)=32;}
+ else if(a==ch+5){*(vi)=ch+2;}
+ v-=2;vi-=2;}
+return;
+
+//--------------------
+gameover:
+mo=2;putsprite(0,0,209,0,0);kzs=1;
+if(sc>hs)hs=sc;
+a=3;gosub play_sound;
+return;
+
+//--------------------
+levelup:
+print((32-6)/2,12,"BUBBO!");
+up+=10;if(lv!=8){++lv;a2=ch+6+(lv&7);}else{a2=ch+6+randi(8);}
+vi=fonts;v2=wy;v2=v2*32;i=0;sound(0,90);
+while(v2){a=*(vi);
+// if((vi&511)==0){sound(0,80-i);--i;}
+ if(a==ch&&randi(4)>0)*(vi)=32;
+ if(a==ch+4||a>ch+5||(a==32&&randi(60)==0)){*(vi)=a2;}
+ ++vi;--v2;}
+a=5;gosub play_sound;
+lgk+=3;lg=4;
+return;
+
+//--------------------
+put_gold:
+v=randi(wy-2)+1;v=fonts+v*32+randi(wx-2)+1;if(*(v)==ch+1)goto put_gold;
+*(v)=ch+1;
+return;
+
+//--------------------
+put_warp:
+v=y/8;v=fonts+v*32+x/8;
+v2=v;gosub put_warp2;
+v2=v-32;gosub put_warp2;
+v2=v+32;gosub put_warp2;
+v2=v+1;gosub put_warp2;
+v2=v-1;gosub put_warp2;
+return;
+put_warp2:
+if(*(v2)!=ch+3)*(v2)=ch+5;
+return;
+
+//--------------------
+print_status:
+wtoa(buf,sc);
+i=0;while(*(buf+i)=='0'){*(buf+i)=32;++i;}
+*(buf+5)='0';*(buf+6)=0;
+print(3,23,"SCORE:");
+print(9,23,buf);
+print(20,23,"POWER:");
+vpoke(6144+27+23*32,48+pw);
+return;
+
+//--------------------
+print_hs:
+wtoa(buf,hs);
+i=0;while(*(buf+i)=='0'){*(buf+i)=32;++i;}
+*(buf+5)='0';*(buf+6)=0;
+print(11,a,"HS:");
+print(11,a,"HS:");
+print(14,a,buf);
+return;
+
+//--------------------
+play_sound:
+if(a==0){sound(6,20);sound(2,200);sound(9,16);sound(12,7);sound(13,4);}
+if(a==1){sound(0,0);sound(1,0);sound(8,15);for(i=0;i<200;i++){sound(0,i);}snd=2;}
+if(a==2){sound(0,0);sound(1,5);sound(8,15);for(i=255;i<0;i--){sound(0,i);}snd=2;}
+if(a==3){sound(0,0);sound(1,6);sound(8,15);for(i=255;i<0;i--){sound(0,i);}snd=8;}
+if(a==4){sound(0,0);sound(1,1);sound(8,15);for(i=0;i<128;i++){sound(0,i);}sound(0,0);sound(1,0);}
+if(a==5){sound(0,58);sound(1,0);sound(8,15);snd=3;}
+return;

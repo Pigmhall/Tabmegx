@@ -1,0 +1,11 @@
+1 cls:width 40,15:key off:color 15
+2 scx=320:scy=240
+3 screen 3,5:locate 0,0,0
+4 *lop
+5 if int(rnd*(100))=0 then line(0,0)-(scx,scy),0,bf
+6 locate @2,sx,sy:print @2,chr$(ch)
+7 line(0,100)-(100,int(rnd*(100))),int(rnd*(256)),bf
+8 screen
+9 wait 35
+10 if strig(0) then system
+11 goto *lop

@@ -1,0 +1,25 @@
+//--- Using XMGS
+// XMGS can read mgs files(music files) and mag files(picture files).
+// When using xmgs, the ORG address needs to be address A500H or later.
+// The xmgs class can not be used with music, sound and gtext class at the same time.
+// XMGS can read the mag file created by the mags.com command for MSX-DOS.
+
+include bios.ccz80++
+include xmgs.ccz80++
+
+class MainClass{
+
+ static void main(){
+  bios.screen(5);
+  xmgs.open();
+  xmgs.mag("TEST.MAG",0);
+  xmgs.load("SAMPLE1.MGS",0);
+  xmgs.play(0);
+  xmgs.vol(14);
+  while(1){
+   if(bios.strig(0))break;
+  }
+  xmgs.stop();
+  xmgs.close();
+ }
+}

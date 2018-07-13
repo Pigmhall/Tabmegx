@@ -1,0 +1,24 @@
+1 cls:width 40,15:key off:color 15
+2 scx=320:scy=240
+3 screen 3,5:locate 0,0,0
+4 gosub *genchbmp
+5 *lop
+6 line(0,0)-(scx,scy),0,bf
+7 sx=int(rnd*(32))
+8 sy=int(rnd*(24))
+9 locate @2,sx,sy:print @2,chr$(ch)
+10 screen
+11 wait 35
+12 if strig(0) then system
+13 goto *lop
+14 '----- bmp to ch
+15 *genchbmp
+16 ch=asc("a")
+17 restore *genchbmp_files:i=0
+18 *genchbmp_skip
+19 read a$:if a$="end" then return
+20 gload a$+".bmp",(0,0)
+21 a$="":for j=0 to 15:for k=0 to 15:a$=a$+chr$(point(k,j)):next k,j
+22 chrgen$(ch+i)=a$:i=i+1:goto *genchbmp_skip
+23 *genchbmp_files
+24 data "4","end"

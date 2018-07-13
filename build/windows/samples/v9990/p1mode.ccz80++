@@ -1,0 +1,129 @@
+//*** v9990 sample -- using sprites in P1
+include bios.ccz80++
+include g9k.ccz80++
+include Random.ccz80++
+include file.ccz80++
+include xmgs.ccz80++
+
+class MainClass{
+static int fnt;
+const tm=120;
+static short tx[tm],ty[tm],txx[tm],tyy[tm],sx,sy,ti,dp;
+static int i,j,v;
+
+//-- msx default color
+static short colors[]={0,0,0, 0,0,0, 1,6,1, 3,7,3, 1,1,7, 2,3,7, 5,1,1, 2,6,7, 7,1,1, 7,3,3, 6,6,1, 6,6,4, 1,4,1, 6,2,5, 5,5,5, 7,7,7};
+
+static void main(){
+ bios.screen(1);
+ bios.print(1,5,"v9990 sprite sample");
+ static short a=0;
+ bios.chgcpu(#82);
+ xmgs.open();
+
+ //--- init v9990
+ g9k.reset();
+ g9k.screen(g9k.MODE_P1,g9k.SCR0_4BIT,g9k.SCR0_XIM256,0,0);
+ g9k.arg(0);
+ g9k.lop(g9k.LOP_WCSC);
+ g9k.writeMask(#ffff);
+ g9k.scrollY(0);
+ //-- set sprite generator base address
+ g9k.sgba(4);//2:#8000 4:#10000
+
+ //--- palette
+ for(i=0;i<16*3;i++)colors[i]=colors[i]*2;
+ g9k.palette(&colors,0,3*16);
+
+ g9k.displayEnable();
+
+ //--- clear
+ g9k.vram(#0000,0);
+ //for(v=0;v<#2000+256*128;v++)g9k.vpoke(0);
+
+ //--- load layer-a
+ g9k.vram(g9k.PG0,g9k.PGH0);
+ g9k.bload("GTEMP.SC5");
+
+ //--- load sprite
+ g9k.vram(#0000,1);
+ g9k.bload("DPTRIP.SC5");
+
+ //--- load layer-b
+ g9k.vram(#0000,4);
+ g9k.bload("TST.SR5");
+
+ //--- init layer-a
+ g9k.vram(#c000,7);
+ v=0;for(i=0;i<26;i++)for(j=0;j<64;j++){
+  g9k.vpokew(0);
+  //g9k.vpoke(v/256);
+  //if(j<32)++v;//if(v==700)v=0;
+  }
+
+ //--- init layer-b
+ g9k.vram(#e000,7);
+ v=0;for(i=0;i<26;i++)for(j=0;j<64;j++){
+  g9k.vpokew(v);
+  ++v;if(j==32)v-=32;//if(v==700)v=0;
+ }
+
+ g9k.spriteEnable();
+ g9k.lop(g9k.LOP_WCSC|g9k.LOP_TP);
+ 
+ //--- draw screen
+ for(i=0;i<16;i++){putc(i*2,0,4);putc(i*2,24,4);}
+ for(i=1;i<12;i++){putc(0,i*2,4);putc(30,i*2,4);}
+ print(5,5,"P1 MODE TEST");
+
+ //--- init
+ for(i=0;i<125;i++){g9k.sprite(i,0,217,0,0);}
+ for(i=0;i<tm;i++){
+  tx[i]=Random.Next()&255;ty[i]=Random.Next()%(212-16);}
+ dp=0;ti=0;
+
+ //--- main loop
+ while(1){
+  for(i=0;i<256;i++);
+  if(!(bios.getkey(7)&4))break;
+  //-- move sprite
+  for(i=0;i<1;i++){
+   sx=tx[i];sy=ty[i];
+   sx+=Random.Next()%3-1;sy+=Random.Next()%3-1;
+   if(sx>248)sx=0;else if(sx>240)sx=240;
+   if(sy>248)sy=0;else if(sy>212-16)sy=212-16;
+   g9k.sprite(i,sx,sy,32,i);
+   tx[i]=sx;ty[i]=sy;}
+ for(i=0;i<4;i++){
+  v=Random.Next()%22;v=#c000+(v)*64*2+64*4+(Random.Next()%28)*2+4;
+  g9k.vram(v,7);g9k.vpokew((Random.Next()&63)+384);
+  }
+ for(i=0;i<10;i++){
+  v=Random.Next()%22;v=#c000+(v)*64*2+64*4+(Random.Next()%28)*2+4;
+  g9k.vram(v,7);g9k.vpokew(0);
+  }
+  
+  //g9k.sprite(tm,8,8,0,2);
+ ++ti;//if((ti&3)==0){}
+ g9k.scrollXB(dp);++dp;
+ }
+}
+
+//--- print chr
+static void putc(short X,short Y,int C){
+ v=Y;v=#c000+v*64*2+X*2;
+ g9k.vram(v,7);
+ g9k.vpokew(C); ++C;g9k.vpokew(C);
+ v+=128;C+=31;
+ g9k.vram(v,7);
+ g9k.vpokew(C); ++C;g9k.vpokew(C);
+}
+
+//--- print text
+static void print(short X,short Y,int S){
+ v=Y;v=#c000+v*64*2+X*2;
+ g9k.vram(v,7);
+ while(*S){g9k.vpokew(*S-32+384);++S;}
+}
+
+}

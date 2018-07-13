@@ -1,0 +1,41 @@
+<html><head><title>bios</title></head><body><h1>bios</h1><hr size=3><b>screen(screen number)</b><pre>changes the screen mode
+</pre><hr><b>color(text color,background color,border color)</b><pre>changes the screen color
+</pre><hr><b>keyon()</b><pre>displays the function key text
+</pre><hr><b>keyoff()</b><pre>disibles the function key text
+</pre><hr><b>vpoke(VRAM address,value)</b><pre>writes the value to VRAM
+</pre><hr><b>vpeek(VRAM address)</b><pre>reads the value from VRAM
+</pre><hr><b>cls()</b><pre>clear the current screen
+</pre><hr><b>stick(kind)</b><pre>gets the keyboard or the joystick direction
+</pre><hr><b>strig(kind)</b><pre>gets the status of the space key or the buttons
+</pre><hr><b>kilbuf()</b><pre>deletes the key buffer
+</pre><hr><b>ldirvm(src pointer,VRAM address,length)</b><pre>copies RAM to VRAM
+</pre><hr><b>copy(dst pointer,src pointer,length)</b><pre>copies RAM to RAM
+</pre><hr><b>sound(register,value)</b><pre>writes the value to the psg
+</pre><hr><b>rslreg()</b><pre>reads the primary slot register
+</pre><hr><b>enaslt(slot num)</b><pre>switches indicated slot at indicated page on perpetual
+</pre><hr><b>chgToRam1()</b><pre>changes page 1 to RAM. usable on DISK-BASIC.
+</pre><hr><b>chgToRom1()</b><pre>changes page 1 to MAIN-ROM
+</pre><hr><b>rdslt(address,slot num)</b><pre>reads the value from the address in another slot
+</pre><hr><b>wrslt(address,slot num,value)</b><pre>writes the value to the address in another slot
+</pre><hr><b>getkey(value)</b><pre>gets the key status
+</pre><hr><b>ldirmv(VRAM address,destination pointer,length)</b><pre>copies VRAM to RAM
+</pre><hr><b>filvrm(VRAM address,value,length)</b><pre>fills VRAM with the value
+</pre><hr><b>print(x,y,string)</b><pre>prints text
+</pre><hr><b>cliksw(value)</b><pre>switches key click sound
+</pre><hr><b>ldir(destination pointer,length)</b><pre>fills 0
+</pre><hr><b>ldir(destination pointer,length,val)</b><pre>fills any value
+</pre><hr><b>disscr()</b><pre>disables the screen
+</pre><hr><b>enascr()</b><pre>enables the screen
+</pre><hr><b>width(width)</b><pre>sets width of screen
+</pre><hr><b>vdp(port,value)</b><pre>writes the value to vdp
+</pre><hr><b>vdp(port)</b><pre>read the value from vdp
+</pre><hr><b>basic(basic statement)</b><pre>executes MSX-BASIC statement
+When this function is used, The stack values will disappear. It can not be used outside the main function.
+</pre><hr><b>scrolldown(destination pointer,length)</b><pre>scrolls text
+</pre><hr><b>call(command)</b><pre>executes call command in msx-basic
+</pre><hr><b>calbas(param str,basic command type)</b><pre>call calbas
+</pre><hr><b>vsync(param str,basic command type)</b><pre>gets vsync 0:60hz 128:50hz
+</pre><hr><b>freearea()</b><pre>gets freearea address of MSX-BASIC
+</pre><hr><b>info(strings)</b><pre>prints text in screen 0~1
+</pre><hr><b>chgcpu(mode)</b><pre>changes the cpu mode. #80=Z80,#81=R800 ROM,#82=R800 DRAM
+<hr size=3><a href="index.html">back</a></body></html>

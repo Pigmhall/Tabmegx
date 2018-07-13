@@ -1,0 +1,39 @@
+// Print texts in SCREEN5
+include chr.ccz80++
+include bios.ccz80++
+include Random.ccz80++
+include gtext.ccz80++
+include graphic.ccz80++
+
+class MainClass{
+ static void main(){
+  //-- Make the font data from the pattern name table in SCREEN1.
+  //-- The format of the font data is the same as the pattern name table in SCREEN1.
+  bios.screen(1);
+  chr.applyLeftBold();
+  graphic.bsave("LEFTBOLD.FNT",256,1022);
+
+  //-- Start
+  bios.screen(5);
+
+  gtext.load8("LEFTBOLD.FNT");
+
+  //--init
+  // The first param is the attribute of the font
+  // bit0:border/bit1:shadow/bit2:italic/bit3:virtical/bit4:pitch/bit5:units/bit6:change color/bit7:interlace
+  // In other words, 1=border 2=shadow 1+2=border+shadow 4=italic
+  gtext.init(1,0,0,0,0);
+  
+  gtext.size(8,8,0);
+  gtext.color(2,4,0,10);
+  gtext.print(10,10,"PRINT TEXT IN SCREEN5");
+
+  while(1){
+   gtext.size(8,8,0);
+   gtext.color(Random.Next()%13+2,0,Random.Next()%13+2,0);
+   gtext.print(20,30,"TEST 1234 !!");
+   gtext.size(16,16,0);
+   gtext.print(20,50,"TEST 1234 !!");
+  }
+ }
+}

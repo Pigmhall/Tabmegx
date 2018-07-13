@@ -1,0 +1,239 @@
+// sprite.ccz80++
+//--- the functions for the management of the sprites
+include bios.ccz80++
+
+class sprite{
+// static short rt_max,rt_num;
+//-- common code for sprite
+static void spvalues()
+asm{
+__spr_satbl:
+defs 4
+__spr_satblad:
+defs 2
+__spr_sgtblad:
+defs 2
+__spr_sctblad:
+defs 2
+__spr_length:
+defs 1
+}
+
+//--- mode(kind)
+//--- sets the sprite mode
+//--- kind:
+//---  0=8x8
+//---  1=8x8 double size
+//---  2=16x16
+//---  3=16x16 double size
+ public static void mode(short argument1)
+{switch(argument1){
+ case 0:*#f3e0=*#f3e0&#fc;setlength(8);break; //8x8
+ case 1:*#f3e0=(*#f3e0&#fc)|1;setlength(8);break; // 8x8 double size
+ case 2:*#f3e0=(*#f3e0&#fc)|2;setlength(32);break; // 16x16
+ case 3:*#f3e0=(*#f3e0&#fc)|3;setlength(32);break; // 16x16 double size
+}
+ short a=*(#fcaf);//SCRMOD
+ switch(a){ 
+  case 1: case 2: case 3:setsatblad(#1b00);setsgtblad(#3800);break;
+  case 4:setsatblad(#1e00);setsctblad(#1c00);setsgtblad(#3800);break;
+  case 5: case 6:setsatblad(#7600);setsctblad(#7400);setsgtblad(#7800);break;
+  case 7: case 8:setsatblad(#fa00);setsctblad(#f800);setsgtblad(#f000);break;}
+ bios.screen(a);
+}
+
+//--- sprite(sprite number,sprite pattern data)
+//--- sets the sprite pattern
+public static void sprite(int argument1,int argument2){
+ int a=length();
+ bios.ldirvm(argument2,sgtblad()+argument1*a,a);
+}
+
+//--- spritecolor(sprite number,sprite color pattern data)
+//--- sets the sprite color pattern
+public static void spritecolor(int argument1,int argument2){
+ bios.ldirvm(argument2,sctblad()+argument1*16,16);
+}
+
+//--- put(sprite number,x,y,color,sprite pattern)
+//--- displays the sprite
+ public static void put(short argument1,short argument2,short argument3,short argument4,short argument5)
+ asm (spvalues()){
+  ld hl,3
+  add hl,sp
+  ld a,(hl)
+  ld (__spr_satbl+2),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__spr_satbl+3),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__spr_satbl),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__spr_satbl+1),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld l,a
+  ld h,0
+  ld a,4
+  ld de,0
+  ex de,hl
+  ld   b,8
+  rra
+  jr   nc,$+3
+  add  hl,de
+  sla  e
+  rl   d
+  djnz $-8
+  ld   b,h
+  ld   c,l
+  ld   hl,(__spr_satblad)
+  add  hl,bc
+  ex de,hl
+  ld bc,4
+  ld hl,__spr_satbl
+  jp #5c  ;ldirvm
+}
+
+//--- setsatblad(sprite attribute table address)
+//--- sets the sprite attribute table address for using this class
+ public static void setsatblad(int argument1)
+ asm inline (spvalues()){
+  ld (__spr_satblad),hl
+ }
+
+//--- setsgtblad(sprite generator table address)
+//--- sets the sprite generator table address for using this class
+ public static void setsgtblad(int argument1)
+ asm inline (spvalues()){
+  ld (__spr_sgtblad),hl
+ }
+
+//--- setsctblad(sprite generator table address)
+//--- sets the sprite color table address for using this class
+ public static void setsctblad(int argument1)
+ asm inline (spvalues()){
+  ld (__spr_sctblad),hl
+ }
+
+//-- setlength(length)
+//-- sprite pattern bytes
+ static void setlength(short argument1)
+ asm inline (spvalues()){
+  ld (__spr_length),a
+ }
+
+//-- satblad()
+//-- gets the sprite attribute table address
+ static int satblad()
+ asm inline (spvalues()){
+  ld hl,(__spr_satblad)
+ }
+
+//-- sgtblad()
+//-- gets the sprite attribute table address
+ static int sgtblad()
+ asm inline (spvalues()){
+  ld hl,(__spr_sgtblad)
+ }
+
+//-- sctblad()
+//-- gets the sprite color table address
+ static int sctblad()
+ asm inline (spvalues()){
+  ld hl,(__spr_sctblad)
+ }
+
+//-- length(sprite generater table address)
+//-- gets the sprite pattern length
+ static short length()
+ asm inline (spvalues()){
+  ld a,(__spr_length)
+ }
+
+//--- prepare(sprite number,x,y,color,sprite pattern)
+//--- prepares the sprite
+ public static void prepare(short argument1,short argument2,short argument3,short argument4,short argument5)
+ asm (spvalues()){
+  ld hl,3
+  add hl,sp
+  ld a,(hl)
+  ld (__spr_satbl+2),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__spr_satbl+3),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__spr_satbl),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld (__spr_satbl+1),a
+  inc hl
+  inc hl
+  ld a,(hl)
+  ld l,a
+  ld h,0
+  ld a,4
+  ld de,0
+  ex de,hl
+  ld   b,8
+  rra
+  jr   nc,$+3
+  add  hl,de
+  sla  e
+  rl   d
+  djnz $-8
+  ld   b,h
+  ld   c,l
+  ld   hl,__spr_prebuf
+  add  hl,bc
+  ex de,hl
+  ld bc,4
+  ld hl,__spr_satbl
+  ldir
+  ret
+__spr_prebuf:
+defs 128
+ }
+
+public static int getBuf()
+ asm inline (spvalues()){
+  ld hl,__spr_prebuf
+ }
+
+//--- refresh(sprite number,x,y,color,sprite pattern)
+//--- displays the prepared sprites
+public static void refresh()
+ asm (spvalues()){
+  ld hl,(__spr_satblad)
+  ex de,hl
+  ld bc,128
+  ld hl,__spr_prebuf
+  jp #5c  ;ldirvm
+ }
+
+//public static void setRotateNum(short argument1){
+// rt_max=argument1;rt_num=0;}
+
+//public static void prepare_rt(short argument1,short argument2,short argument3,short argument4,short argument5){
+// argument1=(argument1+rt_num)%rt_max;
+// prepare(argument1,argument2,argument3,argument4,argument5);
+// }
+
+//public static void refresh_rt(){
+//  vv=getBuf();v2=satblad();
+// bios.ldirvm(vv+rt_num*4,v2,(rt_max-rt_num)*4);
+// if(rt_num)bios.ldirvm(vv,v2+rt_num*4,rt_num*4);
+// bios.ldirvm(getBuf(),satblad()+(rt_num&1)*64,16*4);
+// refresh();
+// if(++rt_num==rt_max)rt_num=0;
+// }
+}

@@ -1,0 +1,27 @@
+include bios.ccz80++
+include Random.ccz80++
+include graphic.ccz80++
+include bitbuster.ccz80++
+
+class MainClass{
+static short gra[]={#6B,#6F,#00,#00,#00,#E9,#FB,#1E,#9D,#00,#1E,#AF,#77,#00,#1F,#99,#00,#1F,#F6,#FD,#1E,#BD,#1F,#7D,#1E,#1D,#3D,#FD,#1D,#78,#1F,#00,#FE,#00,#6D,#D5,#00,#E3,#1F,#FA,#9F,#00,#EF,#CB,#3F,#00,#1F,#F7,#0E,#00,#D7,#00,#BE,#68,#FF,#20,#AF,#40,#ED,#F3,#1A,#61,#1F,#00,#00,#97,#00,#BE,#3F,#FE,#22,#2E,#00,#1B,#59,#FF,#00,#4B,#F0,#79,#3F,#7C,#1C,#3C,#3C,#74,#00,#97,#F9,#3F,#BC,#1F,#AF,#49,#5F,#B7,#1F,#E3,#F2,#00,#DF,#5F,#00,#FF,#F8};
+static short buf[32*32];
+
+static int i,j;
+ static void main(){
+  bios.color(15,0,0);
+  bios.screen(8);
+  graphic.cls();
+  graphic.setpage(1,0);
+
+  graphic.put_compress(0,0,32,32,&gra,&buf);
+  graphic.setpage(0,1);
+  short a;
+  while(1){
+  a=(a+1)&15;
+   for(i=0;i<32;i++){graphic.box(32,32+i,64,1,i);}
+   graphic.copy(Random.Next()%(256-32),Random.Next()%(212-32),32,32, 0,0,graphic.SRCIMP);
+//  if(Random.Next()%500==0)graphic.cls();
+  }
+ }
+}

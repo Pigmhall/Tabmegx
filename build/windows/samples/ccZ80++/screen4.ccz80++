@@ -1,0 +1,58 @@
+// screen 4 test
+include bios.ccz80++
+include Random.ccz80++
+include sprite.ccz80++
+include chr.ccz80++
+
+class MainClass{
+ static short spptn[]={#0C,#1E,#3F,#7F,#5B,#6E,#7E,#3F,#1F,#1F,#1F,#1F,#33,#33,#33,#00,#00,#00,#00,#80,#C2,#CE,#CE,#0E,#FC,#FE,#FE,#FE,#36,#36,#36,#00};
+ static short spcol[]={#09,#09,#02,#02,#02,#02,#02,#02,#02,#02,#02,#02,#02,#05,#05,#00};
+ static short chptn[]={#E7,#C3,#FF,#C3,#C3,#C3,#91,#99,#0A,#0A,#AA,#02,#02,#0A,#0A,#0A,
+  #C3,#BD,#81,#81,#81,#81,#BD,#C3,#04,#04,#40,#70,#F0,#70,#04,#04,
+  #FF,#FF,#FF,#E7,#E7,#FF,#FF,#FF,#CC,#22,#22,#2A,#2A,#22,#22,#CC};
+
+ static short fonts[736];
+ static void main(){
+  short i,x,y;
+  int v;
+  bios.screen(1);
+  bios.ldirmv(256,&fonts,512);
+
+  bios.color(15,0,0);
+  bios.screen(4);
+  bios.cliksw(0);
+  sprite.mode(2);
+  
+  // sprite init
+  sprite.sprite(0,&spptn);
+  sprite.spritecolor(0,&spcol);
+
+  // fonts init
+  bios.cls();
+
+  bios.ldirvm(&fonts,#0+256,512);
+  bios.ldirvm(&fonts,#800+256,512);
+  bios.ldirvm(&fonts,#1000+256,512);
+  bios.filvrm(#2000,#f0,#1800);
+
+  //--- character init
+  for(v=0;v<3;v++){
+   chr.chr(v+1,&chptn+v*16);
+   chr.chrcolor(v+1,&chptn+v*16+8);
+  }
+
+  for(i=0;i<32;i++)sprite.put(i,0,209,0,0);
+
+  x=128;y=96;
+  while(1){
+   short s=bios.stick(0);
+   if(s==1)--y;if(s==3)++x;if(s==5)++y;if(s==7)--x;
+   sprite.put(0,x,y,0,0);
+   for(i=0;i<10;i++){
+    bios.vpoke(6144+Random.Next()%768,1+Random.Next()%3);}
+   for(i=0;i<32;i++){
+    bios.vpoke(6144+Random.Next()%768,0);}
+   if((bios.getkey(5)&128)==0){bios.print(10,4,"PRESS [Z]");}
+   bios.print(10,3,"SCREEN4");}
+  }
+}

@@ -1,0 +1,10 @@
+setSkyBoxVisible(1);
+setSkyBoxSunVisible(1);
+setSkyBoxSunColor(255,255,255);
+setSkyBoxSunSize(10,60);
+setSkyBoxSkyColor(161,183,255);
+setSkyBoxHorizonColor(255,255,240);
+setSkyBoxHorizonSize(4,0);
+setSunActive(1);
+setSunColor(0,255,0);
+setSunDirection(0,5,0);

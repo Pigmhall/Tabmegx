@@ -1,0 +1,21 @@
+1 cls:width 40,15:key off:color 15
+2 scx=320:scy=240
+3 screen 3,5:locate 0,0,0
+4 gosub *genspbmp
+5 *lop
+6 line(0,0)-(scx,scy),0,bf
+7 put sprite 0,(int(rnd*(10)),int(rnd*(10))),0
+8 screen
+9 wait 35
+10 if strig(0) then system
+11 goto *lop
+12 '----- bmp to sp
+13 *genspbmp
+14 restore *genspbmp_files:i=0
+15 *genspbmp_skip
+16 read a$:if a$="end" then return
+17 gload "bmp\"+a$+".bmp",(0,0)
+18 a$="":for j=0 to 15:for k=0 to 15:a$=a$+chr$(point(k,j)):next k,j
+19 sprite$(i)=a$:i=i+1:goto *genspbmp_skip
+20 *genspbmp_files
+21 data "4","end"

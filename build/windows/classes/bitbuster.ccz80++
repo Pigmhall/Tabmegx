@@ -1,0 +1,303 @@
+// bitbuster.ccz80++
+//--- the functions for decompressing with bitbuster
+
+//Copyright (c) 2002-2003 Team Bomba
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+class bitbuster{
+
+//--- depack(distination address,source address)
+//--- decompresses from the source address to the distination address
+public static int depack(int argument1,int argument2)
+ asm (){
+                  ld   hl,2
+                  add  hl,sp
+                  ld   c,(hl)
+                  inc  hl
+                  ld   b,(hl) ; BC = 2nd parameter
+                  inc  hl
+                  ld   e,(hl)
+                  inc  hl
+                  ld   d,(hl) ; DE = 1st parameter
+                  ld   h,b
+                  ld   l,c    ; HL = 1st parameter copy
+
+	ld	a,128
+	
+	exx
+	ld	de,1
+	exx
+	
+depack_loop:
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM1
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM1:
+	jp	c,output_compressed	;if set, we got lz77 compression
+	ldi				;copy byte from compressed data to destination (literal byte)
+;unrolled for extra speed
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM2
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM2:	jp	c,output_compressed	;if set, we got lz77 compression
+	ldi				;copy byte from compressed data to destination (literal byte)
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM3
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM3:	jp	c,output_compressed	;if set, we got lz77 compression
+	ldi				;copy byte from compressed data to destination (literal byte)
+	jp	depack_loop
+	
+
+;handle compressed data
+output_compressed:
+	ld	c,(hl)		;get lowest 7 bits of offset, plus offset extension bit
+	inc	hl		;to next byte in compressed data
+
+output_match:
+	ld	b,0
+	bit	7,c
+	jr	z,output_match1	;no need to get extra bits if carry not set
+
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM4
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM4:	rl	b
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM5
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM5:	rl	b
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM6
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM6:	rl	b
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM7
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM7:
+	jp	c,output_match1	;since extension mark already makes bit 7 set 
+	res	7,c		;only clear it if the bit should be cleared
+output_match1:
+	inc	bc
+	
+	
+;return a gamma-encoded value
+;length returned in HL
+	exx			;to second register set!
+	ld	h,d
+	ld	l,e             ;initial length to 1
+	ld	b,e		;bitcount to 1
+
+;determine number of bits used to encode value
+get_gamma_value_size:
+	exx
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM8
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM8:	exx
+	jr	nc,get_gamma_value_size_end	;if bit not set, bitlength of remaining is known
+	inc	b				;increase bitcount
+	jp	get_gamma_value_size		;repeat...
+
+get_gamma_value_bits:
+	exx
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM9
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM9:	exx
+	
+	adc	hl,hl				;insert new bit in HL
+get_gamma_value_size_end:
+	djnz	get_gamma_value_bits		;repeat if more bits to go
+
+get_gamma_value_end:
+	inc	hl		;length was stored as length-2 so correct this
+	exx			;back to normal register set
+	
+	ret	c
+;HL' = length
+
+	push	hl		;address compressed data on stack
+
+	exx
+	push	hl		;match length on stack
+	exx
+
+	ld	h,d
+	ld	l,e		;destination address in HL...
+	sbc	hl,bc		;calculate source address
+
+	pop	bc		;match length from stack
+
+	ldir			;transfer data
+
+	pop	hl		;address compressed data back from stack
+
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM10
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM10:	jp	c,output_compressed	;if set, we got lz77 compression
+	ldi				;copy byte from compressed data to destination (literal byte)
+	add	a,a		;shift out new bit
+	jp	nz,GET_BIT_FROM_BITSTREAM11
+	ld	a,(hl)		;get 8 bits from bitstream
+	inc	hl		;increase source data address
+	rla                     ;(bit 0 will be set!!!!)
+GET_BIT_FROM_BITSTREAM11:	jp	c,output_compressed	;if set, we got lz77 compression
+	ldi				;copy byte from compressed data to destination (literal byte)
+
+	jp	depack_loop
+}
+
+//--- depackv(distination vram address,source ram address)
+//--- decompresses from the source address to the distination vram address
+public static int depackv(int argument1,int argument2)
+ asm (){
+                  ld   hl,2
+                  add  hl,sp
+                  ld   c,(hl)
+                  inc  hl
+                  ld   b,(hl) ; BC = 2nd parameter
+                  inc  hl
+                  ld   e,(hl)
+                  inc  hl
+                  ld   d,(hl) ; DE = 1st parameter
+                  ld   h,b
+                  ld   l,c    ; HL = 2st parameter copy
+
+; Initialization
+	ld	a,128
+	exx
+	ld	de,1
+	exx
+
+; Main depack loop
+Depack_loop2:
+	add	a,a
+	jp	nz,__nxt0
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt0:	jp	c,Compressed
+	push af
+	ld	a,(hl)
+	ex	de,hl
+	call	#4D ;wrtvrm
+	ex	de,hl
+	inc	de
+	inc	hl
+	pop af
+	jp	Depack_loop2
+
+; Compressed data
+Compressed:
+	ld	c,(hl)
+	inc	hl
+Match:	ld	b,0
+	bit	7,c
+	jr	z,Match1
+	add	a,a
+	jp	nz,__nxt1
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt1:	rl	b
+	add	a,a
+	jp	nz,__nxt2
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt2:	rl	b
+	add	a,a
+	jp	nz,__nxt3
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt3:	rl	b
+	add	a,a
+	jp	nz,__nxt4
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt4:	jp	c,Match1
+	res	7,c
+Match1:	inc	bc
+	exx
+	ld	h,d
+	ld	l,e
+	ld	b,e
+Gamma_size:
+	exx
+	add	a,a
+	jp	nz,__nxt5
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt5:	exx
+	jp	nc,Gamma_size_end
+	inc	b
+	jp	Gamma_size
+Gamma_bits:
+	exx
+	add	a,a
+	jp	nz,__nxt6
+	ld	a,(hl)
+	inc	hl
+	rla
+__nxt6:	exx
+	adc	hl,hl
+Gamma_size_end:
+	djnz	Gamma_bits
+Gamma_end:
+	inc	hl
+	exx
+	jp	c,Depack_out
+	push	hl
+	exx
+	push	hl
+	exx
+	ld	h,d
+	ld	l,e
+	sbc	hl,bc
+	pop	bc
+	push	af
+__loop:	call	#4A ;rdvrm
+	ex	de,hl
+	call	#4D ;wrtvrm
+	ex	de,hl
+	inc	de
+	cpi
+	jp	pe,__loop
+	pop	af
+	pop	hl
+	jp	Depack_loop2
+; Depacker exit
+Depack_out:
+	ret
+}
+}

@@ -1,0 +1,13 @@
+`head.g2
+
+`---------- loadChr
+sub loadChr(nm,fi$){
+ i=0;flg=0;imgn=imgIm+nm*ImMaxSel;
+ while(flg=0){
+  f$=fi$+str(i)+".png";
+  if(getFileExists(f$)){
+   loadImage(imgn+i,f$);++i;}
+  else{flg=1;}}
+ imn[nm]=imgn;imw[nm]=getImageWidth(imgn);imh[nm]=getImageHeight(imgn);imc[nm]=i;} 
+
+

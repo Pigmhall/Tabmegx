@@ -1,0 +1,40 @@
+<html><head><title>Sound editor</title></head><body><h1>Sound editor</h1>
+
+1. Make the sound effect data with Sound Editor<br>
+<br>
+Launch Sound Editor from [Tools]-[Sound Editor] menu.<br>
+The sound effect data has the following parameters.<br>
+<pre>Volume... sets the volume
+Tone..... sets the frequency of the tone
+Noise.... sets the frequency of the noise
+Tone+.... increases or decreases the frequency of the tone
+Volume+.. increases or decreases the frequency of the volume
+Wait..... waits
+Loop..... repeats
+Register. writes the value of PSG directly</pre>
+<br>
+<hr>
+2. Export the sound effect data<br>
+<br>
+Export the sound effect data from [File]-[Export] menu.<br>
+<br>
+<hr>
+3. Use the sound effect data<br>
+<br>
+- Example
+<pre>include bios.ccz80++
+include sound.ccz80++
+
+class MainClass{
+ static short sedata[]={## Paste the sound effect data to here ##};
+
+ static void main(){
+  sound.set(&sedata);
+  sound.play(1);
+  while(bios.strig(0)==0);
+  sound.play(2);
+  }
+ }</pre>
+<hr size=3><a href="../readme.html">back</a>
+
+</body></html>

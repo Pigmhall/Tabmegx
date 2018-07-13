@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="tabmeg.exe"/>
+    <OBJFILES value="tabmeg.obj megson1.obj fod.obj megnumber.obj megkeyas.obj megimage.obj 
+      SPI_LOAD.obj megoption.obj megftp.obj megcmd.obj jis2000.obj megperl.obj"/>
+    <RESFILES value="tabmeg.res"/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES) megson1.dfm megnumber.dfm megkeyas.dfm megimage.dfm 
+      megoption.dfm megftp.dfm megcmd.dfm megperl.dfm"/>
+    <LIBFILES value=""/>
+    <LIBRARIES value="IcsBcb60.lib bcb2kaxserver.lib indy.lib dbxcds.lib dclocx.lib soaprtl.lib 
+      bcbie.lib dbexpress.lib inetdbxpress.lib inetdb.lib inetdbbde.lib inet.lib 
+      xmlrtl.lib visualdbclx.lib ibxpress.lib teeqr.lib tee.lib teedb.lib 
+      teeui.lib bdecds.lib cds.lib dsnap.lib vcldbx.lib bdertl.lib qrpt.lib 
+      adortl.lib dbrtl.lib vcldb.lib bcbsmp.lib nmfast.lib vclx.lib rtl.lib 
+      vcl.lib"/>
+    <SPARELIBS value="vcl.lib rtl.lib vclx.lib nmfast.lib bcbsmp.lib vcldb.lib dbrtl.lib 
+      adortl.lib qrpt.lib bdertl.lib vcldbx.lib dsnap.lib cds.lib bdecds.lib 
+      teeui.lib teedb.lib tee.lib teeqr.lib ibxpress.lib visualdbclx.lib 
+      xmlrtl.lib inet.lib inetdbbde.lib inetdb.lib inetdbxpress.lib 
+      dbexpress.lib bcbie.lib soaprtl.lib dclocx.lib dbxcds.lib indy.lib 
+      bcb2kaxserver.lib IcsBcb60.lib"/>
+    <PACKAGES value="vcl.bpi rtl.bpi vclx.bpi bcbsmp.bpi dbrtl.bpi adortl.bpi vcldb.bpi 
+      qrpt.bpi bdertl.bpi vcldbx.bpi dsnap.bpi cds.bpi bdecds.bpi teeui.bpi 
+      teedb.bpi tee.bpi teeqr.bpi ibxpress.bpi visualclx.bpi visualdbclx.bpi 
+      vclie.bpi xmlrtl.bpi inet.bpi inetdbbde.bpi inetdbxpress.bpi inetdb.bpi 
+      nmfast.bpi bcbie.bpi soaprtl.bpi dclocx.bpi dbexpress.bpi dbxcds.bpi 
+      indy.bpi bcb2kaxserver.bpi IcsBcb60.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="NO_WIN32_LEAN_AND_MEAN"/>
+    <SYSDEFINES value="NO_STRICT"/>
+    <MAINSOURCE value="tabmeg.cpp"/>
+    <INCLUDEPATH value="..;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;C:\projects\megson2;$(BCB)\include;$(BCB)\include\vcl"/>
+    <LIBPATH value="..;&quot;C:\Program Files\Borland\CBuilder6\Projects&quot;;C:\projects\megson2;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-O2 -H=$(BCB)\lib\vcl60.csm -Hc -Vx -Ve -X- -a8 -b- -d -k- -vi -c -tW -tWM"/>
+    <PFLAGS value="-$Y- -$L- -$D- -$C- -$A8 -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-D&quot;&quot; -aa -Tpe -x -Gn"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0w32.obj sysinit.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cp32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="tabmeg.res" FORMNAME="" UNITNAME="tabmeg.res" CONTAINERID="ResTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="tabmeg.cpp" FORMNAME="" UNITNAME="tabmeg" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megson1.cpp" FORMNAME="FrmMeg1" UNITNAME="megson1" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="fod.cpp" FORMNAME="" UNITNAME="fod" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megnumber.cpp" FORMNAME="FrmNumber" UNITNAME="megnumber" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megkeyas.cpp" FORMNAME="FrmKeyas" UNITNAME="megkeyas" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megimage.cpp" FORMNAME="FrmImage" UNITNAME="megimage" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SPI_LOAD.CPP" FORMNAME="" UNITNAME="SPI_LOAD" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megoption.cpp" FORMNAME="FrmOption" UNITNAME="megoption" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megftp.cpp" FORMNAME="FrmFtp" UNITNAME="megftp" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megcmd.cpp" FORMNAME="FrmCmd" UNITNAME="megcmd" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="jis2000.cpp" FORMNAME="" UNITNAME="jis2000" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="megperl.cpp" FORMNAME="FrmPerl" UNITNAME="megperl" CONTAINERID="C/C++ コンパイラ" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1041
+CodePage=932
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+c:\program files\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+c:\program files\borland\cbuilder6\Bin\bcbie60.bpl=Borland C++Builder Internet Explorer 5 Components Package
+
+[HistoryLists\hlIncludePath]
+Count=2
+Item0=..;C:\Program Files\Borland\CBuilder6\Projects;C:\projects\megson2;$(BCB)\include;$(BCB)\include\vcl
+Item1=..\;..;C:\Program Files\Borland\CBuilder6\Projects;C:\projects\megson2;$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=2
+Item0=..;C:\Program Files\Borland\CBuilder6\Projects;C:\projects\megson2;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=..\;..;C:\Program Files\Borland\CBuilder6\Projects;C:\projects\megson2;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=2
+Item0=NO_WIN32_LEAN_AND_MEAN
+Item1=NO_WIN32_LEAN_AND_MEAN;_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+  </IDEOPTIONS>
+</PROJECT>

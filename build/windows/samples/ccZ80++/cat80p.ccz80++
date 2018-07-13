@@ -1,0 +1,50 @@
+// moving 31 cats
+include bios.ccz80++
+include Random.ccz80++
+include String.ccz80++
+include sprite.ccz80++
+
+class MainClass{
+ static short spptn[]={#48,#F8,#A8,#F9,#61,#7F,#7F,#55};
+ const cm=32;
+ static short cx[cm],cy[cm],buf[32];
+ static void main(){
+  short i,sx,sy;
+  int px,py;
+  bios.screen(1);
+  
+  bios.color(15,0,0);
+  bios.cliksw(0);
+
+  //-- sprite setting
+  sprite.mode(0); // 0:8x8 1:8x8(x2) 2:16x16 3:16x16(x2)
+  sprite.sprite(0,&spptn);
+  
+  //-- init
+  px=&cx;py=&cy;
+  for(i=0;i<cm;i++){
+   *(px++)=Random.Next()%(256-8);
+   *(py++)=Random.Next()%(192-8);
+   }
+
+  //-- main loop
+  while(1){
+   bios.vpoke(6144,65);
+   bios.print(3,0,"-- moving 31 cats --");
+   String.IntToDec(&buf,Random.Next());
+   bios.print(21,0,&buf);
+   
+   sprite.put(0,128,96,7,0);
+   px=&cx;py=&cy;
+   for(i=1;i<cm;i++){
+    sx=*px;sy=*py;
+    sprite.put(i,sx,sy,2,0);
+    sx+=Random.Next()%3-1;
+    sy+=Random.Next()%3-1;
+    *(px++)=sx;*(py++)=sy;}
+
+   //-- esc  
+   if((bios.getkey(7)&4)==0){bios.kilbuf();break;}
+  }
+ }  
+}

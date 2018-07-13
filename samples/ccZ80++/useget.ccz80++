@@ -1,0 +1,19 @@
+include bios.ccz80++
+include Random.ccz80++
+include graphic.ccz80++
+
+class MainClass{
+ static short buf[32*32+8];
+ static void main(){
+  bios.color(15,0,0);
+  bios.screen(5);
+  int i;
+  graphic.setpage(0,0);
+  for(i=0;i<32;i++)graphic.box(i,0,2,32,(i&15)|((i&15)*16));
+  graphic.get(0,0,16,16,&buf);
+
+  graphic.put(100,100,16,16,&buf);
+  while(1);
+   
+ }
+}

@@ -1,0 +1,37 @@
+<html><head><title>graphic</title></head><body><h1>graphic</h1><hr size=3><b>cls()</b><pre>clears the current screen
+</pre><hr><b>vpoke(VRAM address,value)</b><pre>writes the value to VRAM
+</pre><hr><b>vpeek(VRAM address)</b><pre>reads the value from VRAM
+</pre><hr><b>copy(XDest,YDest,Width,Height,XSrc,YSrc,logical operation value)</b><pre>copies VRAM to VRAM
+logical operation value:
+ graphic.SRCIMP
+ graphic.SRCAND
+ graphic.SRCOR
+ graphic.SRCXOR
+ graphic.SRCNOT
+ graphic.SRCTIMP
+ graphic.SRCTAND
+ graphic.SRCTOR
+ graphic.SRCTXOR
+ graphic.SRCTNOT
+</pre><hr><b>setpage(draw page,src page)</b><pre>sets the drawing page and the source page of copy, put, box
+</pre><hr><b>page(display page)</b><pre>changes the display page
+</pre><hr><b>page(draw page,src page)</b><pre>sets the drawing page and the source page of copy, put, box
+</pre><hr><b>put(XDest,YDest,Width,Height,src pointer)</b><pre>copies RAM to VRAM
+</pre><hr><b>put_compress(XDest,YDest,Width,Height,src pointer,buffer)</b><pre>copies compressed data to VRAM
+</pre><hr><b>get(XDest,YDest,Width,Height,src pointer)</b><pre>copies VRAM to RAM
+</pre><hr><b>get_sc8(XDest,YDest,Width,Height,src pointer)</b><pre>copies VRAM to RAM in SCREEN8
+</pre><hr><b>color(color numver,R,G,B)</b><pre>sets the color palette
+</pre><hr><b>filvrm(VRAM address,value,length)</b><pre>fills VRAM with value
+</pre><hr><b>box(XDest,YDest,width,height,color)</b><pre>draws the box
+</pre><hr><b>line(X1,Y1,X2,Y2,color)</b><pre>draws the line
+</pre><hr><b>pset(X,Y,color)</b><pre>draws the point
+</pre><hr><b>point(X,Y)</b><pre>gets color from the point
+</pre><hr><b>save(filename,XSrc,YSrc,width,height)</b><pre>saves the picture to the file
+</pre><hr><b>load(filename,XDest,YDest)</b><pre>loads the picture from the file
+</pre><hr><b>vdp(port,value)</b><pre>writes the value to vdp
+</pre><hr><b>vdp(port)</b><pre>read the value from vdp
+</pre><hr><b>colorrestore()</b><pre>restores the color palette
+</pre><hr><b>colorinit()</b><pre>initilizes the color palette
+</pre><hr><b>bload(file)</b><pre>loads VRAM from the file. Same as BLOAD"...",S in MSX-BASIC
+</pre><hr><b>bsave(file,start vram address,end vram address)</b><pre>saves VRAM to the file. Same as BSAVE"...",from,to,S in MSX-BASIC
+<hr size=3><a href="index.html">back</a></body></html>

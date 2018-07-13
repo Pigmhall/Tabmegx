@@ -1,0 +1,9 @@
+array byte spptn={
+};
+array byte spcol={
+};
+
+// sprite init
+define spnum=1;
+ldirvm(spptn,#3800,16*spnum);
+ldirvm(spcol,#1c00,16*spnum);

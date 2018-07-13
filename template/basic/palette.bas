@@ -1,0 +1,1 @@
+fori=0to15:color=(i,rand(8),rand(8),rand(8)):nexti

@@ -1,0 +1,173 @@
+// xmgs.ccz80++
+//--- the functions for using XMGS
+// clear 200,&ha4ff
+include String.ccz80++
+include bios.ccz80++
+
+class xmgs{
+//--- open()
+//--- starts to use xmgs
+public static void open()
+ asm{
+  ld hl,_XMGS_DATA
+  ld de,#f560
+  ld bc,49
+  ldir
+  ld hl,_XMGS_LDR
+  ld de,#f5b8
+  ld bc,102
+  ldir
+  jp #f5b8
+_XMGS_DATA:
+ defb #00,#58,#4D,#47,#53,#30,#37,#20,#20,#53,#59,#53,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#00,#4D,#47,#53,#44,#52,#56,#20,#20,#43,#4F,#4D,#00
+_XMGS_LDR:
+ defb #3A,#0D,#FE,#FE,#C9,#20,#07,#3A,#03,#FE,#FE,#C9,#28,#09,#3E,#01,#32,#00,#F8,#CD,#C0,#00,#C9,#2A,#C6,#F6,#22,#19,#F6,#EB,#0E,#1A,#D5,#CD,#7D,#F3,#D1,#ED,#73,#E2,#F5,#21,#00,#00,#B7,#ED,#52,#11,#80,#08,#B7
+ defb #ED,#52,#3E,#02,#38,#D7,#11,#60,#F5,#0E,#0F,#CD,#7D,#F3,#B7,#3E,#03,#20,#CA,#21,#01,#00,#22,#6E,#F5,#2B,#22,#81,#F5,#22,#83,#F5,#26,#03,#11,#60,#F5,#0E,#27,#CD,#7D,#F3,#B7,#20,#E2,#C3,#00,#00,#0D,#0A,#0D
+}
+
+//--- close()
+//--- quits to use xmgs
+public static void close(){
+ String.Copy(bios.cmdbuf,"\xeb");
+ cmd();}
+
+//--- load(filename,address)
+//--- loads the binary file to the memory
+public static void load(int argument1,int argument2){
+ String.Copy(bios.cmdbuf,"\xb5(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd();
+}
+
+//--- bload(filename,address)
+//--- loads the binary file to the memory. Skips the top 7 bytes. 
+public static void bload(int argument1,int argument2){
+ String.Copy(bios.cmdbuf,"\xcf(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd(); 
+}
+
+//--- play(address)
+//--- plays the mgs
+public static void play(int argument1){
+ String.Copy(bios.cmdbuf,"\xc1(");
+ String.IntToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd();}
+
+//--- stop()
+//--- stops the mgs
+public static void stop(){
+ *(bios.cmdbuf)=0;
+ cmd();}
+
+//--- mag(filename,page)
+//--- load the mag file
+public static void mag(int argument1,short argument2){
+ String.Copy(bios.cmdbuf,"MAG(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.ShortToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd(); 
+}
+
+//--- mag_nopal(filename,page)
+//--- loads the mag file. not updates the screen palette.
+public static void mag_nopal(int argument1,short argument2){
+ String.Copy(bios.cmdbuf,"MAG\xf2(\x22");
+ String.Concat(bios.cmdbuf,argument1);
+ String.Concat(bios.cmdbuf,"\x22,");
+ String.ShortToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd(); 
+}
+
+//--- vol(volume)
+//--- changes the volume 0-15
+public static void vol(short argument1){
+ String.Copy(bios.cmdbuf,"VOL(");
+ String.ShortToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd();}
+
+//
+public static void cmd()
+asm inline(){
+ ld hl,#F55E
+ ld ix,(#39DA) ;cmd
+ call #159 ;calbas
+ }
+
+//--- mm(src address,dest address,length)
+//--- copies RAM to RAM
+public static void mm(int argument1,int argument2,int argument3){
+ String.Copy(bios.cmdbuf,"MM(");
+ String.IntToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument3);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,")");
+ cmd();}
+
+//--- mv(src address,dest vram address,length,bank)
+//--- copies RAM to VRAM
+public static void mv(int argument1,int argument2,int argument3,short argument4){
+ String.Copy(bios.cmdbuf,"MV(");
+ String.IntToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument3);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ static short buf[]=",0)";buf[1]=48+argument4;
+ String.Concat(bios.cmdbuf,&buf);
+ cmd();}
+
+//--- vm(src vram address,dest address,length,bank)
+//--- copies VRAM to RAM
+public static void vm(int argument1,int argument2,int argument3,short argument4){
+ String.Copy(bios.cmdbuf,"VM(");
+ String.IntToDec(bios.cmdnum,argument1);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument2);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ String.Concat(bios.cmdbuf,",");
+ String.IntToDec(bios.cmdnum,argument3);
+ String.Concat(bios.cmdbuf,bios.cmdnum);
+ static short buf[]=",0)";buf[1]=48+argument4;
+ String.Concat(bios.cmdbuf,&buf);
+ cmd();}
+
+//
+public static void clear()
+asm(){
+ ld hl,_xmgs_clear
+ ld ix,(#3950) ;clear
+; ld ix,(#394E) ;print
+ jp #159
+_xmgs_clear:
+  defm "200,&HA4FF"
+  defb 0
+} 
+
+}

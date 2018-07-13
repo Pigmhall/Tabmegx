@@ -1,0 +1,6 @@
+//-- copy font from screen1
+array byte fonts[#800];
+screen(1);ldirmv(0,fonts,#800);screen(2);
+cls();
+ldirvm(fonts,#0,#800);ldirvm(fonts,#800,#800);ldirvm(fonts,#1000,#800);
+filvrm(#2000,#f0,#1800);

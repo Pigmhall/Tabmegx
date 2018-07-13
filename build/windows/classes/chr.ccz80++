@@ -1,0 +1,141 @@
+// chr.ccz80++
+//--- the functions for the management of the characters in SCREEN 2 or 4
+include bios.ccz80++
+
+class chr{
+
+//--- chr(character code,character pattern data)
+//--- sets the character pattern
+public static void chr(int argument1,int argument2)
+asm(){
+  ld   hl,2
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  ld h,b
+  ld l,c
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  ex de,hl
+  push hl
+  push de
+  push hl
+  push de
+  ld bc,8
+  call #5c ;ldirvm
+  ;bank2
+  pop hl
+  ld bc,#800
+  add hl,bc
+  ex de,hl
+  pop hl
+  ld bc,8
+  call #5c ;ldirvm
+  ;bank3
+  pop hl
+  ld bc,#1000
+  add hl,bc
+  ex de,hl
+  pop hl
+  ld bc,8
+  call #5c ;ldirvm
+  ret 
+ }  
+
+//--- chrcolor(character code,character color pattern data)
+//--- sets the chr color pattern
+public static void chrcolor(int argument1,int argument2)
+asm(){
+  ld   hl,2
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  ld h,b
+  ld l,c
+  add hl,hl
+  add hl,hl
+  add hl,hl
+  ld bc,#2000
+  add hl,bc
+  ex de,hl
+  push hl
+  push de
+  push hl
+  push de
+  ld bc,8
+  call #5c ;ldirvm
+  ;bank2
+  pop hl
+  ld bc,#800
+  add hl,bc
+  ex de,hl
+  pop hl
+  ld bc,8
+  call #5c ;ldirvm
+  ;bank3
+  pop hl
+  ld bc,#1000
+  add hl,bc
+  ex de,hl
+  pop hl
+  ld bc,8
+  call #5c ;ldirvm
+  ret 
+}
+
+//--- applyBold()
+//--- applies bold to fonts
+public static void applyBold()
+asm inline {
+ ld     hl,#0108
+ ld     de,#0400
+ __ChrBold:call   #004a
+ ld     b,a   
+ srl    a     
+ or b
+ call   #004d
+ inc    hl   
+ rst    #20
+ jr     nz,__ChrBold
+}
+
+//--- applyLeftBold()
+//--- applies left bold to fonts
+public static void applyLeftBold()
+asm inline {
+ ld     hl,#0108
+ ld     de,#0400
+ __ChrLeftBold:call   #004a
+ ld     b,a   
+ srl    a     
+ and    #7c
+ ld     c,a
+ ld     a,b
+ and    #e0
+ or     c
+ call   #004d
+ inc    hl   
+ rst    #20
+ jr     nz,__ChrLeftBold
+}
+
+//--- applyItalic()
+//--- applies italic to fonts
+public static void applyItalic(){
+ static int i;static short a;
+ static short chr_ai[]={8,4,4,2,2,2,1,1};
+ for(i=0;i<#7ff;i++){a=bios.vpeek(i);
+  a=a|(a/2);bios.vpoke(i,a/chr_ai[i&7]);}}
+
+}

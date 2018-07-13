@@ -1,0 +1,22 @@
+// Amstrad CPC test1
+include Indirections464.ccz80++
+include Screen.ccz80++
+include Text.ccz80++
+include Random.ccz80++
+include GameKeyboard.ccz80++
+include GameScreen.ccz80++
+include GameSprite.ccz80++
+
+class MainClass{
+static void main(){
+ Screen.Mode(0);
+ Screen.Border(0,0);
+ Screen.Ink(0,0,0);
+ Screen.Ink(1,18,14);
+ Text.Paper(0);
+ Text.Pen(1);
+ Text.Locate(5,12);
+ Text.PrintString("Hello CPC.");
+ while(1);
+ }
+}

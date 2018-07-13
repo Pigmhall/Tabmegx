@@ -1,0 +1,72 @@
+`---------- setM for Tab
+const SCX=640,SCY=480;
+const imgIm=100;
+const ImMaxSel=40;
+const obM=1;
+const MM=500,IMM=100;
+dim m[MM],mx[MM],my[MM],mz[MM],mh[MM],mxx[MM],myy[MM],mzz[MM],mrx[MM],mry[MM],mrxx[MM],mryy[MM],mrzz[MM],md[MM],mrz[MM],ms[MM],msmo[MM],msx[MM],msy[MM],msz[MM],mtxmo[MM],mc[MM],mn[MM],ma[MM];
+dim imn[IMM],imc[IMM],imw[IMM],imh[IMM],imc[IMM];
+
+const I_CHR1=0,I_CHR2=4,I_CHR3=8,I_CHR4=12,I_CHR5=16,I_CHR6=20,I_CHR7=24,I_CHR8=28,I_CHR9=32,I_CHR10=36,I_CHR11=40,I_CHR12=44,I_CHR13=48,I_CHR14=52,I_CHR15=56,I_CHR16=60,I_CHR17=64,I_CHR18=68,I_CHR19=72,I_CHR20=76;
+
+setSyncRate(30,0);
+setVirtualResolution(SCX,SCY);
+setWindowSize(512,384,0);
+setWindowPosition(0,64);
+
+loadChr(I_CHR1,"1.png");
+
+cleart(m,MM);
+for(i=0 to 500){
+ c=setMBox(rand(501)-250,rand(501)-250,rand(501)-250,50,50,50,1);
+ mtxmo[c]=1;mc[c]=I_CHR1;
+ setObjectTransparency(obM+i,2);
+ ma[c]=200;
+}
+  
+while(1){
+ loopM();
+ sync();
+ if(getRawKeyPressed(27)){exit;}
+}
+
+`--- loopM
+sub loopM(){
+`----- m move
+ for(i=0 to MM){
+  if(m[i]){sx=mx[i];sy=my[i];sz=mz[i];
+   switch(m[i]){
+case 1:mry[i]=wrapvalue(mry[i]+10);
+ break;
+}
+   if(m[i]==0){delObject(obM+i);}else{
+   
+   setObjectPosition(obM+i,sx,sy,sz);
+   setObjectRotation(obM+i,mrx[i],mry[i],mrz[i]);
+   if(mtxmo[i]==1){setObjectImage(obM+i,imn[mc[i]]+mn[i],0);}
+   if(ma[i]!=255){setObjectColor(obM+i,255,255,255,ma[i]);}
+   f#=ms[i];setObjectScale(obM+i,f#/100,f#/100,f#/100);
+   mx[i]=sx;my[i]=sy;mz[i]=sz;}}}
+}
+
+`--- setM
+sub delObject(m1){
+ if(getObjectExists(m1)){deleteObject(m1);}}
+sub setM(x,y,z,sz,obj,m1){
+ cf(m,MM,i);if(i!=-1){m[i]=m1;mx[i]=x;my[i]=y;mz[i]=z;mrx[i]=0;mry[i]=0;mrz[i]=0;mxx[i]=0;myy[i]=0;mzz[i]=0;ms[i]=sz;msmo[i]=0;msx[i]=sz;msy[i]=sz;msz[i]=sz;md[i]=0;mh[i]=0;mtxmo[i]=0;mc[i]=0;mn[i]=0;ma[i]=255;
+ cloneObject(obM+i,obj);}return i;}
+sub setMi(x,y,z,sz,obj,m1){
+ cf(m,MM,i);if(i!=-1){m[i]=m1;mx[i]=x;my[i]=y;mz[i]=z;mrx[i]=0;mry[i]=0;mrz[i]=0;mxx[i]=0;myy[i]=0;mzz[i]=0;ms[i]=sz;md[i]=0;mh[i]=0;
+  instanceObject(obM+i,obj);}return i;}
+sub setMt(x,y,z,sz,obj,m1,imgn){
+ cf(m,MM,i);if(i!=-1){m[i]=m1;mx[i]=x;my[i]=y;mz[i]=z;mrx[i]=0;mry[i]=0;mrz[i]=0;mxx[i]=0;myy[i]=0;mzz[i]=0;ms[i]=sz;msmo[i]=0;msx[i]=sz;msy[i]=sz;msz[i]=sz;md[i]=0;mh[i]=0;mtxmo[i]=1;mc[i]=imgn;mn[i]=0;ma[i]=255;
+  cloneObject(obM+i,obj);
+  setObjectTransparency(obM+i,1);}return i;}
+sub setMBox(x,y,z,sx,sy,sz,m1){
+ cf(m,MM,i);if(i!=-1){m[i]=m1;mx[i]=x;my[i]=y;mz[i]=z;mrx[i]=0;mry[i]=0;mrz[i]=0;mxx[i]=0;myy[i]=0;mzz[i]=0;ms[i]=sz;msmo[i]=0;msx[i]=sz;msy[i]=sz;msz[i]=sz;md[i]=0;mh[i]=0;mtxmo[i]=0;mc[i]=0;mn[i]=0;ma[i]=255;
+ createObjectBox(obM+i,sx,sy,sz);}return i;}
+`---------- loadChr
+sub loadChr(nm,fi$){
+ i=0;flg=0;imgn=imgIm+nm*ImMaxSel;f$=left(fi$,len(fi$)-4);fi$=f$;
+ while(flg=0){if(getFileExists(fi$+".png")){loadImage(imgn+i,fi$+".png");++i;fi$=f$+chr(96+i);}else{flg=1;}}
+ imn[nm]=imgn;imw[nm]=getImageWidth(imgn);imh[nm]=getImageHeight(imgn);imc[nm]=i;} 

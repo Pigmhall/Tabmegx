@@ -1,0 +1,67 @@
+nisfxdrv
+
+Nisfxdrv is the sound driver for DM-SYSTEM2.
+You can create the sound effect data with seedit.exe for Windows.
+Nisfxdrv has the following parameters.
+
+Volume... sets the volume
+Tone..... sets the tone
+Noise.... sets the frequency of noise
+Tone+.... increases or decreases the tone
+Volume+.. increases or decreases the volume
+Wait..... waits
+Loop..... loops
+Register. write the value of PSG directly
+
+
+- Data format Specifications
+
+Header
++0~+1 relative data address
+----------------------------------------------------------------------------
+Body
+
++0 Property
+bit	7 6 5 4 3 2 1 0
+	---------------
+	0 0 0 0 0 0 0 n		n:noise on/off
+
++1~ Data
+
+* 0-Volume
+bit	7 6 5 4 3 2 1 0
+	---------------
+	0 0 0 X v v v v		v:(0~15)
+
+* 1-Tone
+1st:	0 0 1 |high4|		(0~4095)
+2nd:	|     low8    |
+
+* 2-Noise
+	0 1 0 X n n n n		(0~15)
+
+* 3-Tone+
+1st:	0 1 1 X p p p p		p: increase or decrease
+2nd:	t t t t t t t t		t: time
+
+* 4-Volume+
+	1 0 0 X v v v v		volume:relative (-8~+7)
+
+* 5-Wait
+	1 0 1 w w w w w		wait:(0~31)
+
+* 6-Loop
+1st:	1 1 0 w w w w w		count:(0~31) 0:End
+2nd:	l l l l l l l l		goto:(0~254)
+
+* 7-Register
+1st:    1 1 1 X X X X X         register(0~13)
+2nd:    v v v v v v v v         value:(0~255)
+
+
+
+--------------------------------------------
+N.I
+web: http://ni.x0.com/msx/
+mail: n.i@10-59.com
+-----------------------------

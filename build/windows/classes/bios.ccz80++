@@ -1,0 +1,695 @@
+// bios.ccz80++
+//--- the basic functions with BIOS
+include String.ccz80++
+
+class bios{
+ public const cmdbuf=#F55E;
+ public const cmdnum=#F55E+200;
+ public const ramad0=#F341;
+ public const ramad1=#F342;
+ public const ramad2=#F343;
+ public const ramad3=#F344;
+
+  public static void values()
+    asm
+    {
+      __chkram: equ #0000
+      __synchr: equ #0008
+      __rdslt:  equ #000C
+      __chrgtr: equ #0010
+      __wrslt:  equ #0014
+      __outdo:  equ #0018
+      __calslt: equ #001C
+      __dcompr: equ #0020
+      __enaslt: equ #0024
+      __getypr: equ #0028
+      __callf:  equ #0030
+      __keyint: equ #0038
+      __initio: equ #003B
+      __inifnk: equ #003E
+      __disscr: equ #0041
+      __enascr: equ #0044
+      __wrtvdp: equ #0047
+      __rdvrm:  equ #004A
+      __wrtvrm: equ #004D
+      __setrd:  equ #0050
+      __setwrt: equ #0053
+      __filvrm: equ #0056
+      __ldirmv: equ #0059
+      __ldirvm: equ #005C
+      __chgmod: equ #005F
+      __chgclr: equ #0062
+      __nmi:    equ #0066
+      __clrspr: equ #0069
+      __initxt: equ #006C
+      __init32: equ #006F
+      __inigrp: equ #0072
+      __inimlt: equ #0075
+      __settxt: equ #0078
+      __sett32: equ #007B
+      __setgrp: equ #007E
+      __setmlt: equ #0081
+      __calpat: equ #0084
+      __calatr: equ #0087
+      __gspsiz: equ #008A
+      __grpprt: equ #008D
+      __gicini: equ #0090
+      __wrtpsg: equ #0093
+      __rdpsg:  equ #0096
+      __strtms: equ #0099
+      __chsns:  equ #009C
+      __chget:  equ #009F
+      __chput:  equ #00A2
+      __lptout: equ #00A5
+      __lptstt: equ #00A8
+      __cnvchr: equ #00AB
+      __pinlin: equ #00AE
+      __inlin:  equ #00B1
+      __qinlin: equ #00B4
+      __breakx: equ #00B7
+      __beep:   equ #00C0
+      __cls:    equ #00C3
+      __posit:  equ #00C6
+      __fnksb:  equ #00C9
+      __erafnk: equ #00CC
+      __dspfnk: equ #00CF
+      __totext: equ #00D2
+      __gtstck: equ #00D5
+      __gttrig: equ #00D8
+      __gtpad:  equ #00DB
+      __gtpdl:  equ #00DE
+      __tapion: equ #00E1
+      __tapin:  equ #00E4
+      __tapiof: equ #00E7
+      __tapoon: equ #00EA
+      __tapout: equ #00ED
+      __tapoof: equ #00F0
+      __stmotr: equ #00F3
+      __chgcap: equ #0132
+      __chgsnd: equ #0135
+      __rslreg: equ #0138
+      __wslreg: equ #013B
+      __rdvdp:  equ #013E
+      __snsmat: equ #0141
+      __phydio: equ #0144
+      __isflio: equ #014A
+      __outdlp: equ #014D
+      __kilbuf: equ #0156
+      __calbas: equ #0159
+    }
+
+//--- screen(screen number)
+//--- changes the screen mode
+ public static void screen(short argument1)
+ asm inline (values())
+ {
+      call __chgmod
+ }
+
+//--- color(text color,background color,border color)
+//--- changes the screen color
+ public static void color(short argument1, short argument2, short argument3)
+ asm (values())
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   a,(hl)             ; A = 3th parameter
+      ld   (#F3EB),a
+      inc  hl
+      inc  hl
+      ld   a,(hl)             ; A = 2nd parameter
+      ld   (#F3EA),a
+      inc  hl
+      inc  hl
+      ld   a,(hl)             ; A = 1st parameter
+      ld   (#F3E9),a
+      jp   __chgclr
+ }
+	
+//--- keyon()
+//--- displays the function key text
+  public static void keyon()
+    asm inline (values())
+    {
+      call __dspfnk
+    }
+
+//--- keyoff()
+//--- disibles the function key text
+  public static void keyoff()
+    asm inline (values())
+    {
+      call __erafnk
+    }
+
+//--- vpoke(VRAM address,value)
+//--- writes the value to VRAM
+ public static void vpoke(int argument1,short argument2)
+ asm (values()){
+  ld   hl,3
+  add  hl,sp
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  jp __wrtvrm
+ }
+
+//--- vpeek(VRAM address)
+//--- reads the value from VRAM
+ public static short vpeek(int argument1)
+ asm inline (values())
+ {
+  call __rdvrm
+ }
+
+//--- cls()
+//--- clear the current screen
+ public static void cls()
+ asm (values()){
+  ld hl,6144
+  ld a,32
+  ld bc,768
+  jp __filvrm
+ }
+
+//--- stick(kind)
+//--- gets the keyboard or the joystick direction
+ public static short stick(short argument1)
+ asm inline (values())
+ {
+  call __gtstck
+ }
+
+//--- strig(kind)
+//--- gets the status of the space key or the buttons
+ public static short strig(short argument1)
+ asm inline (values())
+ {
+  call __gttrig
+ }
+
+//--- kilbuf()
+//--- deletes the key buffer
+ public static void kilbuf()
+ asm inline (values())
+ {
+  call __kilbuf
+ }
+
+//--- ldirvm(src pointer,VRAM address,length)
+//--- copies RAM to VRAM
+ public static void ldirvm(int argument1,int argument2,int argument3)
+ asm (values())
+ {
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+  jp __ldirvm
+ }
+
+//--- copy(dst pointer,src pointer,length)
+//--- copies RAM to RAM
+ public static void copy(int argument1,int argument2,int argument3)
+ asm (values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+  ex de,hl
+  ldir
+  ret
+}
+
+//--- sound(register,value)
+//--- writes the value to the psg
+ public static void sound(short argument1,short argument2)
+ asm (values()){
+  ld   hl,3
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  inc hl
+  ld a,(hl)
+  jp __wrtpsg
+ }
+
+ public static short sound(short argument1)
+ asm inline (values())
+ {
+  call __rdpsg
+ }
+ 
+//--- rslreg()
+//--- reads the primary slot register
+ public static short rslreg()
+ asm inline (values())
+ {
+  call __rslreg
+ }
+
+//--- enaslt(slot num)
+//--- switches indicated slot at indicated page on perpetual
+ public static void enaslt(short argument1)
+ asm inline (values()){
+  ld hl,#8000
+  call __enaslt
+  ei
+ }
+
+//--- chgToRam1()
+//--- changes page 1 to RAM. usable on DISK-BASIC.
+public static void chgToRam1()
+ asm inline{
+  ld a,(#F342)
+  ld hl,#4000
+  call __enaslt
+  ei
+ }
+
+//--- chgToRom1()
+//--- changes page 1 to MAIN-ROM
+public static void chgToRom1()
+ asm inline{
+  ld a,(#FCC1)
+  ld hl,#4000
+  call __enaslt
+  ei
+ }
+
+//--- rdslt(address,slot num)
+//--- reads the value from the address in another slot
+ public static short rdslt(int argument1,short argument2)
+ asm (values()){
+  ld   hl,3
+  add  hl,sp
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  jp __rdslt
+ }
+
+//--- wrslt(address,slot num,value)
+//--- writes the value to the address in another slot
+ public static short wrslt(int argument1,short argument2,short argument3)
+ asm (values()){
+  ld   hl,3
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  ld h,b
+  ld l,c
+  jp __wrslt
+ }
+
+//--- getkey(value)
+//--- gets the key status
+ public static short getkey(short argument1)
+ asm inline (values()){
+  call __snsmat
+ }
+
+//--- ldirmv(VRAM address,destination pointer,length)
+//--- copies VRAM to RAM
+ public static void ldirmv(int argument1,int argument2,int argument3)
+ asm (values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld h,(hl)
+  ld l,a
+  jp __ldirmv
+}
+
+//--- filvrm(VRAM address,value,length)
+//--- fills VRAM with the value
+ public static void filvrm(int argument1,short argument2,int argument3)
+ asm (values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  inc hl
+  inc hl
+  ld a,(hl)
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  jp __filvrm
+}
+
+//--- print(x,y,string)
+//--- prints text
+ public static void print(short argument1,short argument2,int argument3)
+ asm (values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  push bc
+  inc hl
+  inc hl
+  ld e,(hl)
+  ld d,0
+  inc hl
+  inc hl
+  ld c,(hl)
+  ld b,0
+  ld   hl,6144
+  add  hl,bc
+  push hl
+  ex   de,hl
+  ld   a,32
+  ld   de,0
+  ex   de,hl
+  ld   b,8
+  rra
+  jr   nc,$+3
+  add  hl,de
+  sla  e
+  rl   d
+  djnz $-8
+  ld   b,h
+  ld   c,l
+  pop  hl
+  add  hl,bc
+  pop bc
+  __printloop:
+  ld   a,(bc)
+  or   a
+  ret  z
+  call __wrtvrm
+  inc  bc
+  inc  hl
+  jr   __printloop
+ }
+
+//--- cliksw(value)
+//--- switches key click sound
+ public static void cliksw(short argument1)
+ asm inline (values()){
+  _CLIKSW: equ #F3DB
+  ld (_CLIKSW),a
+ }
+ 
+//--- ldir(destination pointer,length)
+//--- fills 0
+ public static void ldir(int argument1,int argument2)
+ asm (values()){
+  ld   hl,2
+  add  hl,sp
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  dec bc
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  inc de
+  xor a
+  ld (hl),a
+  ldir
+  ret
+ }
+
+//--- ldir(destination pointer,length,val)
+//--- fills any value
+ public static void ldir(int argument1,int argument2,short argument3)
+ asm (values()){
+  ld   hl,3
+  add  hl,sp
+  ld a,(hl)
+  inc hl
+  ld c,(hl)
+  inc hl
+  ld b,(hl)
+  dec bc
+  inc hl
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  ld h,d
+  ld l,e
+  inc de
+  ld (hl),a
+  ldir
+  ret
+ }
+
+//--- disscr()
+//--- disables the screen
+ public static void disscr()
+ asm inline{
+  call #41
+ }
+
+//--- enascr()
+//--- enables the screen
+ public static void enascr()
+ asm inline{
+  call #44
+ }
+
+//--- width(width)
+//--- sets width of screen
+ public static void width(short argument1)
+ asm inline{
+  ld (#F3B0),a
+ }
+
+//--- vdp(port,value)
+//--- writes the value to vdp
+ public static void vdp(short argument1,short argument2)
+ asm
+ {
+      ld   hl,3
+      add  hl,sp
+      ld   b,(hl)             ; A = 2nd parameter
+      inc  hl
+      inc  hl
+      ld   c,(hl)             ; A = 1st parameter
+      jp #47 ;WRTVDP
+}
+
+//--- vdp(port)
+//--- read the value from vdp
+ public static short vdp(short argument1)
+ asm inline{
+  call #13e ;RDVDP
+}
+
+//--- basic(basic statement)
+//--- executes MSX-BASIC statement
+//--- When this function is used, The stack values will disappear. It can not be used outside the main function.
+public static void basic(int argument1)
+ asm register{
+ ld de,#f55f
+ ld bc,256
+ ldir
+ ld a,#3a
+ ld hl,#f55e
+ ld (#f55e),a
+ 
+ ld de,#f55e
+ ld bc,__basfoot
+ call __bios_strcat
+ 
+ ld hl,#f55e
+ call #42B2  ;CRUNCH
+
+ pop hl
+ ld (#f55e),hl
+
+ ld hl,#f41f
+ jp #4601 ;NEWSTT
+
+__bios_strcat:
+ ld   a,(de)
+ inc  de
+ or   a
+ jr   nz,__bios_strcat
+ dec  de     ; DE = final zero character
+__bios_strcat_1:
+ ld   a,(bc)
+ ld   (de),a
+ inc  de
+ inc  bc
+ or   a
+ jr   nz,__bios_strcat_1
+ ret
+__basfoot:defb 58,68,69,70,85,83,82,61,80,69,69,75,40,38,72,70,53,53,69,41,43,80,69,69,75,40,38,72,70,53,53,70,41,42,50,53,54,58,65,61,85,83,82,40,48,41,0
+}
+
+//--- scrolldown(destination pointer,length)
+//--- scrolls text
+ public static void scrolldown(int argument1)
+ asm (values()){
+  ld   hl,2
+  add  hl,sp
+  ld e,(hl)
+  inc hl
+  ld d,(hl)
+  push de
+  ex de,hl
+  ld bc,32
+  add hl,bc
+  pop de
+  ex de,hl
+  ld a,24
+ __ppp:
+  ld bc,24
+  lddr
+  ld bc,8
+  sbc hl,bc
+  ex de,hl
+  sbc hl,bc
+  ex de,hl
+  dec a
+  jr nz,__ppp
+  ret
+ }
+
+//--- call(command)
+//--- executes call command in msx-basic
+public static void call(int argument1)
+asm(){ 
+ ld   hl,2
+ add  hl,sp
+ ld e,(hl)	;1st param
+ inc hl
+ ld d,(hl)
+ ex de,hl;
+ ld ix,(#39C0) ;call
+ jp #159 ;calbas
+}
+
+public static void call()
+asm inline(){
+ ld hl,#F55E
+ ld ix,(#39C0) ;call
+ call #159 ;calbas
+}
+
+//--- calbas(param str,basic command type)
+//--- call calbas
+public static void calbas(int argument1,int argument2)
+asm(){ 
+ ld   hl,2
+ add  hl,sp
+ ld e,(hl)	;2st param
+ inc hl
+ ld d,(hl)
+ inc hl
+ ld c,(hl)	;1st param
+ inc hl
+ ld b,(hl)
+ ex de,hl
+ ld e,(hl)
+ inc hl
+ ld d,(hl)
+ push de
+ pop ix
+ push bc
+ pop hl
+ jp #159 ;calbas
+}
+
+//--- vsync(param str,basic command type)
+//--- gets vsync 0:60hz 128:50hz
+public static short vsync()
+asm inline (values())
+{
+ ld a,(#2b)
+ and 128
+}
+
+//--- freearea()
+//--- gets freearea address of MSX-BASIC
+public static int freearea()
+asm inline(){
+ ld hl,(#f6c6) ;STREND
+}
+
+//--- info(strings)
+//--- prints text in screen 0~1
+public static void info(int argument1)
+asm register (values())
+{
+ __trace_0:
+ ld a,(hl)
+ or a
+ ret  z
+ call __chput
+ inc  hl
+ jr __trace_0
+}
+
+//--- chgcpu(mode)
+//--- changes the cpu mode. #80=Z80,#81=R800 ROM,#82=R800 DRAM
+public static void chgcpu(short argument1)
+asm inline(values())
+{
+ ld b,a
+ ld a,(#180)
+ cp #C3
+ ld a,b
+ call z,#180
+}
+
+//public static short inkey(){
+// calbas("&HF55E,\x15(\xec+\x16(0))",#395C);
+// return *(#f55e);
+//}
+
+}

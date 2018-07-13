@@ -1,0 +1,51 @@
+// Hello v9990 (2017 N.I)
+include bios.ccz80++
+include g9k.ccz80++
+include bitbuster.ccz80++
+
+class MainClass{
+//---------- variable
+//-- font data
+static short gfont[]={
+#6A,#00,#00,#F0,#02,#39,#0F,#0F,#03,#D6,#0B,#FF,#06,#6F,#0A,#04,#1B,#17,#23,#D7,#00,#C6,#0F,#74,#FF,#3F,#FF,#E9,#0B,#0F,#3F,#8E,#FF,#44,#77,#07,#17,#C3,#30,#C3,#48,#97,#FF,#3B,#7E,#7F,#D5,#13,#0C,#16,#2D,#F0,#01,#26,#F2,#03,#B7,#0F,#04,#7F,#E1,#CE,#29,#52,#1D,#F0,#01,#6E,#58,#26,#C7,#CA,#3E,#01,#3E,#00,#1D,#73,#77,#33,#7F,#E7,#AF,#1B,#77,#C4,#F3,#75,#03,#DF,#0F,#11,#E7,#D7,#7D,#C0,#0F,#EA,#33,#A8,#3A,#E2,#47,#AA,#3B,#CF,#0B,#7F,#08,#C7,#EB,#77,#65,#9F,#BF,#50,#0E,#06,#A3,#FF,#98,#EF,#F2,#9F,#87,#3E,#37,#E5,#B7,
+#8E,#30,#E5,#97,#CB,#23,#63,#FB,#53,#0F,#83,#DC,#97,#F9,#A3,#F0,#FE,#DE,#88,#39,#E2,#5C,#9A,#5C,#9C,#FF,#78,#73,#6E,#1B,#D4,#FF,#7D,#91,#C6,#C7,#7F,#29,#0F,#83,#6A,#A3,#39,#8F,#F3,#19,#E3,#67,#38,#C6,#FF,#3D,#3D,#4F,#91,#0F,#B7,#D4,#D3,#B1,#A7,#4D,#4F,#FF,#C0,#F0,#8F,#BE,#5F,#67,#1E,#0B,#A3,#FF,#AF,#7F,#45,#0F,#CB,#39,#2B,#FF,#86,#D2,#FF,#5E,#09,#CB,#65,#F0,#1F,#E3,#FF,#5E,#FE,#7F,#5C,#2A,#57,#E7,#55,#EB,#DA,#00,#FF,#7A,#B7,#97,#4F,#3B,#3A,#FF,#F2,#B7,#D3,#9F,#00,#EB,#9F,#B2,#6F,#00,#E0,#23,#A7,#BA,#AF,#62,#CB,
+#35,#F0,#CF,#1E,#B6,#DF,#C7,#1B,#16,#C9,#E3,#09,#DC,#FB,#73,#83,#2D,#CB,#8B,#8F,#01,#C7,#4F,#F0,#4F,#DE,#82,#F0,#F7,#B9,#DE,#07,#0B,#AF,#F6,#C6,#BB,#DC,#B7,#17,#1B,#A3,#FF,#0F,#A3,#1A,#F8,#01,#A7,#F3,#BF,#17,#83,#5F,#89,#E3,#EB,#EB,#3B,#8F,#81,#0E,#7B,#79,#66,#63,#F0,#F6,#9F,#7F,#AD,#E7,#36,#F0,#F9,#7F,#DF,#00,#7F,#02,#0F,#8B,#BB,#A7,#C7,#3E,#13,#E9,#8E,#89,#CB,#71,#EE,#7F,#CB,#56,#87,#D8,#9E,#87,#BB,#33,#96,#B6,#F7,#7F,#03,#8E,#2B,#BB,#07,#C7,#BB,#0E,#01,#E3,#B0,#AA,#8B,#F0,#9E,#EF,#E9,#C4,#CA,#CB,#38,#47,#FF,
+#FF,#CF,#D3,#2E,#51,#FF,#E7,#F7,#9D,#F7,#2B,#8F,#1C,#47,#FC,#84,#F7,#78,#B9,#F0,#07,#BF,#96,#2C,#AB,#F1,#F2,#7F,#96,#FF,#E7,#FF,#EB,#E1,#7F,#0F,#7F,#F3,#78,#1B,#7A,#7F,#D2,#A7,#E3,#9F,#9C,#FF,#7C,#75,#93,#DD,#FF,#7B,#DF,#DB,#73,#9B,#DF,#AF,#37,#DF,#5E,#73,#B3,#E1,#C3,#3E,#52,#EF,#E7,#BF,#1E,#78,#9F,#E1,#1F,#DE,#EF,#B7,#00,#FD,#F7,#00,#FF,#FC};
+//-- palette
+static short colors[]={0,0,0, 2,2,2, 1,6,1, 3,7,3, 1,1,7, 2,3,7, 5,1,1, 2,6,7, 7,1,1, 7,3,3, 6,6,1, 6,6,4, 1,4,1, 6,2,5, 5,5,5, 31,31,31};
+static short buf[128*16];
+
+//---------- main 
+static void main(){
+ //--- init
+ if(!g9k.detect()){bios.info("V9990 not found");return;}
+ bios.screen(5);
+ g9k.reset();
+ g9k.screen(g9k.MODE_B1,g9k.SCR0_4BIT,g9k.SCR0_XIM256,0,0);
+ g9k.arg(0);
+ g9k.writeMask(#ffff);
+
+ g9k.palette(&colors,0,3*16);
+
+ //--- init screen
+ g9k.lop(g9k.LOP_WCSC);
+ g9k.box(0,0,256,212,0);
+ g9k.cmdWait();
+ g9k.displayEnable();
+ 
+ //--- font setup
+ bitbuster.depack(&buf,&gfont);
+ g9k.put(0,212,256,16,&buf);
+
+ //--- print
+ print(32,32,"HELLO V9990");
+}
+
+//----- print  
+static void print(int X,int Y,int S){
+ while(*S){
+  if(*S!=32){g9k.copy(X,Y,8,8,((*S-32)&31)*8,212+((*S-32)/32)*8);g9k.cmdWait();}
+  ++S;X+=8;}
+}
+
+}

@@ -1,0 +1,1 @@
+c=setT(rand(SCX),rand(SCY),I_CHR,,100);spCenter(c,tc[c]);

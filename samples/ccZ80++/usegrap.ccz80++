@@ -1,0 +1,54 @@
+include bios.ccz80++
+include Random.ccz80++
+include graphic.ccz80++
+include bitbuster.ccz80++
+
+class MainClass{
+static int i;
+static short pg;
+const tm=8;
+static short tx[tm],ty[tm],txx[tm],tyy[tm],sx,sy;
+ static void main(){
+  bios.screen(5);
+  bios.color(15,0,0);
+   static short colors[]={0,0,0, 6,2,5, 4,1,4, 2,0,3, 3,5,7, 2,3,6, 1,1,5, 7,7,5, 6,6,3, 5,5,1, 3,7,4, 2,6,2, 1,5,0, 7,5,3, 5,5,5, 7,7,7};
+ for(i=0;i<16;i++)graphic.color(i,colors[i*3],colors[i*3+1],colors[i*3+2]);
+  static short gradata[]={// 236 bytes,
+#70,#00,#00,#07,#47,#99,#03,#79,#00,#00,#88,#77,#89,#90,#5E,#07,#02,#0F,#2F,#78,#0F,#80,#98,#88,#3C,#88,#99,#0F,#91,#88,#00,#89,#89,#0E,#E0,#07,#CC,#0E,#1F,#78,#90,#1E,#04,#22,#98,#89,#22,#1F,#99,#F0,#5E,#11,#22,#99,#89,#12,#99,#99,#2E,#D8,#78,#99,#92,#BC,#0D,#1F,#71,#3E,#92,#5F,#1E,#98,#98,#1F,#21,#88,#29,#28,#89,#3F,#E5,#5D,#B9,#1E,#5F,#E1,#2C,#6C,#1D,#8F,#79,#11,#AA,#99,#00,#BC,#C0,#0F,#E4,#AB,#0F,#BB,#BB,#CC,#98,#0E,#00,#08,#88,#AA,#CC,#0F,#CC,#C9,#89,#80,#4F,#02,#78,#79,#2F,#5D,#98,#45,#1E,#9B,#89,#87,#50,
+#0F,#E2,#97,#E5,#70,#88,#30,#D4,#FC,#6C,#DF,#6A,#98,#F1,#39,#23,#09,#82,#FE,#72,#31,#C2,#2E,#2E,#4E,#99,#88,#00,#23,#D3,#39,#1F,#3D,#28,#88,#1F,#24,#8E,#7A,#78,#1F,#33,#07,#6D,#61,#24,#1E,#29,#D0,#73,#0A,#AC,#78,#6F,#75,#92,#3E,#8A,#2B,#E1,#1B,#DF,#1D,#46,#DA,#46,#9C,#52,#13,#B3,#77,#0F,#87,#17,#03,#12,#8E,#D1,#92,#92,#38,#70,#00,#20,#72,#00,#3F,#29,#4A,#29,#13,#99,#2D,#BE,#7C,#B3,#13,#1C,#A7,#00,#00,#FF,#FC};
+ static short buf[32*32];
+ graphic.setpage(2,0);
+ bitbuster.depack(&buf,&gradata);
+ graphic.put(0,0,32,32,&buf);
+ graphic.setpage(3,0);
+ graphic.box(0,0,256,212,0);
+ for(i=0;i<30;i++){
+  graphic.box(Random.Next()%256,Random.Next()%212,Random.Next()%16+8,Random.Next()%16+8,Random.Next()%14+2);
+  }
+ graphic.setpage(0,2);
+ graphic.cls();
+// graphic.copy(10,10,32,32, 0,0,graphic.SRCTXOR);
+ pg=0;
+ while(1){
+ // graphic.setpage(pg,3);
+ // graphic.copy(0,0,256,212, 0,0,graphic.SRCIMP);
+  graphic.setpage(pg,2);
+  graphic.box(0,0,256,212,0);
+  for(i=0;i<tm;i++){
+   sx=tx[i];sy=ty[i];
+   if(Random.Next()%10==0){
+    txx[i]=Random.Next()%11-5;
+    tyy[i]=Random.Next()%11-5;}
+   sx+=txx[i];sy+=tyy[i];
+   if(sx<16){sx=16;txx[i]=-txx[i];}if(sx>240){sx=240;txx[i]=-txx[i];}
+   if(sy<16){sy=16;tyy[i]=-tyy[i];}if(sy>212-32){sy=212-32;tyy[i]=-tyy[i];}
+   graphic.copy(sx-16,sy-16,32,32, 0,0,graphic.SRCTIMP);
+   tx[i]=sx;ty[i]=sy;}
+   graphic.copy(0,0,2,2,0,0,graphic.SRCTIMP);
+   graphic.page(pg);
+  // graphic.copy(0,0,2,2,0,0,graphic.SRCTIMP);
+   
+   pg=(pg+1)&1;
+  }
+ }
+}

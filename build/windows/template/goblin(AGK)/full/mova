@@ -1,0 +1,189 @@
+`--- sett ver2.0
+`-------------------- user routine
+sub init(){
+}
+
+sub move(i){
+switch(t[i]){
+case 1:
+break;
+ }
+}
+
+sub move3d(i){
+switch(m[i]){
+ case 1:
+ break;
+ }
+}
+
+sub _update(){
+}
+
+
+`-------------------- engine
+`---------- variables
+const SCX=640,SCY=480,IMM=100,TM=500,MM=500;
+const imgIm=1,ImMaxSel=40,spT=1,obM=1;
+dim an[3]=[0,1,2,1]
+global sx as float:global sy as float:global sz as float:global sc as integer:global sn as integer:global sh as integer:global sl as integer
+global ss as float:global sa as integer:global sr as integer:global sxx as float:global syy as float:global szz as float
+global srx as integer;global sry as integer;global srz as integer;
+global cax as float;global cay as float;global caz as float;global carx as integer;global cary as integer;global carz as integer;
+global txsz as integer;global txr as integer;global txg as integer;global txb as integer;global txa;
+dim t[TM]:dim tx[TM] as float:dim ty[TM] as float:dim ts[TM] as float:dim txx[TM] as float:dim tyy[TM] as float:dim tsx[TM] as float:dim tsy[TM] as float
+dim th[TM],tl[TM],th2[TM],tl2[TM],tr[TM],tc[TM],tn[TM],trs[TM],ta[TM],tpri[TM];
+dim mx[MM] as float:dim my[MM] as float:dim mz[MM] as float:dim mxx[MM] as float:dim myy[MM] as float:dim mzz[MM] as float:dim msx[MM] as float:dim msy[MM] as float:dim msz[MM]
+dim m[MM],mh[MM],mh2[MM],ml[MM],ml2[MM],mrx[MM],mry[MM],mrxx[MM],mryy[MM],mrzz[MM],md[MM],mrz[MM],ms[MM],msmo[MM],mtxmo[MM],mc[MM],mn[MM],ma[MM];
+dim imn[IMM],imc[IMM],imw[IMM],imh[IMM];
+
+loadImage(1000,"msfont.png")
+setTextDefaultFontImage(1000);
+setSyncRate(30,0);
+setVirtualResolution(SCX,SCY);
+setWindowSize(160,120,0);
+`setWindowSize(512,384,0);
+setWindowPosition(20,400);
+cleart(t,TM);
+txsz=16;txr=255;txg=255;txb=255;txa=255;
+init();
+
+while(1){
+ loopT();loopM();_update();sync();
+}
+
+`--- setT
+sub sett(x#,y#,imgn,t1,pri){
+ cf(t,TM,i);if(i!=-1){t[i]=t1;tx[i]=x#;ty[i]=y#;txx[i]=0;tyy[i]=0;tc[i]=imgn;tn[i]=0;th[i]=0;th2[i]=0;tl[i]=0;tl2[i]=0;ts[i]=1;tr[i]=0;trs[i]=0;ta[i]=255;tsx[i]=x#;tsy[i]=y#;
+  createSprite(spT+i,imgn);
+`  addSpriteAnimationFrame(spT+i,imgn);
+  setSpriteAnimation(spT+i,imw[imgn],imh[imgn],imc[imgn]);
+  tpri[i]=pri;}return i;}
+
+sub settrans(c,m){setSpriteTransparency(spT+c,m);}
+sub settransm(c,m){setObjectTransparency(obM+c,m);}
+
+`-- loopT
+sub loopT(){
+ `- move
+ for(i=0 to TM){
+  if(t[i]){sx=tx[i];sy=ty[i];c=tc[i];sh=th[i];sl=tl[i];sn=tn[i];ss=ts[i];sa=ta[i];sr=tr[i];
+   move(i);
+   if(t[i]==0){deleteSprite(spT+i);}else{tx[i]=sx;ty[i]=sy;th[i]=sh;tl[i]=sl;tn[i]=sn;ts[i]=ss;ta[i]=sa;tr[i]=sr;}}
+ }
+ `- draw
+ for(i=0 to TM){
+  if(t[i]){sx=tx[i];sy=ty[i];
+   setSpritePositionByOffset(spT+i,sx,sy);
+   setSpriteAngle(spT+i,tr[i]);setSpriteScale(spT+i,ts[i],ts[i]);
+   setSpriteDepth(spT+i,tpri[i]);
+   setSpriteColorAlpha(spT+i,ta[i]);
+   setSpriteFrame(spT+i,tn[i]+1);}
+ }
+}  
+
+sub maprepeat(c,ww#,hh#){
+ w#=imw[mc[c]];h#=imh[mc[c]];c#=imc[mc[c]];
+ setImageWrapU(mc[c],1);
+ setImageWrapV(mc[c],1);
+ setObjectImage(obM+c,mc[c],0);
+ setObjectUVScale(obM+c,0,ww#,hh#);
+ mtxmo[c]=0;}
+
+sub _setm(x#,y#,z#,imgn,m1){
+ cf(m,MM,i);if(i!=-1){m[i]=m1;mx[i]=x#;my[i]=y#;mz[i]=z#;mrx[i]=0;mry[i]=0;mrz[i]=0;mxx[i]=0;myy[i]=0;mzz[i]=0;ms[i]=1;msmo[i]=0;msx[i]=x#;msy[i]=y#;msz[i]=z#;md[i]=0;mh[i]=0;mh2[i]=0;ml[i]=0;ml2[i]=0;mtxmo[i]=1;mc[i]=imgn;mn[i]=0;ma[i]=255;}
+ return i;}
+sub setm(x#,y#,z#,imgn,m1){
+ i=_setm(x#,y#,z#,imgn,m1);if(i!=-1){
+ createObjectPlane(obM+i,1,1);
+ setObjectLightMode(obM+i,0);
+ setObjectTransparency(obM+i,1);}return i;}
+
+sub setmPlain(x#,y#,z#,imgn,m1,w,h){
+ i=_setm(x#,y#,z#,imgn,m1);if(i!=-1){
+ createObjectPlane(obM+i,w,h);
+ setObjectLightMode(obM+i,0);
+ setObjectTransparency(obM+i,1);}return i;}
+
+sub setmBox(x#,y#,z#,imgn,m1,w,h,d){
+ i=_setm(x#,y#,z#,imgn,m1);if(i!=-1){
+ createObjectBox(obM+i,w,h,d);
+ setObjectLightMode(obM+i,0);
+ setObjectTransparency(obM+i,1);
+ }return i;}
+
+sub setmSphere(x#,y#,z#,imgn,m1,w,row,col){
+ i=_setm(x#,y#,z#,imgn,m1);if(i!=-1){
+ createObjectSphere(obM+i,w,row,col);
+ setObjectLightMode(obM+i,0);
+ setObjectTransparency(obM+i,1);
+ }return i;}
+
+`--- loopM
+sub loopM(){
+`----- m move
+ for(i=0 to MM){
+  if(m[i]){sx=mx[i];sy=my[i];sz=mz[i];sn=mn[i];sh=mh[i];sl=ml[i];
+   srx=mrx[i];sry=mry[i];srz=mrz[i];sxx=mxx[i];syy=myy[i];szz=mzz[i];
+   sa=ma[i];ss=ms[i];
+  move3d(i)
+  if(m[i]==0){delm(obM+i);}else{
+   setObjectPosition(obM+i,sx,sy,sz);
+   setObjectRotation(obM+i,srx,sry,srz);
+   if(mtxmo[i]==1){
+    setObjectImage(obM+i,mc[i],0);
+    w#=imw[mc[i]];h#=imh[mc[i]];c#=imc[mc[i]];
+    setObjectUVOffset(obM+i,0,sn,0);
+    setObjectUVScale(obM+i,0,1/c#,1);
+    }
+   if(sa!=255){setObjectColor(obM+i,255,255,255,sa);}
+   setObjectScale(obM+i,ss,ss,ss);
+   mx[i]=sx;my[i]=sy;mz[i]=sz;mn[i]=sn;mh[i]=sh;ml[i]=sl;
+   mrx[i]=srx;mry[i]=sry;mrz[i]=srz;mxx[i]=sxx;myy[i]=syy;mzz[i]=szz;
+   ma[i]=sa;ms[i]=ss;
+   }}}
+
+`----- cam
+setCameraPosition(1,cax,cay,caz);
+setCameraRotation(1,carx,cary,carz);
+` moveCameraLocalZ(1,cad);
+
+` setPrintSize(100);
+` print(str(w#*c#)+":"+str(getRawKeyState(16)));
+}
+
+`---------- loadChr
+sub loadchr(nm,fi$,n){
+ loadImage(nm,fi$+".png");
+ imw[nm]=getImageWidth(nm)/n;imh[nm]=getImageHeight(nm);imc[nm]=n;}
+ 
+`---- cntrBordr
+sub spCenter(i,imgn){setSpriteOffset(spT+i,imw[imgn]/2,imh[imgn]/2);}
+sub brdRight(i){a=SCX-getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdBottom(i){a=SCY-getW(imh[tc[i]],ts[i])/2;return a;}
+sub brdTop(i){a=getW(imh[tc[i]],ts[i])/2;return a;}
+sub brdLeft(i){a=getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdRight2(i){a=SCX-getW(imh[tc[i]],ts[i])/2;return a;}
+sub brdBottom2(i){a=SCY-getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdTop2(i){a=getW(imw[tc[i]],ts[i])/2;return a;}
+sub brdLeft2(i){a=getW(imh[tc[i]],ts[i])/2;return a;}
+`---- hideBordr
+sub hideRight(i){a=SCX+getW(imw[tc[i]],ts[i])/2;return a;}
+sub hideBottom(i){a=SCY+getW(imh[tc[i]],ts[i])/2;return a;}
+sub hideTop(i){a=-getW(imh[tc[i]],ts[i])/2;return a;}
+sub hideLeft(i){a=-getW(imw[tc[i]],ts[i])/2;return a;}
+sub getW(wid#,scal#){wid#=wid#*scal#;wid#=wid#/100;return wid#;}
+function rnd():a#=random(0,65535):a#=a#/65535:endfunction a#
+sub setCam(x#,y#,z#,rx,ry,rz){cax=x#;cay=y#;caz=z#;carx=rx;cary=ry;carz=rz;}
+sub delm(m1){if(getObjectExists(m1)){deleteObject(m1);}}
+
+`----------
+sub textsize(sz){txsz=sz;}
+sub text(id,x,y,st$){
+ createText(id,st$);
+ setTextPosition(id,x,y);
+ setTextColor(id,txr,txg,txb,txa);
+ setTextSize(id,txsz);}
+sub settext(id,st$){setTextString(id,st$);}
+sub textcolor(r,g,b,a){txr=r;txg=g;txb=b;txa=a;}
+sub settranstext(id,m){setTextTransparency(id,m);}

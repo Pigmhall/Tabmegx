@@ -1,0 +1,178 @@
+<html><head><title>MML</title></head><body><h1>MML Reference</h1>
+<pre><b><big>Global Setting</big></b>
+
+#opll_mode &lt;0|1&gt;
+ 0:FM 9 tracks
+ 1:FM 6 tracks+Rhythm track
+
+#machine_id &lt;0~7&gt;
+ 1:Sony
+ 2:Panasonic
+ 3:SANYO
+
+#lfo_mode &lt;0|1&gt;
+ 0:normal 1:fast
+
+#title &lt;"string"&gt;
+
+#alloc &lt;track no.=bytes,track no.=bytes,track no.=bytes...&gt;
+ buffer size per track
+
+#psg_tune { c,c# .... b }
+
+#opll_tune { c,c# .... b }
+
+#tempo &lt;57~2047&gt;
+
+#macro_offset &lt;name = no&gt;
+
+#end
+
+<b><big>Macro definition</big></b>
+
+*&lt;0~255&gt; = { string }
+
+<b><big>Voice definition</big></b>
+
+@e&lt;number&gt; = { Mode,Noise,data...data }
+ number: Voice number 0~31
+ (1)Mode
+  0 ... none
+  1 ... tone only(default)
+  2 ... noise only
+  3 ... tone and noize
+ (2)Noise
+  noise frequency
+ (3)Data
+  envelope data
+   Volume : count ... 2~239
+   Volume = count ... 2~239
+   n&lt;noise frequency&gt;
+   /&lt;mode&gt; *&lt;mode&gt;
+   [~] ... repeat
+   @&lt;Voice number&gt;
+   y&lt;r&gt;,&lt;d&gt; ... write d to register r
+   \&lt;-127~127&gt; ...
+   .,
+
+@r&lt;number&gt; = { Mode,Noise,AL,AR,DR,SL,SR,RR }
+  Mode ... 
+  Noise ...
+  AL ..... attack level
+  AR ..... attack rate
+  DR ..... delay rate
+  SL ..... sustain level
+  SR ..... sustain rate
+  RR ..... release rate
+
+@s&lt;number&gt; = { data1 .... data32 }
+  voice of SCC
+
+@v&lt;number&gt; = { data ... }
+  voice of OPLL
+
+@#&lt;number&gt; = &lt;n&gt;
+
+<b><big>Music</big></b>
+
+&lt;track no.&gt; &lt;notes&gt;
+ track no.
+  opll_mode 0
+   1~3 ... PSG
+   4~8 ... SCC
+   9~h ... FM
+  opll_mode 1
+   1~3 ... PSG
+   4~8 ... SCC
+   9~e ... FM
+   f(r)... Rhythm
+
+ notes
+  t&lt;n&gt; ... tempo, 57~2047(default:120)
+  l&lt;n&gt; ... note length, 1~192 (default:4)
+  ^&lt;n&gt; ... ties
+  & ... slur
+  q&lt;n&gt; ... length ratio, 0~8 (default:8)
+  v&lt;n&gt; ... volume, 0~15(default:0)
+  v+|-&lt;n&gt; ... change volume
+  )&lt;n&gt; ... volume up
+  (&lt;n&gt; ... volume down
+  v&lt;rhythm instrument&gt;&lt;n&gt; ... rhythm instrument volume in rhythm track, 0~15
+  v&lt;rhythm instrument&gt;+|-&lt;n&gt; ... change instrument rhythm volume, 0~15
+  k&lt;n&gt; ... fade out speed in PSG or SSC, 0~255(default:0)
+  @&lt;n&gt; ... change voice
+  @e&lt;n&gt; ... copy voice data
+  @r&lt;n&gt; ... copy voice data
+  m&lt;n&gt; ... envelope frequency in PSG, 1~65535
+  s&lt;n&gt; ... envelope shape in PSG, 0~15
+  n&lt;n&gt; ... noise in PSG, 0~31
+  o&lt;n&gt; ... octave, 1~8(default:4)
+  &gt; ... octabe up
+  &lt; ... octabe down
+  a~g&lt;+,-&gt;&lt;n&gt; ... musical notes
+  _ ... change smooth
+  r ... rests
+  &lt;rhythm instrument&gt;&lt;:&gt; ... bsmhc
+  \&lt;n&gt; ... detune, -127~127(default:0)
+  @\&lt;n&gt; ... detune details, -32768~32767(PSG, SSC), 0~255(FM)
+  p&lt;n&gt; ... volume down in PSG or SSC, 0~255
+  h&lt;n1&gt;,&lt;n2&gt;,&lt;n3&gt;,&lt;n4&gt; ... LFO
+   n1: delay(0~255)
+   n2: depth(0~127)
+   n3: speed(0~255)
+   n4: roughness(-127~127)
+  @p&lt;n&gt;	... LFO details, -32768~32767
+  ho ... start LFO
+  hf ... stop LFO
+  hi ... initialize LFO
+  [&lt;count&gt;~]; ... repeat, 0~255(0: endless, default:2)
+  [~]&lt;count&gt; ... repeat, 0~255(0: endless, default:2)
+  | ... out of the repeat
+  so ... sustain on in FM
+  sf ... sustain off in FM (default)
+  ko ... do not stop the sound(in rhythm) (default)
+  kf ... stop the sound(in rhythm)
+  /&lt;n&gt; ... key off
+  y&lt;n1&gt;,&lt;n2&gt; ... write n1 to register n2,
+                 n1 FM:0~56 PSG:0~15
+                 n2 0~255
+  @l&lt;n&gt; ... change total level in OPLL
+  *&lt;n&gt; ... call macro(0~255)
+  ! ... ignore the MML after this
+  @m&lt;n&gt; ... call the control string
+  @o&lt;n&gt; ... offset of the control string
+  @f ... increment &lt;fadefg&gt; of MIB
+  $ ... debug command
+
+<b><big>Voice number</big></b>
+0 Violin
+1 Guitar
+2 Piano
+3 Flute
+4 Clarinet
+5 Oboe
+6 Trumpet
+7 Organ
+8 Horn
+9 Synth
+10 Harpsichord
+11 Vibraphone
+12 Synth bass
+13 Wood base
+14 Electric base
+
+<b><big>Hint</big></b>
+<li>Alloc
+When the MML file is compiled, the size of each track is displayed.
+
+track :  9  ( 1016)  (  165)  (  851) 
+(reserved bytes) (used bytes) (remaining bytes)
+
+This information can be used to adjust the reserved size in "#alloc".
+
+<li>Tempo compatibility
+Because MSGDRV operates for MSX in 60hz, the tempo needs to be multiplied by 1.2 in 50hz.
+</pre>
+<hr size=3><a href="../readme.html">back</a>
+
+</body></html>

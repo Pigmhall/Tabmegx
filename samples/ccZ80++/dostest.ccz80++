@@ -1,0 +1,14 @@
+include bios_dos.ccz80++
+include Random.ccz80++
+
+class MainClass{
+static short sd[]={1,2,3,4};
+ static void main(){
+  bios.screen(1);
+  bios.print(1,1,"MSX DOS 2");
+  int i;
+  for(i=0;i<4;i++){bios.vpoke(6144+i,sd[i]);}
+  while(1);
+  
+ }
+}

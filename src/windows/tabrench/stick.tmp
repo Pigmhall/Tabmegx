@@ -1,0 +1,4 @@
+1 *lop
+2 locate 1,1:print stick(0)
+3 end
+4 goto *lop

@@ -1,0 +1,45 @@
+include bios.ccz80++
+include Random.ccz80++
+
+class MainClass{
+ static short buf[32];
+ static void main(){
+  bios.screen(1);
+
+  // change slot
+  bios.print(0,0,"WRITE TO PAGE 1:4000H~4003H");
+  *(#4000)='T';*(#4001)='E';*(#4002)='S';*(#4003)='T';
+  buf[0]=*(#4000);buf[1]=*(#4001);buf[2]=*(#4002);buf[3]=*(#4003);
+  bios.print(0,1,&buf);
+
+  bios.print(0,2,"use chgToRam1");
+  bios.chgToRam1();
+  *(#4000)='T';*(#4001)='E';*(#4002)='S';*(#4003)='T';
+  buf[0]=*(#4000);buf[1]=*(#4001);buf[2]=*(#4002);buf[3]=*(#4003);
+  bios.chgToRom1();
+  bios.print(0,3,&buf);
+
+  bios.print(0,5,"Push space key");
+  while(bios.strig(0)==0);
+
+  bios.cls();
+  //
+  bios.print(0,0,"WRITE TO PAGE 0:0000H~0003H");
+  bios.wrslt(#0000,*(bios.ramad0),'T');
+  bios.wrslt(#0001,*(bios.ramad0),'E');
+  bios.wrslt(#0002,*(bios.ramad0),'S');
+  bios.wrslt(#0003,*(bios.ramad0),'T');
+  buf[0]=bios.rdslt(0,*(bios.ramad0));
+  buf[1]=bios.rdslt(1,*(bios.ramad0));
+  buf[2]=bios.rdslt(2,*(bios.ramad0));
+  buf[3]=bios.rdslt(3,*(bios.ramad0));
+  buf[4]=0;
+  bios.print(0,1,&buf);
+
+
+  int i;for(i=0;i<1000;i++);
+  bios.print(0,5,"Push space key");
+  while(bios.strig(0)==0);
+
+ }
+}
